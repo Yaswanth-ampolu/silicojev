@@ -1,0 +1,17 @@
+# Local model/checkpoint artifacts (multi-gigabyte; keep outside GitHub).
+checkpoints/
+
+# Python and notebook caches.
+**/__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# GitHub rejects this raw archive because it is over 1 GB.
+dataset/raw/hf/CircuitNet3/circuitNetv3.zip
+
+# Graphify's generated extraction cache is reproducible and not source code.
+graphify-out/cache/
+graphify-out/.graphify_*
+
+# Do not vendor nested repository metadata.
+**/.git/

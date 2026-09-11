@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SilicoJev decision case",
+  "type": "object",
+  "required": ["id", "state", "questions", "gold", "provenance"],
+  "properties": {
+    "id": {"type": "string"},
+    "source": {"type": "string"},
+    "state": {"oneOf": [{"type": "string"}, {"type": "object"}, {"type": "array"}]},
+    "questions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type", "instructions"],
+        "properties": {
+          "type": {"enum": ["choice", "noul", "score"]},
+          "instructions": {"type": "string"},
+          "criteria": {}
+        }
+      }
+    },
+    "gold": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["probabilities"],
+        "properties": {
+          "probabilities": {"type": "object", "additionalProperties": {"type": "number"}},
+          "label_source": {"type": "string"}
+        }
+      }
+    },
+    "outcome": {"type": "object"},
+    "provenance": {
+      "type": "object",
+      "required": ["license", "synthetic"],
+      "properties": {
+        "license": {"type": "string"},
+        "synthetic": {"type": "boolean"},
+        "bug_family": {"type": "string"}
+      }
+    }
+  }
+}
