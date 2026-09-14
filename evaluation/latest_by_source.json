@@ -1,0 +1,89 @@
+{
+  "model_dir": "silicojev/checkpoints/latest",
+  "data": "silicojev/dataset/normalized/test.jsonl",
+  "score": {
+    "enabled": false,
+    "metrics": null,
+    "note": "Score is disabled for the current normalized SilicoJev data: no source provides a defensible ordered score label. Choice and noul metrics are reported; score/RPS is not claimed or fabricated."
+  },
+  "per_source": {
+    "HierSVA": {
+      "n": 9,
+      "accuracy": 0.6666666666666666,
+      "soft_accuracy": 0.638066062237105,
+      "brier_score": 0.5678820899874992,
+      "kl_divergence": 1.7592448462817991,
+      "total_variation": 0.3619339377628949,
+      "ece": 0.2752281882467263,
+      "score_mae": null,
+      "within_1_level": null,
+      "latency_p50_ms": 69.1645779997998,
+      "latency_p95_ms": 88.84947160067895
+    },
+    "Inspect-Eval-ChipBench": {
+      "n": 63,
+      "accuracy": 0.6984126984126984,
+      "soft_accuracy": 0.6615591723234695,
+      "brier_score": 0.5225649903040208,
+      "kl_divergence": 1.4943569680794917,
+      "total_variation": 0.3384408276765306,
+      "ece": 0.2652517043967923,
+      "score_mae": null,
+      "within_1_level": null,
+      "latency_p50_ms": 59.192632000304,
+      "latency_p95_ms": 83.56040499984374
+    },
+    "OriGen": {
+      "n": 1944,
+      "accuracy": 0.9583333333333334,
+      "soft_accuracy": 0.915804345055234,
+      "brier_score": 0.06661270865503523,
+      "kl_divergence": 0.16984914899943107,
+      "total_variation": 0.08419565494476612,
+      "ece": 0.023471976545610767,
+      "score_mae": null,
+      "within_1_level": null,
+      "latency_p50_ms": 54.156362999947305,
+      "latency_p95_ms": 62.89733910025461
+    },
+    "RTL-augmented": {
+      "n": 48,
+      "accuracy": 0.7291666666666666,
+      "soft_accuracy": 0.6758952010644936,
+      "brier_score": 0.35598577662883796,
+      "kl_divergence": 0.9735429768729099,
+      "total_variation": 0.3241047989355063,
+      "ece": 0.14885140744282652,
+      "score_mae": null,
+      "within_1_level": null,
+      "latency_p50_ms": 64.76487200006886,
+      "latency_p95_ms": 75.72417175015289
+    },
+    "RootCause-Bench": {
+      "n": 12,
+      "accuracy": 0.75,
+      "soft_accuracy": 0.7414253575357536,
+      "brier_score": 0.2118263022524596,
+      "kl_divergence": 0.4603218937758777,
+      "total_variation": 0.2585746424642464,
+      "ece": 0.1606469146914692,
+      "score_mae": null,
+      "within_1_level": null,
+      "latency_p50_ms": 46.67117149983824,
+      "latency_p95_ms": 49.257912200437204
+    },
+    "hwe-bench": {
+      "n": 105,
+      "accuracy": 0.8857142857142857,
+      "soft_accuracy": 0.627666287631679,
+      "brier_score": 0.25281913334184986,
+      "kl_divergence": 0.7200955154278675,
+      "total_variation": 0.34480410393494787,
+      "ece": 0.19198066757026355,
+      "score_mae": null,
+      "within_1_level": null,
+      "latency_p50_ms": 44.168671000079485,
+      "latency_p95_ms": 52.671027399810555
+    }
+  }
+}
