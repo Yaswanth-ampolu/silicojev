@@ -1,0 +1,26 @@
+{
+  "total_cases": 6248,
+  "source_counts": {
+    "HierSVA": 28,
+    "Inspect-Eval-ChipBench": 178,
+    "OriGen": 5444,
+    "RTL-augmented": 145,
+    "RootCause-Bench": 36,
+    "hwe-bench": 417
+  },
+  "split_counts": {
+    "test": 727,
+    "train": 4689,
+    "validation": 832
+  },
+  "quality_counts": {
+    "bronze": 5444,
+    "gold": 417,
+    "silver": 36,
+    "silver_benchmark": 178,
+    "silver_formal_context": 28,
+    "silver_validated": 145
+  },
+  "invalid_count": 0,
+  "include_origen": true
+}
