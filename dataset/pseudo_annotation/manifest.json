@@ -1,0 +1,59 @@
+{
+  "total_records": 6248,
+  "records_annotated": 6248,
+  "worker_count": 10,
+  "shard_counts": {
+    "shard_01": 625,
+    "shard_02": 625,
+    "shard_03": 625,
+    "shard_04": 625,
+    "shard_05": 625,
+    "shard_06": 625,
+    "shard_07": 625,
+    "shard_08": 625,
+    "shard_09": 625,
+    "shard_10": 623
+  },
+  "source_counts": {
+    "HierSVA": 28,
+    "Inspect-Eval-ChipBench": 178,
+    "OriGen": 5444,
+    "RTL-augmented": 145,
+    "RootCause-Bench": 36,
+    "hwe-bench": 417
+  },
+  "confidence_histogram": {
+    "0.43": 617,
+    "0.52": 620,
+    "0.53": 599,
+    "0.58": 509,
+    "0.60": 174,
+    "0.62": 752,
+    "0.64": 15,
+    "0.65": 1246,
+    "0.66": 625,
+    "0.68": 2306,
+    "0.70": 1252,
+    "0.72": 1249,
+    "0.75": 625,
+    "0.76": 599,
+    "0.78": 15,
+    "0.80": 625,
+    "0.82": 612,
+    "0.84": 20,
+    "0.90": 36
+  },
+  "average_risk_score": 1.4527986555697685,
+  "average_urgency_score": 1.1903656370038291,
+  "count_low_confidence_records": 617,
+  "low_confidence_definition": "confidence < 0.5 for either generated risk or urgency label",
+  "all_labels_unverified_statement": "All generated risk and urgency labels are unverified pseudo-labels; they are not ground truth and have not been validated.",
+  "structural_checks": {
+    "valid_jsonl": true,
+    "no_duplicate_record_ids": true,
+    "all_input_records_preserved": true,
+    "exactly_two_new_questions_per_record": true,
+    "probabilities_sum_to_approximately_1": true,
+    "original_labels_unchanged": true
+  }
+}

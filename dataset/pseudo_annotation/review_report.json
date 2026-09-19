@@ -1,0 +1,60 @@
+{
+  "base": "silicojev/dataset/normalized/all.jsonl",
+  "annotated": "silicojev/dataset/normalized/all_with_pseudo_scores.jsonl",
+  "merged_all": "silicojev/dataset/normalized/pseudo_scores/all_with_pseudo_scores_reviewed.jsonl",
+  "merged_splits": {
+    "train": "silicojev/dataset/normalized/pseudo_scores/train_with_pseudo_scores.jsonl",
+    "validation": "silicojev/dataset/normalized/pseudo_scores/validation_with_pseudo_scores.jsonl",
+    "test": "silicojev/dataset/normalized/pseudo_scores/test_with_pseudo_scores.jsonl"
+  },
+  "records": 6248,
+  "shard_counts": {
+    "shard_01": 625,
+    "shard_02": 625,
+    "shard_03": 625,
+    "shard_04": 625,
+    "shard_05": 625,
+    "shard_06": 625,
+    "shard_07": 625,
+    "shard_08": 625,
+    "shard_09": 625,
+    "shard_10": 623
+  },
+  "shard_unique_ids": 6248,
+  "original_fields_preserved": true,
+  "objective_corrections": {},
+  "flag_counts": {
+    "bronze_unreplayed_teacher_label": 5444,
+    "low_confidence": 617,
+    "urgency_no_time_pressure_not_proven": 631
+  },
+  "source_flag_counts": {
+    "HierSVA": {
+      "low_confidence": 28,
+      "urgency_no_time_pressure_not_proven": 28
+    },
+    "Inspect-Eval-ChipBench": {
+      "low_confidence": 139,
+      "urgency_no_time_pressure_not_proven": 144
+    },
+    "OriGen": {
+      "bronze_unreplayed_teacher_label": 5444,
+      "urgency_no_time_pressure_not_proven": 6
+    },
+    "RootCause-Bench": {
+      "low_confidence": 36,
+      "urgency_no_time_pressure_not_proven": 36
+    },
+    "hwe-bench": {
+      "low_confidence": 414,
+      "urgency_no_time_pressure_not_proven": 417
+    }
+  },
+  "split_counts": {
+    "test": 727,
+    "train": 4689,
+    "validation": 832
+  },
+  "semantic_status": "unverified_teacher_pseudo_labels",
+  "score_training_warning": "Do not use these labels as final validation/test truth until independently audited."
+}
