@@ -1,0 +1,43 @@
+{
+  "format": "SilicoJev/Laya typed-decisions compatible JSONL",
+  "base_question_ids": [
+    "evidence_sufficient",
+    "next_action",
+    "root_cause_type"
+  ],
+  "added_question_ids": [
+    "risk",
+    "urgency"
+  ],
+  "total_cases": 6248,
+  "total_decisions": 31240,
+  "split_counts": {
+    "train": 4689,
+    "validation": 832,
+    "test": 727
+  },
+  "decision_counts": {
+    "train": 23445,
+    "validation": 4160,
+    "test": 3635
+  },
+  "source_counts": {
+    "HierSVA": 28,
+    "Inspect-Eval-ChipBench": 178,
+    "OriGen": 5444,
+    "RTL-augmented": 145,
+    "RootCause-Bench": 36,
+    "hwe-bench": 417
+  },
+  "quality_counts": {
+    "bronze": 5444,
+    "gold": 417,
+    "silver": 36,
+    "silver_benchmark": 178,
+    "silver_formal_context": 28,
+    "silver_validated": 145
+  },
+  "original_question_integrity": "verified_exact_match",
+  "pseudo_label_status": "codex_pseudo_unverified",
+  "training_note": "Use risk/urgency for exploratory training only until independently validated; do not use them as final evaluation truth."
+}
