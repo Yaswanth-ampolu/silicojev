@@ -1,0 +1,656 @@
+{
+  "repair_evidence_verified_3q": [
+    "fixbench:case_000_2654b357",
+    "fixbench:case_001_1390de2d",
+    "fixbench:case_002_8c22f7e4",
+    "fixbench:case_004_afd798e1",
+    "fixbench:case_005_93d278aa",
+    "fixbench:case_007_32cd1677",
+    "fixbench:case_009_7715cf2f",
+    "fixbench:case_010_609c9260",
+    "fixbench:case_011_21b5f5d3",
+    "fixbench:case_014_de384ea2",
+    "fixbench:case_015_2ff57c50",
+    "fixbench:case_017_9acf1c43",
+    "fixbench:case_018_a8b822d9",
+    "fixbench:case_019_4114fd4a",
+    "fixbench:case_020_629f5f43",
+    "fixbench:case_021_c92e0e5b",
+    "fixbench:case_023_11b890c7",
+    "fixbench:case_024_68902e8f",
+    "fixbench:case_026_89ee4a92",
+    "fixbench:case_028_3581f420",
+    "fixbench:case_029_befe010d",
+    "fixbench:case_031_7994f605",
+    "fixbench:case_032_bf08fa6e",
+    "fixbench:case_033_da9025fe",
+    "fixbench:case_034_8f20c720",
+    "fixbench:case_035_2cd94472",
+    "fixbench:case_036_549d01af",
+    "fixbench:case_037_59ffb946",
+    "fixbench:case_038_3e823e0a",
+    "fixbench:case_040_14931a4a",
+    "fixbench:case_041_7f3d2c28",
+    "fixbench:case_042_1b3efec7",
+    "fixbench:case_043_7339fc19",
+    "fixbench:case_044_6b00f725",
+    "fixbench:case_046_a734981d",
+    "fixbench:case_047_bf5c41de",
+    "fixbench:case_048_a15c4652",
+    "fixbench:case_049_0bfb474d",
+    "fixbench:case_050_2753d7c2",
+    "fixbench:case_051_19a9ea38",
+    "fixbench:case_052_f42abc47",
+    "fixbench:case_053_39762858",
+    "fixbench:case_054_49fc0f2c",
+    "fixbench:case_055_ac639607",
+    "fixbench:case_056_2076920a",
+    "fixbench:case_057_686bab57",
+    "fixbench:case_058_3e4dc868",
+    "fixbench:case_061_30bc86ea",
+    "fixbench:case_063_5ac124bd",
+    "fixbench:case_083_5a46d396",
+    "fixbench:case_087_33dae361",
+    "fixbench:case_089_34a618cf",
+    "fixbench:case_090_647a1ae5",
+    "fixbench:case_091_c243581d"
+  ],
+  "replay_verified_unflagged_3q": [
+    "fixbench:case_000_2654b357",
+    "fixbench:case_001_1390de2d",
+    "fixbench:case_002_8c22f7e4",
+    "fixbench:case_004_afd798e1",
+    "fixbench:case_005_93d278aa",
+    "fixbench:case_007_32cd1677",
+    "fixbench:case_009_7715cf2f",
+    "fixbench:case_010_609c9260",
+    "fixbench:case_011_21b5f5d3",
+    "fixbench:case_014_de384ea2",
+    "fixbench:case_015_2ff57c50",
+    "fixbench:case_017_9acf1c43",
+    "fixbench:case_018_a8b822d9",
+    "fixbench:case_019_4114fd4a",
+    "fixbench:case_020_629f5f43",
+    "fixbench:case_021_c92e0e5b",
+    "fixbench:case_023_11b890c7",
+    "fixbench:case_024_68902e8f",
+    "fixbench:case_026_89ee4a92",
+    "fixbench:case_028_3581f420",
+    "fixbench:case_029_befe010d",
+    "fixbench:case_031_7994f605",
+    "fixbench:case_032_bf08fa6e",
+    "fixbench:case_033_da9025fe",
+    "fixbench:case_034_8f20c720",
+    "fixbench:case_035_2cd94472",
+    "fixbench:case_036_549d01af",
+    "fixbench:case_037_59ffb946",
+    "fixbench:case_038_3e823e0a",
+    "fixbench:case_040_14931a4a",
+    "fixbench:case_041_7f3d2c28",
+    "fixbench:case_042_1b3efec7",
+    "fixbench:case_043_7339fc19",
+    "fixbench:case_044_6b00f725",
+    "fixbench:case_046_a734981d",
+    "fixbench:case_047_bf5c41de",
+    "fixbench:case_048_a15c4652",
+    "fixbench:case_049_0bfb474d",
+    "fixbench:case_050_2753d7c2",
+    "fixbench:case_051_19a9ea38",
+    "fixbench:case_052_f42abc47",
+    "fixbench:case_053_39762858",
+    "fixbench:case_054_49fc0f2c",
+    "fixbench:case_055_ac639607",
+    "fixbench:case_056_2076920a",
+    "fixbench:case_057_686bab57",
+    "fixbench:case_058_3e4dc868",
+    "fixbench:case_091_c243581d"
+  ],
+  "replay_verified_3q": [
+    "fixbench:case_000_2654b357",
+    "fixbench:case_002_8c22f7e4",
+    "fixbench:case_009_7715cf2f",
+    "fixbench:case_010_609c9260",
+    "fixbench:case_011_21b5f5d3",
+    "fixbench:case_014_de384ea2",
+    "fixbench:case_017_9acf1c43",
+    "fixbench:case_018_a8b822d9",
+    "fixbench:case_020_629f5f43",
+    "fixbench:case_021_c92e0e5b",
+    "fixbench:case_023_11b890c7",
+    "fixbench:case_024_68902e8f",
+    "fixbench:case_028_3581f420",
+    "fixbench:case_029_befe010d",
+    "fixbench:case_031_7994f605",
+    "fixbench:case_032_bf08fa6e",
+    "fixbench:case_033_da9025fe",
+    "fixbench:case_034_8f20c720",
+    "fixbench:case_035_2cd94472",
+    "fixbench:case_037_59ffb946",
+    "fixbench:case_040_14931a4a",
+    "fixbench:case_041_7f3d2c28",
+    "fixbench:case_042_1b3efec7",
+    "fixbench:case_044_6b00f725",
+    "fixbench:case_046_a734981d",
+    "fixbench:case_047_bf5c41de",
+    "fixbench:case_048_a15c4652",
+    "fixbench:case_049_0bfb474d",
+    "fixbench:case_050_2753d7c2",
+    "fixbench:case_051_19a9ea38",
+    "fixbench:case_052_f42abc47",
+    "fixbench:case_055_ac639607",
+    "fixbench:case_056_2076920a",
+    "fixbench:case_057_686bab57",
+    "fixbench:case_058_3e4dc868"
+  ],
+  "unverified_label_3q": [
+    "fixbench:case_001_1390de2d",
+    "fixbench:case_003_019ab5b7",
+    "fixbench:case_004_afd798e1",
+    "fixbench:case_005_93d278aa",
+    "fixbench:case_006_628f065d",
+    "fixbench:case_007_32cd1677",
+    "fixbench:case_008_2d795521",
+    "fixbench:case_015_2ff57c50",
+    "fixbench:case_016_3fe1f78f",
+    "fixbench:case_019_4114fd4a",
+    "fixbench:case_025_067cc4df",
+    "fixbench:case_026_89ee4a92",
+    "fixbench:case_027_943baffb",
+    "fixbench:case_030_c1dc7302",
+    "fixbench:case_036_549d01af",
+    "fixbench:case_038_3e823e0a",
+    "fixbench:case_039_2480547f",
+    "fixbench:case_043_7339fc19",
+    "fixbench:case_045_764c3938",
+    "fixbench:case_053_39762858",
+    "fixbench:case_054_49fc0f2c",
+    "fixbench:case_059_56c31a91",
+    "fixbench:case_062_7740ab38",
+    "fixbench:case_063_5ac124bd",
+    "fixbench:case_064_0ea61baa",
+    "fixbench:case_065_3eec1172",
+    "fixbench:case_067_f0daa3a9",
+    "fixbench:case_069_7ce866b2",
+    "fixbench:case_070_b5bc7d01",
+    "fixbench:case_071_127bdaac",
+    "fixbench:case_072_a9c7e5c1",
+    "fixbench:case_073_3f86fce6",
+    "fixbench:case_074_0392aa15",
+    "fixbench:case_076_8d9b4d0e",
+    "fixbench:case_077_0d9c2062",
+    "fixbench:case_078_2753b21f",
+    "fixbench:case_079_3df86a62",
+    "fixbench:case_080_a6875695",
+    "fixbench:case_081_afc7468e",
+    "fixbench:case_083_5a46d396",
+    "fixbench:case_084_9bca174f",
+    "fixbench:case_085_5aa28da7",
+    "fixbench:case_086_58aa02a5",
+    "fixbench:case_087_33dae361",
+    "fixbench:case_088_50d61e92",
+    "fixbench:case_090_647a1ae5",
+    "fixbench:case_091_c243581d",
+    "fixbench:case_092_024f0796",
+    "fixbench:case_093_6a2ff03f",
+    "fixbench:case_094_99c25e13",
+    "fixbench:case_095_b51a4a9e",
+    "fixbench:case_096_5df5a3ac",
+    "fixbench:case_097_408a689a",
+    "fixbench:case_098_3417a84f",
+    "fixbench:case_099_c17eedb6"
+  ],
+  "unvalidated_no_replay": [],
+  "flagged_for_review": [
+    "fixbench:case_003_019ab5b7",
+    "fixbench:case_006_628f065d",
+    "fixbench:case_008_2d795521",
+    "fixbench:case_012_30926604",
+    "fixbench:case_013_e3f2a9ff",
+    "fixbench:case_016_3fe1f78f",
+    "fixbench:case_022_85cafe70",
+    "fixbench:case_025_067cc4df",
+    "fixbench:case_027_943baffb",
+    "fixbench:case_030_c1dc7302",
+    "fixbench:case_039_2480547f",
+    "fixbench:case_045_764c3938",
+    "fixbench:case_059_56c31a91",
+    "fixbench:case_060_f416ea9f",
+    "fixbench:case_061_30bc86ea",
+    "fixbench:case_062_7740ab38",
+    "fixbench:case_063_5ac124bd",
+    "fixbench:case_064_0ea61baa",
+    "fixbench:case_065_3eec1172",
+    "fixbench:case_066_d1cc6ea4",
+    "fixbench:case_067_f0daa3a9",
+    "fixbench:case_068_dc260b90",
+    "fixbench:case_069_7ce866b2",
+    "fixbench:case_070_b5bc7d01",
+    "fixbench:case_071_127bdaac",
+    "fixbench:case_072_a9c7e5c1",
+    "fixbench:case_073_3f86fce6",
+    "fixbench:case_074_0392aa15",
+    "fixbench:case_075_bf9b7471",
+    "fixbench:case_076_8d9b4d0e",
+    "fixbench:case_077_0d9c2062",
+    "fixbench:case_078_2753b21f",
+    "fixbench:case_079_3df86a62",
+    "fixbench:case_080_a6875695",
+    "fixbench:case_081_afc7468e",
+    "fixbench:case_082_827829e2",
+    "fixbench:case_083_5a46d396",
+    "fixbench:case_084_9bca174f",
+    "fixbench:case_085_5aa28da7",
+    "fixbench:case_086_58aa02a5",
+    "fixbench:case_087_33dae361",
+    "fixbench:case_088_50d61e92",
+    "fixbench:case_089_34a618cf",
+    "fixbench:case_090_647a1ae5",
+    "fixbench:case_092_024f0796",
+    "fixbench:case_093_6a2ff03f",
+    "fixbench:case_094_99c25e13",
+    "fixbench:case_095_b51a4a9e",
+    "fixbench:case_096_5df5a3ac",
+    "fixbench:case_097_408a689a",
+    "fixbench:case_098_3417a84f",
+    "fixbench:case_099_c17eedb6"
+  ],
+  "flag_reasons": {
+    "fixbench:case_003_019ab5b7": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_006_628f065d": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_008_2d795521": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_012_30926604": [
+      "failure_survives_repair"
+    ],
+    "fixbench:case_013_e3f2a9ff": [
+      "failure_survives_repair"
+    ],
+    "fixbench:case_016_3fe1f78f": [
+      "no_usable_verdict"
+    ],
+    "fixbench:case_022_85cafe70": [
+      "failure_survives_repair"
+    ],
+    "fixbench:case_025_067cc4df": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_027_943baffb": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_030_c1dc7302": [
+      "failure_survives_repair"
+    ],
+    "fixbench:case_039_2480547f": [
+      "failure_survives_repair"
+    ],
+    "fixbench:case_045_764c3938": [
+      "security_relevant_content",
+      "failure_survives_repair"
+    ],
+    "fixbench:case_059_56c31a91": [
+      "failure_survives_repair"
+    ],
+    "fixbench:case_060_f416ea9f": [
+      "bug_text_is_upstream_pr_text",
+      "failure_survives_repair"
+    ],
+    "fixbench:case_061_30bc86ea": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content"
+    ],
+    "fixbench:case_062_7740ab38": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_063_5ac124bd": [
+      "bug_text_is_upstream_pr_text"
+    ],
+    "fixbench:case_064_0ea61baa": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_065_3eec1172": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_066_d1cc6ea4": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_067_f0daa3a9": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_068_dc260b90": [
+      "bug_text_is_upstream_pr_text",
+      "failure_survives_repair"
+    ],
+    "fixbench:case_069_7ce866b2": [
+      "failure_survives_repair"
+    ],
+    "fixbench:case_070_b5bc7d01": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_071_127bdaac": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_072_a9c7e5c1": [
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_073_3f86fce6": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_074_0392aa15": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_075_bf9b7471": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_076_8d9b4d0e": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_077_0d9c2062": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_078_2753b21f": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_079_3df86a62": [
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_080_a6875695": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_081_afc7468e": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_082_827829e2": [
+      "failure_survives_repair"
+    ],
+    "fixbench:case_083_5a46d396": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content"
+    ],
+    "fixbench:case_084_9bca174f": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_085_5aa28da7": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_086_58aa02a5": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_087_33dae361": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_088_50d61e92": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_089_34a618cf": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content"
+    ],
+    "fixbench:case_090_647a1ae5": [
+      "bug_text_is_upstream_pr_text"
+    ],
+    "fixbench:case_092_024f0796": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_093_6a2ff03f": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_094_99c25e13": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_095_b51a4a9e": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_096_5df5a3ac": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "fixbench:case_097_408a689a": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_098_3417a84f": [
+      "cannot_build_either_revision"
+    ],
+    "fixbench:case_099_c17eedb6": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ]
+  },
+  "replay_class_3q": {
+    "cannot_build_either_revision": [
+      "fixbench:case_065_3eec1172",
+      "fixbench:case_070_b5bc7d01",
+      "fixbench:case_071_127bdaac",
+      "fixbench:case_072_a9c7e5c1",
+      "fixbench:case_077_0d9c2062",
+      "fixbench:case_079_3df86a62",
+      "fixbench:case_081_afc7468e",
+      "fixbench:case_086_58aa02a5",
+      "fixbench:case_088_50d61e92",
+      "fixbench:case_094_99c25e13",
+      "fixbench:case_095_b51a4a9e",
+      "fixbench:case_097_408a689a",
+      "fixbench:case_098_3417a84f"
+    ],
+    "failure_survives_repair": [
+      "fixbench:case_012_30926604",
+      "fixbench:case_013_e3f2a9ff",
+      "fixbench:case_022_85cafe70",
+      "fixbench:case_030_c1dc7302",
+      "fixbench:case_039_2480547f",
+      "fixbench:case_045_764c3938",
+      "fixbench:case_059_56c31a91",
+      "fixbench:case_060_f416ea9f",
+      "fixbench:case_068_dc260b90",
+      "fixbench:case_069_7ce866b2",
+      "fixbench:case_082_827829e2"
+    ],
+    "no_usable_verdict": [
+      "fixbench:case_016_3fe1f78f"
+    ],
+    "testbench_passes_on_buggy_code": [
+      "fixbench:case_003_019ab5b7",
+      "fixbench:case_006_628f065d",
+      "fixbench:case_008_2d795521",
+      "fixbench:case_025_067cc4df",
+      "fixbench:case_027_943baffb",
+      "fixbench:case_062_7740ab38",
+      "fixbench:case_064_0ea61baa",
+      "fixbench:case_066_d1cc6ea4",
+      "fixbench:case_067_f0daa3a9",
+      "fixbench:case_073_3f86fce6",
+      "fixbench:case_074_0392aa15",
+      "fixbench:case_075_bf9b7471",
+      "fixbench:case_076_8d9b4d0e",
+      "fixbench:case_078_2753b21f",
+      "fixbench:case_080_a6875695",
+      "fixbench:case_084_9bca174f",
+      "fixbench:case_085_5aa28da7",
+      "fixbench:case_092_024f0796",
+      "fixbench:case_093_6a2ff03f",
+      "fixbench:case_096_5df5a3ac",
+      "fixbench:case_099_c17eedb6"
+    ],
+    "verified_failure_at_base": [
+      "fixbench:case_000_2654b357",
+      "fixbench:case_001_1390de2d",
+      "fixbench:case_002_8c22f7e4",
+      "fixbench:case_004_afd798e1",
+      "fixbench:case_005_93d278aa",
+      "fixbench:case_007_32cd1677",
+      "fixbench:case_009_7715cf2f",
+      "fixbench:case_010_609c9260",
+      "fixbench:case_011_21b5f5d3",
+      "fixbench:case_014_de384ea2",
+      "fixbench:case_015_2ff57c50",
+      "fixbench:case_017_9acf1c43",
+      "fixbench:case_018_a8b822d9",
+      "fixbench:case_019_4114fd4a",
+      "fixbench:case_020_629f5f43",
+      "fixbench:case_021_c92e0e5b",
+      "fixbench:case_023_11b890c7",
+      "fixbench:case_024_68902e8f",
+      "fixbench:case_026_89ee4a92",
+      "fixbench:case_028_3581f420",
+      "fixbench:case_029_befe010d",
+      "fixbench:case_031_7994f605",
+      "fixbench:case_032_bf08fa6e",
+      "fixbench:case_033_da9025fe",
+      "fixbench:case_034_8f20c720",
+      "fixbench:case_035_2cd94472",
+      "fixbench:case_036_549d01af",
+      "fixbench:case_037_59ffb946",
+      "fixbench:case_038_3e823e0a",
+      "fixbench:case_040_14931a4a",
+      "fixbench:case_041_7f3d2c28",
+      "fixbench:case_042_1b3efec7",
+      "fixbench:case_043_7339fc19",
+      "fixbench:case_044_6b00f725",
+      "fixbench:case_046_a734981d",
+      "fixbench:case_047_bf5c41de",
+      "fixbench:case_048_a15c4652",
+      "fixbench:case_049_0bfb474d",
+      "fixbench:case_050_2753d7c2",
+      "fixbench:case_051_19a9ea38",
+      "fixbench:case_052_f42abc47",
+      "fixbench:case_053_39762858",
+      "fixbench:case_054_49fc0f2c",
+      "fixbench:case_055_ac639607",
+      "fixbench:case_056_2076920a",
+      "fixbench:case_057_686bab57",
+      "fixbench:case_058_3e4dc868",
+      "fixbench:case_061_30bc86ea",
+      "fixbench:case_063_5ac124bd",
+      "fixbench:case_083_5a46d396",
+      "fixbench:case_087_33dae361",
+      "fixbench:case_089_34a618cf",
+      "fixbench:case_090_647a1ae5",
+      "fixbench:case_091_c243581d"
+    ]
+  },
+  "pseudo_5q": [
+    "fixbench:case_000_2654b357",
+    "fixbench:case_001_1390de2d",
+    "fixbench:case_002_8c22f7e4",
+    "fixbench:case_003_019ab5b7",
+    "fixbench:case_004_afd798e1",
+    "fixbench:case_005_93d278aa",
+    "fixbench:case_006_628f065d",
+    "fixbench:case_007_32cd1677",
+    "fixbench:case_008_2d795521",
+    "fixbench:case_009_7715cf2f",
+    "fixbench:case_010_609c9260",
+    "fixbench:case_011_21b5f5d3",
+    "fixbench:case_012_30926604",
+    "fixbench:case_013_e3f2a9ff",
+    "fixbench:case_014_de384ea2",
+    "fixbench:case_015_2ff57c50",
+    "fixbench:case_016_3fe1f78f",
+    "fixbench:case_017_9acf1c43",
+    "fixbench:case_018_a8b822d9",
+    "fixbench:case_019_4114fd4a",
+    "fixbench:case_020_629f5f43",
+    "fixbench:case_021_c92e0e5b",
+    "fixbench:case_022_85cafe70",
+    "fixbench:case_023_11b890c7",
+    "fixbench:case_024_68902e8f",
+    "fixbench:case_025_067cc4df",
+    "fixbench:case_026_89ee4a92",
+    "fixbench:case_027_943baffb",
+    "fixbench:case_028_3581f420",
+    "fixbench:case_029_befe010d",
+    "fixbench:case_030_c1dc7302",
+    "fixbench:case_031_7994f605",
+    "fixbench:case_032_bf08fa6e",
+    "fixbench:case_033_da9025fe",
+    "fixbench:case_034_8f20c720",
+    "fixbench:case_035_2cd94472",
+    "fixbench:case_036_549d01af",
+    "fixbench:case_037_59ffb946",
+    "fixbench:case_038_3e823e0a",
+    "fixbench:case_039_2480547f",
+    "fixbench:case_040_14931a4a",
+    "fixbench:case_041_7f3d2c28",
+    "fixbench:case_042_1b3efec7",
+    "fixbench:case_043_7339fc19",
+    "fixbench:case_044_6b00f725",
+    "fixbench:case_045_764c3938",
+    "fixbench:case_046_a734981d",
+    "fixbench:case_047_bf5c41de",
+    "fixbench:case_048_a15c4652",
+    "fixbench:case_049_0bfb474d",
+    "fixbench:case_050_2753d7c2",
+    "fixbench:case_051_19a9ea38",
+    "fixbench:case_052_f42abc47",
+    "fixbench:case_053_39762858",
+    "fixbench:case_054_49fc0f2c",
+    "fixbench:case_055_ac639607",
+    "fixbench:case_056_2076920a",
+    "fixbench:case_057_686bab57",
+    "fixbench:case_058_3e4dc868",
+    "fixbench:case_059_56c31a91",
+    "fixbench:case_060_f416ea9f",
+    "fixbench:case_061_30bc86ea",
+    "fixbench:case_062_7740ab38",
+    "fixbench:case_063_5ac124bd",
+    "fixbench:case_064_0ea61baa",
+    "fixbench:case_065_3eec1172",
+    "fixbench:case_066_d1cc6ea4",
+    "fixbench:case_067_f0daa3a9",
+    "fixbench:case_068_dc260b90",
+    "fixbench:case_069_7ce866b2",
+    "fixbench:case_070_b5bc7d01",
+    "fixbench:case_071_127bdaac",
+    "fixbench:case_072_a9c7e5c1",
+    "fixbench:case_073_3f86fce6",
+    "fixbench:case_074_0392aa15",
+    "fixbench:case_075_bf9b7471",
+    "fixbench:case_076_8d9b4d0e",
+    "fixbench:case_077_0d9c2062",
+    "fixbench:case_078_2753b21f",
+    "fixbench:case_079_3df86a62",
+    "fixbench:case_080_a6875695",
+    "fixbench:case_081_afc7468e",
+    "fixbench:case_082_827829e2",
+    "fixbench:case_083_5a46d396",
+    "fixbench:case_084_9bca174f",
+    "fixbench:case_085_5aa28da7",
+    "fixbench:case_086_58aa02a5",
+    "fixbench:case_087_33dae361",
+    "fixbench:case_088_50d61e92",
+    "fixbench:case_089_34a618cf",
+    "fixbench:case_090_647a1ae5",
+    "fixbench:case_091_c243581d",
+    "fixbench:case_092_024f0796",
+    "fixbench:case_093_6a2ff03f",
+    "fixbench:case_094_99c25e13",
+    "fixbench:case_095_b51a4a9e",
+    "fixbench:case_096_5df5a3ac",
+    "fixbench:case_097_408a689a",
+    "fixbench:case_098_3417a84f",
+    "fixbench:case_099_c17eedb6"
+  ],
+  "defensible_5q": [],
+  "policy": "records_3q.jsonl holds all converted cases with the honest per-question label source. The three gates nest: 'repair_evidence_verified_3q' is every case whose buggy revision demonstrably fails the supplied testbench under a simulator in which the corrected revision passes it (provenance.repair_evidence_verified); 'replay_verified_unflagged_3q' additionally drops cases carrying a trust flag; 'replay_verified_3q' additionally requires all three labels to be non-pseudo. 'verified_repair' means the replay and the source evidence support that label; it is not a claim that the judgement is uniquely correct, and next_action / root_cause_type remain readings even in the trusted set. The score questions in records_5q_pseudo_unverified.jsonl are rubric estimates and must not be used as gold. Nothing here is merged into dataset/normalized/."
+}

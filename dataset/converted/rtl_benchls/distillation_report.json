@@ -1,0 +1,552 @@
+{
+  "generated_by": "training/annotate_scores_model.py",
+  "method": "model case-by-case judgment; no rule or default selected any label or probability",
+  "inputs": [
+    "records_3q.jsonl",
+    "records_3q_unverified.jsonl"
+  ],
+  "input_records": 108,
+  "completed_records": 108,
+  "missing_records": 0,
+  "batch_size": 3,
+  "completion_by_batch": {
+    "1": 3,
+    "2": 3,
+    "3": 3,
+    "4": 3,
+    "5": 3,
+    "6": 3,
+    "7": 3,
+    "8": 3,
+    "9": 3,
+    "10": 3,
+    "11": 3,
+    "12": 3,
+    "13": 3,
+    "14": 3,
+    "15": 3,
+    "16": 3,
+    "17": 3,
+    "18": 3,
+    "19": 3,
+    "20": 3,
+    "21": 3,
+    "22": 3,
+    "23": 3,
+    "24": 3,
+    "25": 3,
+    "26": 3,
+    "27": 3,
+    "28": 3,
+    "29": 3,
+    "30": 3,
+    "31": 3,
+    "32": 3,
+    "33": 3,
+    "34": 3,
+    "35": 3,
+    "36": 3
+  },
+  "tiers": {
+    "trusted_exploratory_3q": 34,
+    "exploratory_unverified_3q": 74,
+    "by_trust_flag": {
+      "self_answering_issue_body": 6,
+      "patch_inconsistent_with_git_diff": 1
+    }
+  },
+  "risk": {
+    "distribution": {
+      "0": 108
+    },
+    "confidence_mean": 0.7727,
+    "confidence_min": 0.58,
+    "confidence_max": 0.83
+  },
+  "urgency": {
+    "distribution": {
+      "0": 101,
+      "1": 7
+    },
+    "confidence_mean": 0.5281,
+    "confidence_min": 0.4,
+    "confidence_max": 0.68,
+    "insufficient_evidence": 107
+  },
+  "insufficient_evidence_cases": [
+    "rtlbenchls:analogdevicesinc_hdl_1460_916",
+    "rtlbenchls:analogdevicesinc_hdl_781_778",
+    "rtlbenchls:lowRISC_ibex_1136_1134",
+    "rtlbenchls:lowRISC_ibex_166_163",
+    "rtlbenchls:lowRISC_ibex_176_25",
+    "rtlbenchls:lowRISC_ibex_1824_1765",
+    "rtlbenchls:lowRISC_ibex_222_216",
+    "rtlbenchls:lowRISC_ibex_272_270",
+    "rtlbenchls:lowRISC_ibex_48_46",
+    "rtlbenchls:lowRISC_ibex_54_51",
+    "rtlbenchls:lowRISC_ibex_836_2099",
+    "rtlbenchls:lowRISC_opentitan_10690_10062",
+    "rtlbenchls:lowRISC_opentitan_12384_12382",
+    "rtlbenchls:lowRISC_opentitan_12505_12502",
+    "rtlbenchls:lowRISC_opentitan_12508_12274",
+    "rtlbenchls:lowRISC_opentitan_12703_11576",
+    "rtlbenchls:lowRISC_opentitan_21237_21210",
+    "rtlbenchls:lowRISC_opentitan_22232_22234",
+    "rtlbenchls:lowRISC_opentitan_23546_21700",
+    "rtlbenchls:lowRISC_opentitan_23775_23773",
+    "rtlbenchls:openhwgroup_cv32e40p_194_190",
+    "rtlbenchls:openhwgroup_cv32e40p_285_254",
+    "rtlbenchls:openhwgroup_cv32e40p_337_335",
+    "rtlbenchls:openhwgroup_cv32e40p_344_187",
+    "rtlbenchls:openhwgroup_cv32e40p_359_116",
+    "rtlbenchls:openhwgroup_cv32e40p_494_445",
+    "rtlbenchls:openhwgroup_cv32e40p_575_574",
+    "rtlbenchls:openhwgroup_cv32e40p_665_629",
+    "rtlbenchls:openhwgroup_cv32e40p_665_663",
+    "rtlbenchls:openhwgroup_cv32e40p_841_838",
+    "rtlbenchls:openhwgroup_cv32e40p_841_840",
+    "rtlbenchls:openhwgroup_cv32e40p_966_965",
+    "rtlbenchls:openhwgroup_cv32e40p_977_975",
+    "rtlbenchls:openhwgroup_cvfpu_116_115",
+    "rtlbenchls:openhwgroup_cvfpu_97_83",
+    "rtlbenchls:openrisc_mor1kx_110_102",
+    "rtlbenchls:YosysHQ_picorv32_229_228",
+    "rtlbenchls:black-parrot_black-parrot_859_832",
+    "rtlbenchls:lowRISC_ibex_1107_1106",
+    "rtlbenchls:lowRISC_ibex_1179_1178",
+    "rtlbenchls:lowRISC_ibex_120_103",
+    "rtlbenchls:lowRISC_ibex_1554_1553",
+    "rtlbenchls:lowRISC_ibex_1595_1587",
+    "rtlbenchls:lowRISC_ibex_169_162",
+    "rtlbenchls:lowRISC_ibex_172_170",
+    "rtlbenchls:lowRISC_ibex_1737_1736",
+    "rtlbenchls:lowRISC_ibex_1744_1743",
+    "rtlbenchls:lowRISC_ibex_188_187",
+    "rtlbenchls:lowRISC_ibex_2214_2193",
+    "rtlbenchls:lowRISC_ibex_2241_2239",
+    "rtlbenchls:lowRISC_ibex_244_6",
+    "rtlbenchls:lowRISC_ibex_282_265",
+    "rtlbenchls:lowRISC_ibex_286_285",
+    "rtlbenchls:lowRISC_ibex_294_290",
+    "rtlbenchls:lowRISC_ibex_302_300",
+    "rtlbenchls:lowRISC_ibex_335_305",
+    "rtlbenchls:lowRISC_ibex_461_444",
+    "rtlbenchls:lowRISC_ibex_713_709",
+    "rtlbenchls:lowRISC_ibex_813_808",
+    "rtlbenchls:lowRISC_ibex_815_781",
+    "rtlbenchls:lowRISC_ibex_835_832",
+    "rtlbenchls:lowRISC_ibex_83_80",
+    "rtlbenchls:lowRISC_ibex_903_902",
+    "rtlbenchls:lowRISC_ibex_905_904",
+    "rtlbenchls:lowRISC_ibex_974_957",
+    "rtlbenchls:lowRISC_opentitan_10696_10680",
+    "rtlbenchls:lowRISC_opentitan_10943_10909",
+    "rtlbenchls:lowRISC_opentitan_12218_12204",
+    "rtlbenchls:lowRISC_opentitan_13177_13026",
+    "rtlbenchls:lowRISC_opentitan_13192_11019",
+    "rtlbenchls:lowRISC_opentitan_13487_13434",
+    "rtlbenchls:lowRISC_opentitan_13541_13026",
+    "rtlbenchls:lowRISC_opentitan_13794_13751",
+    "rtlbenchls:lowRISC_opentitan_13936_13934",
+    "rtlbenchls:lowRISC_opentitan_14575_14540",
+    "rtlbenchls:lowRISC_opentitan_14711_14700",
+    "rtlbenchls:lowRISC_opentitan_15364_15257",
+    "rtlbenchls:lowRISC_opentitan_15633_15632",
+    "rtlbenchls:lowRISC_opentitan_17277_17275",
+    "rtlbenchls:lowRISC_opentitan_22045_3353",
+    "rtlbenchls:lowRISC_opentitan_22438_22437",
+    "rtlbenchls:lowRISC_opentitan_23560_19789",
+    "rtlbenchls:lowRISC_opentitan_23807_23806",
+    "rtlbenchls:lowRISC_opentitan_24125_24119",
+    "rtlbenchls:lowRISC_opentitan_25590_23936",
+    "rtlbenchls:lowRISC_opentitan_9936_9741",
+    "rtlbenchls:openhwgroup_cv32e40p_145_143",
+    "rtlbenchls:openhwgroup_cv32e40p_165_150",
+    "rtlbenchls:openhwgroup_cv32e40p_198_160",
+    "rtlbenchls:openhwgroup_cv32e40p_261_255",
+    "rtlbenchls:openhwgroup_cv32e40p_326_130",
+    "rtlbenchls:openhwgroup_cv32e40p_327_277",
+    "rtlbenchls:openhwgroup_cv32e40p_402_354",
+    "rtlbenchls:openhwgroup_cv32e40p_403_401",
+    "rtlbenchls:openhwgroup_cv32e40p_405_404",
+    "rtlbenchls:openhwgroup_cv32e40p_450_432",
+    "rtlbenchls:openhwgroup_cv32e40p_450_448",
+    "rtlbenchls:openhwgroup_cv32e40p_483_481",
+    "rtlbenchls:openhwgroup_cv32e40p_495_490",
+    "rtlbenchls:openhwgroup_cv32e40p_504_429",
+    "rtlbenchls:openhwgroup_cv32e40p_511_470",
+    "rtlbenchls:openhwgroup_cv32e40p_511_503",
+    "rtlbenchls:openhwgroup_cv32e40p_514_430",
+    "rtlbenchls:openhwgroup_cv32e40p_78_77",
+    "rtlbenchls:openhwgroup_cvfpu_73_72",
+    "rtlbenchls:openrisc_mor1kx_54_46",
+    "rtlbenchls:pulp-platform_common_cells_155_84"
+  ],
+  "disagreements_with_prior_annotations": {
+    "count": 44,
+    "by_prior_file": {
+      "records_5q_pseudo_unverified.jsonl": 18,
+      "records_5q.jsonl": 26
+    },
+    "all": [
+      {
+        "id": "rtlbenchls:lowRISC_ibex_1744_1743",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_176_25",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_12218_12204",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_12384_12382",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "1"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_12505_12502",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "1"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_12508_12274",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "1",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_12703_11576",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "1",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_13177_13026",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "1",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_13487_13434",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "1",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_13541_13026",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "1",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_13794_13751",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "1"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_14575_14540",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "1",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_15364_15257",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "1"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_21237_21210",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "1",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_22045_3353",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "1",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_23775_23773",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_25590_23936",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_9936_9741",
+        "question": "urgency",
+        "prior_file": "records_5q_pseudo_unverified.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "codex_pseudo_unverified",
+        "new_label": "1"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_1136_1134",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_1136_1134",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_169_162",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_169_162",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "3",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_1737_1736",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_1737_1736",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_286_285",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_286_285",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "3",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_815_781",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_815_781",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "3",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_83_80",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_83_80",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "3",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_905_904",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_ibex_905_904",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "3",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_10943_10909",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_10943_10909",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "1"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_13192_11019",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_13192_11019",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_24771_24767",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:lowRISC_opentitan_24771_24767",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "3",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "1"
+      },
+      {
+        "id": "rtlbenchls:openhwgroup_cv32e40p_326_130",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:openhwgroup_cv32e40p_326_130",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:openhwgroup_cv32e40p_403_401",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:openhwgroup_cv32e40p_403_401",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "3",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:openhwgroup_cv32e40p_977_975",
+        "question": "risk",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "2",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      },
+      {
+        "id": "rtlbenchls:openhwgroup_cv32e40p_977_975",
+        "question": "urgency",
+        "prior_file": "records_5q.jsonl",
+        "prior_label": "3",
+        "prior_label_source": "manual_issue_label",
+        "new_label": "0"
+      }
+    ],
+    "note": "prior labels were never read while judging; they are compared here only, after the fact, and never copied into the output"
+  },
+  "validation": {
+    "problem_count": 0,
+    "problems": []
+  },
+  "output_file": "dataset/converted/rtl_benchls/records_5q_distilled_pseudo_unverified.jsonl"
+}

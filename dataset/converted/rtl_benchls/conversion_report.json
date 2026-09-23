@@ -1,0 +1,1588 @@
+{
+  "source": "RTL-BenchLS",
+  "source_file": "dataset/raw/github/RTL-BenchLS/data/repo_issue_108_cases.json",
+  "repo_cache": "dataset/raw/github/RTL-BenchLS/repo_cache",
+  "generated_by": "training/convert_rtl_benchls.py",
+  "rtl_context_budget": {
+    "per_file_chars": 40000,
+    "per_case_chars": 100000
+  },
+  "total_source_cases": 108,
+  "converted_total": 108,
+  "converted_3q_verified": 36,
+  "converted_3q_unverified": 72,
+  "converted_5q_verified": 13,
+  "converted_5q_pseudo_unverified": 75,
+  "three_question_only": 20,
+  "skipped": [],
+  "invalid": [],
+  "possible_state_leakage": [],
+  "missing_base_files": {},
+  "checkout_failures": [],
+  "truncated_state_cases": 45,
+  "windowed_file_count": 94,
+  "whole_file_count": 130,
+  "omitted_file_count": 0,
+  "omitted_files": {},
+  "context_window_coverage": {
+    "patched_lines_total": 9519,
+    "covered_by_windowed_context": 6550,
+    "covered_by_old_top_anchored_slice": 6426,
+    "windowed_coverage_percent": 68.81,
+    "old_coverage_percent": 67.51,
+    "repair_hunks_total": 768,
+    "hunks_in_windowed_context": 538,
+    "hunks_in_old_top_anchored_slice": 534,
+    "hunks_beyond_old_top_anchored_slice": 234,
+    "hunks_old_slice_cannot_show": 134,
+    "hunks_recovered_by_windowed_context": 100,
+    "hunk_coverage_percent": 70.05,
+    "old_hunk_coverage_percent": 69.53,
+    "patched_files_total": 224,
+    "patched_files_with_first_hunk_visible": 194,
+    "patched_files_with_first_hunk_visible_old": 181,
+    "patched_files_fully_visible": 145,
+    "patched_files_fully_visible_old": 141,
+    "cases_audited": 108,
+    "note": "Audit only. Window placement uses pre-repair evidence only (the top of the file, an even spread, then identifiers named in the issue); the repaired region is never used to choose a window, and patch line numbers never enter the state. A file that fits the budget is included whole. The old-slice columns reconstruct the replaced top-anchored prefix slice."
+  },
+  "usage_sets": {
+    "trusted_exploratory_3q": 34,
+    "trusted_exploratory_5q": 2,
+    "exploratory_unverified_3q": 72,
+    "exploratory_pseudo_5q": 75,
+    "eval_excluded": 7,
+    "eval_excluded_from_trusted_3q": 2,
+    "file": "usage_sets.json"
+  },
+  "trust_flags": {
+    "patch_inconsistent_with_git_diff": 1,
+    "self_answering_issue_body": 6
+  },
+  "eval_excluded_cases": [
+    {
+      "task_id": "lowRISC_ibex_48_46",
+      "flags": [
+        "self_answering_issue_body"
+      ]
+    },
+    {
+      "task_id": "lowRISC_opentitan_10696_10680",
+      "flags": [
+        "self_answering_issue_body"
+      ]
+    },
+    {
+      "task_id": "lowRISC_opentitan_12218_12204",
+      "flags": [
+        "self_answering_issue_body"
+      ]
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_145_143",
+      "flags": [
+        "self_answering_issue_body"
+      ]
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_165_150",
+      "flags": [
+        "self_answering_issue_body"
+      ]
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_327_277",
+      "flags": [
+        "patch_inconsistent_with_git_diff"
+      ]
+    },
+    {
+      "task_id": "openrisc_mor1kx_110_102",
+      "flags": [
+        "self_answering_issue_body"
+      ]
+    }
+  ],
+  "patch_verified": 107,
+  "patch_exact_match": 106,
+  "head_contains_extra_changes": [
+    "lowRISC_ibex_83_80",
+    "openhwgroup_cv32e40p_327_277"
+  ],
+  "patch_not_reproduced": [
+    "openhwgroup_cv32e40p_327_277"
+  ],
+  "issue_body_quotes_patch_lines": [
+    {
+      "id": "rtlbenchls:lowRISC_ibex_48_46",
+      "proposed_fix_lines_in_issue_body": [
+        "if (instr_i[11:7] == 5'b0) begin",
+        "// c.ebreak -> ebreak",
+        "instr_o = {32'h00_10_00_73};"
+      ]
+    },
+    {
+      "id": "rtlbenchls:lowRISC_opentitan_10696_10680",
+      "proposed_fix_lines_in_issue_body": [
+        "test_dir_inval   = (reg2hw.command.direction.q == Bidir);"
+      ]
+    },
+    {
+      "id": "rtlbenchls:lowRISC_opentitan_12218_12204",
+      "proposed_fix_lines_in_issue_body": [
+        "// SEC_CM: MAIN.FSM.GLOBAL_ESC",
+        "if (esc_scrap_state0_i || esc_scrap_state1_i) begin"
+      ]
+    },
+    {
+      "id": "rtlbenchls:openhwgroup_cv32e40p_145_143",
+      "proposed_fix_lines_in_issue_body": [
+        "depc_n = csr_wdata_int & ~32'b1; // force 16-bit alignment"
+      ]
+    },
+    {
+      "id": "rtlbenchls:openhwgroup_cv32e40p_165_150",
+      "proposed_fix_lines_in_issue_body": [
+        "instr_o = {32'h00_10_00_73};"
+      ]
+    },
+    {
+      "id": "rtlbenchls:openrisc_mor1kx_110_102",
+      "proposed_fix_lines_in_issue_body": [
+        "(decode_insn_i[9:8] == 2'b00 || decode_insn_i[9:8] == 2'b01) &&"
+      ]
+    }
+  ],
+  "issue_body_quotes_patch_lines_count": 6,
+  "label_source_counts_3q_questions": {
+    "codex_pseudo_unverified": 73,
+    "inferred_from_verified_repair": 155,
+    "manual_issue_label": 96
+  },
+  "label_source_counts_5q_verified": {
+    "codex_pseudo_unverified": 11,
+    "inferred_from_verified_repair": 13,
+    "manual_issue_label": 41
+  },
+  "cases_with_pseudo_label_per_question": {
+    "next_action": 1,
+    "root_cause_type": 71,
+    "evidence_sufficient": 1
+  },
+  "pseudo_label_count": 223,
+  "inferred_label_count": 155,
+  "manual_issue_label_count": 122,
+  "criteria_applied_count": 0,
+  "cases_with_any_pseudo_label": 72,
+  "cases_fully_verified": 36,
+  "five_q_records_with_all_base_labels_verified": 2,
+  "five_q_records_with_a_pseudo_base_label": 11,
+  "rule_usage": {
+    "urgency": {
+      "U_ACCESS_CONTROL": 3,
+      "U_DEFERRED_LABEL": 1,
+      "U_DESTRUCTIVE_IMPACT": 8,
+      "U_MILESTONE_LABEL": 2,
+      "U_NONE": 76,
+      "U_PRIORITY_P1": 6,
+      "U_PRIORITY_P2": 8,
+      "U_PRODUCTION_LABEL": 4
+    },
+    "risk": {
+      "R_ACCESS_CONTROL": 3,
+      "R_DESTRUCTIVE_IMPACT": 10,
+      "R_NONE": 27,
+      "R_READONLY_ACTION": 68
+    }
+  },
+  "repository_split": {
+    "train": [
+      "lowRISC/ibex",
+      "analogdevicesinc/hdl",
+      "openrisc/mor1kx",
+      "YosysHQ/picorv32",
+      "black-parrot/black-parrot"
+    ],
+    "validation": [
+      "openhwgroup/cv32e40p",
+      "openhwgroup/cvfpu",
+      "pulp-platform/common_cells"
+    ],
+    "test": [
+      "lowRISC/opentitan"
+    ]
+  },
+  "repository_split_counts": {
+    "train": 42,
+    "validation": 35,
+    "test": 31
+  },
+  "split_policy": "repository-disjoint: no repository appears in more than one split; openhwgroup cores and the pulp-platform cells they instantiate form one lineage; lowRISC/opentitan is held out entirely as test",
+  "file_inventory": {
+    "records_3q.jsonl": 36,
+    "records_3q_unverified.jsonl": 72,
+    "records_5q.jsonl": 13,
+    "records_5q_pseudo_unverified.jsonl": 75
+  },
+  "file_layout": "The 3q files carry exactly the three base questions and together cover every converted case exactly once. The 5q files carry all five questions; the three-question projection of a 5q record is byte-identical to its 3q counterpart.",
+  "post_write_audit": {
+    "records_3q.jsonl": {
+      "records": 36,
+      "unique_ids": 36,
+      "questions_per_record": 3,
+      "problems": []
+    },
+    "records_3q_unverified.jsonl": {
+      "records": 72,
+      "unique_ids": 72,
+      "questions_per_record": 3,
+      "problems": []
+    },
+    "records_5q.jsonl": {
+      "records": 13,
+      "unique_ids": 13,
+      "questions_per_record": 5,
+      "problems": []
+    },
+    "records_5q_pseudo_unverified.jsonl": {
+      "records": 75,
+      "unique_ids": 75,
+      "questions_per_record": 5,
+      "problems": []
+    }
+  },
+  "tallies_3q_verified": {
+    "repositories": {
+      "rtlbenchls:analogdevicesinc/hdl": 2,
+      "rtlbenchls:lowRISC/ibex": 9,
+      "rtlbenchls:lowRISC/opentitan": 9,
+      "rtlbenchls:openhwgroup/cv32e40p": 13,
+      "rtlbenchls:openhwgroup/cvfpu": 2,
+      "rtlbenchls:openrisc/mor1kx": 1
+    },
+    "splits": {
+      "test": 9,
+      "train": 12,
+      "validation": 15
+    },
+    "root_cause": {
+      "combinational_logic": 32,
+      "security": 1,
+      "type_width": 3
+    },
+    "next_action": {
+      "rtl": 36
+    },
+    "evidence_sufficient": {
+      "true": 36
+    },
+    "label_source": {
+      "inferred_from_verified_repair": 75,
+      "manual_issue_label": 33
+    }
+  },
+  "tallies_3q_unverified": {
+    "repositories": {
+      "rtlbenchls:YosysHQ/picorv32": 1,
+      "rtlbenchls:black-parrot/black-parrot": 1,
+      "rtlbenchls:lowRISC/ibex": 27,
+      "rtlbenchls:lowRISC/opentitan": 22,
+      "rtlbenchls:openhwgroup/cv32e40p": 18,
+      "rtlbenchls:openhwgroup/cvfpu": 1,
+      "rtlbenchls:openrisc/mor1kx": 1,
+      "rtlbenchls:pulp-platform/common_cells": 1
+    },
+    "splits": {
+      "test": 22,
+      "train": 30,
+      "validation": 20
+    },
+    "root_cause": {
+      "combinational_logic": 17,
+      "formal_property": 1,
+      "reset_initialization": 4,
+      "security": 8,
+      "state_machine": 6,
+      "syntax_compile": 2,
+      "timing_protocol": 1,
+      "type_width": 3,
+      "unknown": 30
+    },
+    "next_action": {
+      "rtl": 72
+    },
+    "evidence_sufficient": {
+      "false": 1,
+      "true": 71
+    },
+    "label_source": {
+      "codex_pseudo_unverified": 73,
+      "inferred_from_verified_repair": 80,
+      "manual_issue_label": 63
+    }
+  },
+  "tallies_5q_verified": {
+    "repositories": {
+      "rtlbenchls:lowRISC/ibex": 7,
+      "rtlbenchls:lowRISC/opentitan": 3,
+      "rtlbenchls:openhwgroup/cv32e40p": 3
+    },
+    "splits": {
+      "test": 3,
+      "train": 7,
+      "validation": 3
+    },
+    "root_cause": {
+      "combinational_logic": 3,
+      "reset_initialization": 2,
+      "security": 2,
+      "state_machine": 1,
+      "type_width": 1,
+      "unknown": 4
+    },
+    "next_action": {
+      "rtl": 13
+    },
+    "evidence_sufficient": {
+      "true": 13
+    },
+    "label_source": {
+      "codex_pseudo_unverified": 11,
+      "inferred_from_verified_repair": 13,
+      "manual_issue_label": 41
+    }
+  },
+  "tallies_5q_pseudo": {
+    "repositories": {
+      "rtlbenchls:analogdevicesinc/hdl": 2,
+      "rtlbenchls:lowRISC/ibex": 21,
+      "rtlbenchls:lowRISC/opentitan": 23,
+      "rtlbenchls:openhwgroup/cv32e40p": 24,
+      "rtlbenchls:openhwgroup/cvfpu": 2,
+      "rtlbenchls:openrisc/mor1kx": 2,
+      "rtlbenchls:pulp-platform/common_cells": 1
+    },
+    "splits": {
+      "test": 23,
+      "train": 25,
+      "validation": 27
+    },
+    "root_cause": {
+      "combinational_logic": 34,
+      "reset_initialization": 2,
+      "security": 5,
+      "state_machine": 5,
+      "syntax_compile": 1,
+      "timing_protocol": 1,
+      "type_width": 5,
+      "unknown": 22
+    },
+    "next_action": {
+      "rtl": 75
+    },
+    "evidence_sufficient": {
+      "false": 1,
+      "true": 74
+    },
+    "label_source": {
+      "codex_pseudo_unverified": 199,
+      "inferred_from_verified_repair": 107,
+      "manual_issue_label": 69
+    }
+  },
+  "score_question_policy": {
+    "verified_tier": "urgency and risk each require explicit issue evidence: a Priority/Milestone/security/destructive/system-impact statement or schedule label",
+    "pseudo_tier": "transparent rubric estimate (issue impact wording, or published risk criteria applied to a repair-pinned read-only action); both score labels are marked codex_pseudo_unverified",
+    "excluded": "records with neither issue-anchored nor rubric risk/urgency evidence keep three questions only"
+  },
+  "audit_index": [
+    {
+      "task_id": "YosysHQ_picorv32_229_228",
+      "repository": "YosysHQ/picorv32",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "analogdevicesinc_hdl_1460_916",
+      "repository": "analogdevicesinc/hdl",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "analogdevicesinc_hdl_781_778",
+      "repository": "analogdevicesinc/hdl",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "black-parrot_black-parrot_859_832",
+      "repository": "black-parrot/black-parrot",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_1107_1106",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_1136_1134",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_ACCESS_CONTROL",
+      "risk_rule": "R_ACCESS_CONTROL",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_ibex_1179_1178",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_120_103",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_ibex_1554_1553",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_1595_1587",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_166_163",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_169_162",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_DESTRUCTIVE_IMPACT",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_172_170",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_1737_1736",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_ACCESS_CONTROL",
+      "risk_rule": "R_ACCESS_CONTROL",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_1744_1743",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRODUCTION_LABEL",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_ibex_176_25",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRODUCTION_LABEL",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_1824_1765",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_188_187",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_2214_2193",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_ibex_222_216",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_2241_2239",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_244_6",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_272_270",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_282_265",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_286_285",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_DESTRUCTIVE_IMPACT",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_294_290",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_302_300",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_335_305",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_461_444",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_48_46",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_54_51",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_713_709",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_ibex_813_808",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_815_781",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_DESTRUCTIVE_IMPACT",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_ibex_835_832",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_836_2099",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_ibex_83_80",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_DESTRUCTIVE_IMPACT",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": false,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_903_902",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_ibex_905_904",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_DESTRUCTIVE_IMPACT",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_ibex_974_957",
+      "repository": "lowRISC/ibex",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_opentitan_10690_10062",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_10696_10680",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_10943_10909",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_PRIORITY_P1",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_12218_12204",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_MILESTONE_LABEL",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_12384_12382",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P1",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_12505_12502",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P1",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_12508_12274",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P2",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_12703_11576",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P2",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_13177_13026",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P2",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_13192_11019",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_MILESTONE_LABEL",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_13487_13434",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P2",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_13541_13026",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P2",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_13794_13751",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P1",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_13936_13934",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_opentitan_14575_14540",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P2",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_opentitan_14711_14700",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_15364_15257",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P1",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_opentitan_15633_15632",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_17277_17275",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_21237_21210",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P2",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_opentitan_22045_3353",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P2",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_opentitan_22232_22234",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_22438_22437",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_23546_21700",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_opentitan_23560_19789",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_opentitan_23775_23773",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRODUCTION_LABEL",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "lowRISC_opentitan_23807_23806",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_24125_24119",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_24771_24767",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_DESTRUCTIVE_IMPACT",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_25590_23936",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRODUCTION_LABEL",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "lowRISC_opentitan_9936_9741",
+      "repository": "lowRISC/opentitan",
+      "split": "test",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_PRIORITY_P1",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_145_143",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_165_150",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_194_190",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_198_160",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_261_255",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_285_254",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_326_130",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_ACCESS_CONTROL",
+      "risk_rule": "R_ACCESS_CONTROL",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_327_277",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": false,
+      "patch_exact": false,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_337_335",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_344_187",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_359_116",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_402_354",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_403_401",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_DESTRUCTIVE_IMPACT",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_405_404",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_450_432",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_450_448",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_483_481",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_494_445",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_495_490",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_504_429",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_511_470",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_DEFERRED_LABEL",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_511_503",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_514_430",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_575_574",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_665_629",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_665_663",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_78_77",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_841_838",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_841_840",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_966_965",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cv32e40p_977_975",
+      "repository": "openhwgroup/cv32e40p",
+      "split": "validation",
+      "score_tier": "5q_verified",
+      "urgency_rule": "U_DESTRUCTIVE_IMPACT",
+      "risk_rule": "R_DESTRUCTIVE_IMPACT",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cvfpu_116_115",
+      "repository": "openhwgroup/cvfpu",
+      "split": "validation",
+      "score_tier": "3q_only",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_NONE",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "openhwgroup_cvfpu_73_72",
+      "repository": "openhwgroup/cvfpu",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openhwgroup_cvfpu_97_83",
+      "repository": "openhwgroup/cvfpu",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": true
+    },
+    {
+      "task_id": "openrisc_mor1kx_110_102",
+      "repository": "openrisc/mor1kx",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "openrisc_mor1kx_54_46",
+      "repository": "openrisc/mor1kx",
+      "split": "train",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    },
+    {
+      "task_id": "pulp-platform_common_cells_155_84",
+      "repository": "pulp-platform/common_cells",
+      "split": "validation",
+      "score_tier": "5q_pseudo",
+      "urgency_rule": "U_NONE",
+      "risk_rule": "R_READONLY_ACTION",
+      "verified": true,
+      "patch_exact": true,
+      "truncated": false
+    }
+  ]
+}

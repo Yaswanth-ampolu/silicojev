@@ -1,0 +1,760 @@
+{
+ "dataset": "Fixbench-RTL",
+ "output_file": "/silicogenplayground/projects/silicogen/silicojev/dataset/converted/fixbench_rtl/records_5q_distilled_pseudo_unverified.jsonl",
+ "progress_file": "/silicogenplayground/projects/silicogen/silicojev/dataset/converted/fixbench_rtl/distillation_progress.jsonl",
+ "input_records": 100,
+ "completed_records": 100,
+ "missing_records": 0,
+ "missing_ids": [],
+ "counts_by_batch": {
+  "1": 3,
+  "2": 3,
+  "3": 3,
+  "4": 3,
+  "5": 3,
+  "6": 3,
+  "7": 3,
+  "8": 3,
+  "9": 3,
+  "10": 3,
+  "11": 3,
+  "12": 3,
+  "13": 3,
+  "14": 3,
+  "15": 3,
+  "16": 3,
+  "17": 3,
+  "18": 3,
+  "19": 3,
+  "20": 3,
+  "21": 3,
+  "22": 3,
+  "23": 3,
+  "24": 3,
+  "25": 3,
+  "26": 3,
+  "27": 3,
+  "28": 3,
+  "29": 3,
+  "30": 3,
+  "31": 3,
+  "32": 3,
+  "33": 3,
+  "34": 1
+ },
+ "counts_by_replay_class": {
+  "verified_failure_at_base": 54,
+  "testbench_passes_on_buggy_code": 21,
+  "failure_survives_repair": 11,
+  "no_usable_verdict": 1,
+  "cannot_build_either_revision": 13
+ },
+ "counts_by_trust_tier": {
+  "unflagged": 48,
+  "flagged": 52
+ },
+ "records_with_insufficient_risk_evidence": [],
+ "records_with_insufficient_urgency_evidence": [
+  "case_000_2654b357",
+  "case_001_1390de2d",
+  "case_002_8c22f7e4",
+  "case_003_019ab5b7",
+  "case_004_afd798e1",
+  "case_005_93d278aa",
+  "case_006_628f065d",
+  "case_007_32cd1677",
+  "case_008_2d795521",
+  "case_009_7715cf2f",
+  "case_010_609c9260",
+  "case_011_21b5f5d3",
+  "case_012_30926604",
+  "case_013_e3f2a9ff",
+  "case_014_de384ea2",
+  "case_015_2ff57c50",
+  "case_016_3fe1f78f",
+  "case_017_9acf1c43",
+  "case_018_a8b822d9",
+  "case_019_4114fd4a",
+  "case_020_629f5f43",
+  "case_021_c92e0e5b",
+  "case_022_85cafe70",
+  "case_023_11b890c7",
+  "case_024_68902e8f",
+  "case_025_067cc4df",
+  "case_026_89ee4a92",
+  "case_027_943baffb",
+  "case_028_3581f420",
+  "case_029_befe010d",
+  "case_030_c1dc7302",
+  "case_031_7994f605",
+  "case_032_bf08fa6e",
+  "case_033_da9025fe",
+  "case_034_8f20c720",
+  "case_035_2cd94472",
+  "case_036_549d01af",
+  "case_037_59ffb946",
+  "case_038_3e823e0a",
+  "case_039_2480547f",
+  "case_040_14931a4a",
+  "case_041_7f3d2c28",
+  "case_042_1b3efec7",
+  "case_043_7339fc19",
+  "case_044_6b00f725",
+  "case_045_764c3938",
+  "case_046_a734981d",
+  "case_047_bf5c41de",
+  "case_048_a15c4652",
+  "case_049_0bfb474d",
+  "case_050_2753d7c2",
+  "case_051_19a9ea38",
+  "case_052_f42abc47",
+  "case_053_39762858",
+  "case_054_49fc0f2c",
+  "case_055_ac639607",
+  "case_056_2076920a",
+  "case_057_686bab57",
+  "case_058_3e4dc868",
+  "case_059_56c31a91",
+  "case_060_f416ea9f",
+  "case_061_30bc86ea",
+  "case_062_7740ab38",
+  "case_063_5ac124bd",
+  "case_064_0ea61baa",
+  "case_065_3eec1172",
+  "case_066_d1cc6ea4",
+  "case_067_f0daa3a9",
+  "case_069_7ce866b2",
+  "case_070_b5bc7d01",
+  "case_071_127bdaac",
+  "case_072_a9c7e5c1",
+  "case_073_3f86fce6",
+  "case_074_0392aa15",
+  "case_075_bf9b7471",
+  "case_076_8d9b4d0e",
+  "case_077_0d9c2062",
+  "case_078_2753b21f",
+  "case_079_3df86a62",
+  "case_080_a6875695",
+  "case_081_afc7468e",
+  "case_082_827829e2",
+  "case_083_5a46d396",
+  "case_084_9bca174f",
+  "case_085_5aa28da7",
+  "case_086_58aa02a5",
+  "case_087_33dae361",
+  "case_088_50d61e92",
+  "case_089_34a618cf",
+  "case_090_647a1ae5",
+  "case_091_c243581d",
+  "case_093_6a2ff03f",
+  "case_094_99c25e13",
+  "case_095_b51a4a9e",
+  "case_096_5df5a3ac",
+  "case_097_408a689a",
+  "case_098_3417a84f",
+  "case_099_c17eedb6"
+ ],
+ "n_insufficient_risk_evidence": 0,
+ "n_insufficient_urgency_evidence": 98,
+ "risk": {
+  "label_counts": {
+   "0": 95,
+   "1": 5,
+   "2": 0,
+   "3": 0
+  },
+  "mean_confidence_by_label": {
+   "0": 0.6567,
+   "1": 0.546,
+   "2": null,
+   "3": null
+  },
+  "mean_score": 0.4607
+ },
+ "urgency": {
+  "label_counts": {
+   "0": 98,
+   "1": 2,
+   "2": 0,
+   "3": 0
+  },
+  "mean_confidence_by_label": {
+   "0": 0.442,
+   "1": 0.335,
+   "2": null,
+   "3": null
+  },
+  "mean_score": 0.8986
+ },
+ "label_source": "codex_pseudo_unverified",
+ "defensible": false,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "n_checked": 100,
+  "n_input": 100,
+  "ten_point": [
+   {
+    "check": "ids_once_each",
+    "ok": true
+   },
+   {
+    "check": "originals_unchanged",
+    "ok": true
+   },
+   {
+    "check": "question_ids_match_gold",
+    "ok": true
+   },
+   {
+    "check": "canonical_criteria_equal",
+    "ok": true
+   },
+   {
+    "check": "probabilities_valid_normalised",
+    "ok": true
+   },
+   {
+    "check": "score_equals_expectation",
+    "ok": true
+   },
+   {
+    "check": "label_equals_argmax",
+    "ok": true
+   },
+   {
+    "check": "pseudo_unverified_defensible_false",
+    "ok": true
+   },
+   {
+    "check": "state_byte_identical",
+    "ok": true
+   },
+   {
+    "check": "normalized_untouched",
+    "ok": true
+   }
+  ]
+ },
+ "comparison_vs_prior_labels": {
+  "available": true,
+  "vs_rejected_distilled_run": {
+   "n_compared": 100,
+   "risk_label_disagreements": [
+    {
+     "id": "case_072_a9c7e5c1",
+     "prior": "0",
+     "new": "1"
+    }
+   ],
+   "n_risk_disagreements": 1,
+   "urgency_label_disagreements": [
+    {
+     "id": "case_068_dc260b90",
+     "prior": "0",
+     "new": "1"
+    },
+    {
+     "id": "case_092_024f0796",
+     "prior": "0",
+     "new": "1"
+    }
+   ],
+   "n_urgency_disagreements": 2
+  },
+  "vs_original_rubric_pseudo": {
+   "n_compared": 100,
+   "risk_label_disagreements": [
+    {
+     "id": "case_000_2654b357",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_001_1390de2d",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_002_8c22f7e4",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_003_019ab5b7",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_004_afd798e1",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_005_93d278aa",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_006_628f065d",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_007_32cd1677",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_008_2d795521",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_009_7715cf2f",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_010_609c9260",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_011_21b5f5d3",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_012_30926604",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_013_e3f2a9ff",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_014_de384ea2",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_015_2ff57c50",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_017_9acf1c43",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_018_a8b822d9",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_019_4114fd4a",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_020_629f5f43",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_021_c92e0e5b",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_022_85cafe70",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_023_11b890c7",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_024_68902e8f",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_025_067cc4df",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_026_89ee4a92",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_027_943baffb",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_028_3581f420",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_029_befe010d",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_030_c1dc7302",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_031_7994f605",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_032_bf08fa6e",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_033_da9025fe",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_035_2cd94472",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_036_549d01af",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_037_59ffb946",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_038_3e823e0a",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_039_2480547f",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_040_14931a4a",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_041_7f3d2c28",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_042_1b3efec7",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_043_7339fc19",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_044_6b00f725",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_045_764c3938",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_046_a734981d",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_047_bf5c41de",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_049_0bfb474d",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_050_2753d7c2",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_051_19a9ea38",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_052_f42abc47",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_053_39762858",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_054_49fc0f2c",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_055_ac639607",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_056_2076920a",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_057_686bab57",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_058_3e4dc868",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_059_56c31a91",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_060_f416ea9f",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_061_30bc86ea",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_062_7740ab38",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_063_5ac124bd",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_064_0ea61baa",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_065_3eec1172",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_066_d1cc6ea4",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_067_f0daa3a9",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_068_dc260b90",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_069_7ce866b2",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_070_b5bc7d01",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_071_127bdaac",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_073_3f86fce6",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_074_0392aa15",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_075_bf9b7471",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_076_8d9b4d0e",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_077_0d9c2062",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_078_2753b21f",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_080_a6875695",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_081_afc7468e",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_082_827829e2",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_083_5a46d396",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_084_9bca174f",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_085_5aa28da7",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_086_58aa02a5",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_087_33dae361",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_088_50d61e92",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_089_34a618cf",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_090_647a1ae5",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_091_c243581d",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_092_024f0796",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_093_6a2ff03f",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_094_99c25e13",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_095_b51a4a9e",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_096_5df5a3ac",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_097_408a689a",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_098_3417a84f",
+     "prior": "1",
+     "new": "0"
+    },
+    {
+     "id": "case_099_c17eedb6",
+     "prior": "1",
+     "new": "0"
+    }
+   ],
+   "n_risk_disagreements": 95,
+   "urgency_label_disagreements": [
+    {
+     "id": "case_068_dc260b90",
+     "prior": "0",
+     "new": "1"
+    },
+    {
+     "id": "case_092_024f0796",
+     "prior": "0",
+     "new": "1"
+    }
+   ],
+   "n_urgency_disagreements": 2
+  }
+ }
+}

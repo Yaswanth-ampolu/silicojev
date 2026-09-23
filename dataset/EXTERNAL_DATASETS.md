@@ -18,6 +18,11 @@ into the normalized SilicoJev training split automatically.
   metadata, base/head commits, patches, and formal-verification status.
 - Do not put the golden patch or head-commit RTL in the model state; retain it
   as a target/evaluation artifact.
+- Converted Task 3 decision records live in `dataset/converted/rtl_benchls/` as a
+  standalone source: 34 trusted 3-question records, 2 trusted 5-question records,
+  and unverified/pseudo files for separate experiments. Read that directory's
+  `README.md` and `usage_sets.json` before use; those files are deliberately
+  *not* merged into `dataset/normalized/`.
 - Dataset license: CC-BY-4.0; upstream source licenses remain applicable.
 
 ## Fixbench-RTL
@@ -28,6 +33,15 @@ into the normalized SilicoJev training split automatically.
   a testbench.
 - Use: compact bug-repair training/evaluation after replaying the supplied
   testbenches. `correctcode` is a target, not input state.
+- Converted decision records live in `dataset/converted/fixbench_rtl/` as a
+  standalone source: 100 three-question records (35 in the trusted nested-gate
+  set, 54 with replay-verified repair evidence, 52 flagged for review, and 46
+  not replay-verified: 21 where the supplied testbench passes on the buggy code,
+  13 that build under neither revision, 11 whose failure survives the repair,
+  1 with no usable verdict), 0 defensible 5-question records, and a rubric-only
+  pseudo 5-question file. Read that directory's `README.md` and
+  `usage_sets.json` before use; those files are deliberately *not* merged into
+  `dataset/normalized/`.
 - Dataset license: CC-BY-4.0.
 
 ## CVDP v1.1.0

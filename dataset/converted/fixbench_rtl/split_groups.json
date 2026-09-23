@@ -1,0 +1,492 @@
+{
+  "why": "Fixbench cases are cut from a small number of upstream pull requests and designs; the families below are near-duplicates by harness, design code, module name, or PR title. Split by group, never by row.",
+  "signals": {
+    "same_testbench": "identical harness (comments, digits and whitespace stripped)",
+    "shared_module_name": "both design files declare the same module",
+    "same_upstream_pr_line": "identical first line of the description (the upstream PR title)",
+    "same_design_code": "buggy revisions share >= 40% of their distinct lines (symmetric Jaccard)"
+  },
+  "case_group": {
+    "fixbench:case_065_3eec1172": "group_065",
+    "fixbench:case_070_b5bc7d01": "group_065",
+    "fixbench:case_071_127bdaac": "group_065",
+    "fixbench:case_081_afc7468e": "group_065",
+    "fixbench:case_086_58aa02a5": "group_065",
+    "fixbench:case_094_99c25e13": "group_065",
+    "fixbench:case_095_b51a4a9e": "group_065",
+    "fixbench:case_097_408a689a": "group_065",
+    "fixbench:case_098_3417a84f": "group_065",
+    "fixbench:case_062_7740ab38": "group_062",
+    "fixbench:case_069_7ce866b2": "group_062",
+    "fixbench:case_078_2753b21f": "group_062",
+    "fixbench:case_082_827829e2": "group_062",
+    "fixbench:case_085_5aa28da7": "group_062",
+    "fixbench:case_093_6a2ff03f": "group_062",
+    "fixbench:case_060_f416ea9f": "group_060",
+    "fixbench:case_064_0ea61baa": "group_060",
+    "fixbench:case_087_33dae361": "group_060",
+    "fixbench:case_012_30926604": "group_012",
+    "fixbench:case_022_85cafe70": "group_012",
+    "fixbench:case_066_d1cc6ea4": "group_066",
+    "fixbench:case_083_5a46d396": "group_066",
+    "fixbench:case_072_a9c7e5c1": "group_072",
+    "fixbench:case_076_8d9b4d0e": "group_072",
+    "fixbench:case_080_a6875695": "group_080",
+    "fixbench:case_091_c243581d": "group_080",
+    "fixbench:case_084_9bca174f": "group_084",
+    "fixbench:case_088_50d61e92": "group_084",
+    "fixbench:case_096_5df5a3ac": "group_096",
+    "fixbench:case_099_c17eedb6": "group_096",
+    "fixbench:case_000_2654b357": "group_000",
+    "fixbench:case_001_1390de2d": "group_001",
+    "fixbench:case_002_8c22f7e4": "group_002",
+    "fixbench:case_003_019ab5b7": "group_003",
+    "fixbench:case_004_afd798e1": "group_004",
+    "fixbench:case_005_93d278aa": "group_005",
+    "fixbench:case_006_628f065d": "group_006",
+    "fixbench:case_007_32cd1677": "group_007",
+    "fixbench:case_008_2d795521": "group_008",
+    "fixbench:case_009_7715cf2f": "group_009",
+    "fixbench:case_010_609c9260": "group_010",
+    "fixbench:case_011_21b5f5d3": "group_011",
+    "fixbench:case_013_e3f2a9ff": "group_013",
+    "fixbench:case_014_de384ea2": "group_014",
+    "fixbench:case_015_2ff57c50": "group_015",
+    "fixbench:case_016_3fe1f78f": "group_016",
+    "fixbench:case_017_9acf1c43": "group_017",
+    "fixbench:case_018_a8b822d9": "group_018",
+    "fixbench:case_019_4114fd4a": "group_019",
+    "fixbench:case_020_629f5f43": "group_020",
+    "fixbench:case_021_c92e0e5b": "group_021",
+    "fixbench:case_023_11b890c7": "group_023",
+    "fixbench:case_024_68902e8f": "group_024",
+    "fixbench:case_025_067cc4df": "group_025",
+    "fixbench:case_026_89ee4a92": "group_026",
+    "fixbench:case_027_943baffb": "group_027",
+    "fixbench:case_028_3581f420": "group_028",
+    "fixbench:case_029_befe010d": "group_029",
+    "fixbench:case_030_c1dc7302": "group_030",
+    "fixbench:case_031_7994f605": "group_031",
+    "fixbench:case_032_bf08fa6e": "group_032",
+    "fixbench:case_033_da9025fe": "group_033",
+    "fixbench:case_034_8f20c720": "group_034",
+    "fixbench:case_035_2cd94472": "group_035",
+    "fixbench:case_036_549d01af": "group_036",
+    "fixbench:case_037_59ffb946": "group_037",
+    "fixbench:case_038_3e823e0a": "group_038",
+    "fixbench:case_039_2480547f": "group_039",
+    "fixbench:case_040_14931a4a": "group_040",
+    "fixbench:case_041_7f3d2c28": "group_041",
+    "fixbench:case_042_1b3efec7": "group_042",
+    "fixbench:case_043_7339fc19": "group_043",
+    "fixbench:case_044_6b00f725": "group_044",
+    "fixbench:case_045_764c3938": "group_045",
+    "fixbench:case_046_a734981d": "group_046",
+    "fixbench:case_047_bf5c41de": "group_047",
+    "fixbench:case_048_a15c4652": "group_048",
+    "fixbench:case_049_0bfb474d": "group_049",
+    "fixbench:case_050_2753d7c2": "group_050",
+    "fixbench:case_051_19a9ea38": "group_051",
+    "fixbench:case_052_f42abc47": "group_052",
+    "fixbench:case_053_39762858": "group_053",
+    "fixbench:case_054_49fc0f2c": "group_054",
+    "fixbench:case_055_ac639607": "group_055",
+    "fixbench:case_056_2076920a": "group_056",
+    "fixbench:case_057_686bab57": "group_057",
+    "fixbench:case_058_3e4dc868": "group_058",
+    "fixbench:case_059_56c31a91": "group_059",
+    "fixbench:case_061_30bc86ea": "group_061",
+    "fixbench:case_063_5ac124bd": "group_063",
+    "fixbench:case_067_f0daa3a9": "group_067",
+    "fixbench:case_068_dc260b90": "group_068",
+    "fixbench:case_073_3f86fce6": "group_073",
+    "fixbench:case_074_0392aa15": "group_074",
+    "fixbench:case_075_bf9b7471": "group_075",
+    "fixbench:case_077_0d9c2062": "group_077",
+    "fixbench:case_079_3df86a62": "group_079",
+    "fixbench:case_089_34a618cf": "group_089",
+    "fixbench:case_090_647a1ae5": "group_090",
+    "fixbench:case_092_024f0796": "group_092"
+  },
+  "groups_total": 79,
+  "families": [
+    {
+      "group": "group_065",
+      "size": 9,
+      "members": [
+        "fixbench:case_065_3eec1172",
+        "fixbench:case_070_b5bc7d01",
+        "fixbench:case_071_127bdaac",
+        "fixbench:case_081_afc7468e",
+        "fixbench:case_086_58aa02a5",
+        "fixbench:case_094_99c25e13",
+        "fixbench:case_095_b51a4a9e",
+        "fixbench:case_097_408a689a",
+        "fixbench:case_098_3417a84f"
+      ],
+      "signals_uniform": [],
+      "signals_partial": {
+        "same_testbench": [
+          [
+            "fixbench:case_065_3eec1172",
+            "fixbench:case_070_b5bc7d01",
+            "fixbench:case_071_127bdaac",
+            "fixbench:case_095_b51a4a9e"
+          ],
+          [
+            "fixbench:case_097_408a689a",
+            "fixbench:case_098_3417a84f"
+          ]
+        ],
+        "same_upstream_pr_line": [
+          [
+            "fixbench:case_065_3eec1172",
+            "fixbench:case_070_b5bc7d01",
+            "fixbench:case_071_127bdaac",
+            "fixbench:case_081_afc7468e",
+            "fixbench:case_086_58aa02a5",
+            "fixbench:case_094_99c25e13",
+            "fixbench:case_095_b51a4a9e",
+            "fixbench:case_097_408a689a"
+          ]
+        ],
+        "same_design_code": [
+          [
+            "fixbench:case_065_3eec1172",
+            "fixbench:case_070_b5bc7d01"
+          ],
+          [
+            "fixbench:case_065_3eec1172",
+            "fixbench:case_071_127bdaac"
+          ],
+          [
+            "fixbench:case_065_3eec1172",
+            "fixbench:case_095_b51a4a9e"
+          ],
+          [
+            "fixbench:case_070_b5bc7d01",
+            "fixbench:case_071_127bdaac"
+          ],
+          [
+            "fixbench:case_070_b5bc7d01",
+            "fixbench:case_095_b51a4a9e"
+          ],
+          [
+            "fixbench:case_071_127bdaac",
+            "fixbench:case_095_b51a4a9e"
+          ]
+        ]
+      },
+      "shared_label": "verible-verilog-format: apply it on core directory"
+    },
+    {
+      "group": "group_062",
+      "size": 6,
+      "members": [
+        "fixbench:case_062_7740ab38",
+        "fixbench:case_069_7ce866b2",
+        "fixbench:case_078_2753b21f",
+        "fixbench:case_082_827829e2",
+        "fixbench:case_085_5aa28da7",
+        "fixbench:case_093_6a2ff03f"
+      ],
+      "signals_uniform": [],
+      "signals_partial": {
+        "same_testbench": [
+          [
+            "fixbench:case_062_7740ab38",
+            "fixbench:case_082_827829e2"
+          ]
+        ],
+        "shared_module_name": [
+          [
+            "fixbench:case_062_7740ab38",
+            "fixbench:case_082_827829e2"
+          ]
+        ],
+        "same_upstream_pr_line": [
+          [
+            "fixbench:case_062_7740ab38",
+            "fixbench:case_069_7ce866b2",
+            "fixbench:case_078_2753b21f",
+            "fixbench:case_085_5aa28da7",
+            "fixbench:case_093_6a2ff03f"
+          ]
+        ],
+        "same_design_code": [
+          [
+            "fixbench:case_062_7740ab38",
+            "fixbench:case_082_827829e2"
+          ],
+          [
+            "fixbench:case_078_2753b21f",
+            "fixbench:case_093_6a2ff03f"
+          ],
+          [
+            "fixbench:case_085_5aa28da7",
+            "fixbench:case_093_6a2ff03f"
+          ]
+        ]
+      },
+      "shared_label": "zcb tests & other cleanup"
+    },
+    {
+      "group": "group_060",
+      "size": 3,
+      "members": [
+        "fixbench:case_060_f416ea9f",
+        "fixbench:case_064_0ea61baa",
+        "fixbench:case_087_33dae361"
+      ],
+      "signals_uniform": [
+        "same_upstream_pr_line"
+      ],
+      "signals_partial": {},
+      "shared_label": "fixing errors introduced by pr 421"
+    },
+    {
+      "group": "group_012",
+      "size": 2,
+      "members": [
+        "fixbench:case_012_30926604",
+        "fixbench:case_022_85cafe70"
+      ],
+      "signals_uniform": [
+        "same_testbench",
+        "shared_module_name"
+      ],
+      "signals_partial": {
+        "same_design_code": [
+          [
+            "fixbench:case_012_30926604",
+            "fixbench:case_022_85cafe70"
+          ]
+        ]
+      },
+      "shared_label": "shared module adder_64bit"
+    },
+    {
+      "group": "group_066",
+      "size": 2,
+      "members": [
+        "fixbench:case_066_d1cc6ea4",
+        "fixbench:case_083_5a46d396"
+      ],
+      "signals_uniform": [
+        "same_testbench",
+        "shared_module_name"
+      ],
+      "signals_partial": {
+        "same_design_code": [
+          [
+            "fixbench:case_066_d1cc6ea4",
+            "fixbench:case_083_5a46d396"
+          ]
+        ]
+      },
+      "shared_label": "shared module ibex_register_file_latch"
+    },
+    {
+      "group": "group_072",
+      "size": 2,
+      "members": [
+        "fixbench:case_072_a9c7e5c1",
+        "fixbench:case_076_8d9b4d0e"
+      ],
+      "signals_uniform": [
+        "same_upstream_pr_line"
+      ],
+      "signals_partial": {},
+      "shared_label": "fix partially #1181"
+    },
+    {
+      "group": "group_080",
+      "size": 2,
+      "members": [
+        "fixbench:case_080_a6875695",
+        "fixbench:case_091_c243581d"
+      ],
+      "signals_uniform": [
+        "same_upstream_pr_line"
+      ],
+      "signals_partial": {},
+      "shared_label": "optimized spi logic"
+    },
+    {
+      "group": "group_084",
+      "size": 2,
+      "members": [
+        "fixbench:case_084_9bca174f",
+        "fixbench:case_088_50d61e92"
+      ],
+      "signals_uniform": [
+        "same_upstream_pr_line"
+      ],
+      "signals_partial": {},
+      "shared_label": "[rtl] protect core_busy_o with a multi-bit encoding"
+    },
+    {
+      "group": "group_096",
+      "size": 2,
+      "members": [
+        "fixbench:case_096_5df5a3ac",
+        "fixbench:case_099_c17eedb6"
+      ],
+      "signals_uniform": [],
+      "signals_partial": {
+        "same_design_code": [
+          [
+            "fixbench:case_096_5df5a3ac",
+            "fixbench:case_099_c17eedb6"
+          ]
+        ]
+      },
+      "shared_label": "fixes after merging from cv32e40x"
+    }
+  ],
+  "cases_in_families": 30,
+  "largest_family": 9,
+  "design_code_pairs": [
+    {
+      "cases": [
+        "fixbench:case_012_30926604",
+        "fixbench:case_022_85cafe70"
+      ],
+      "line_jaccard": 0.968
+    },
+    {
+      "cases": [
+        "fixbench:case_062_7740ab38",
+        "fixbench:case_082_827829e2"
+      ],
+      "line_jaccard": 0.951
+    },
+    {
+      "cases": [
+        "fixbench:case_065_3eec1172",
+        "fixbench:case_070_b5bc7d01"
+      ],
+      "line_jaccard": 0.882
+    },
+    {
+      "cases": [
+        "fixbench:case_065_3eec1172",
+        "fixbench:case_071_127bdaac"
+      ],
+      "line_jaccard": 0.724
+    },
+    {
+      "cases": [
+        "fixbench:case_065_3eec1172",
+        "fixbench:case_095_b51a4a9e"
+      ],
+      "line_jaccard": 0.865
+    },
+    {
+      "cases": [
+        "fixbench:case_066_d1cc6ea4",
+        "fixbench:case_083_5a46d396"
+      ],
+      "line_jaccard": 0.707
+    },
+    {
+      "cases": [
+        "fixbench:case_070_b5bc7d01",
+        "fixbench:case_071_127bdaac"
+      ],
+      "line_jaccard": 0.805
+    },
+    {
+      "cases": [
+        "fixbench:case_070_b5bc7d01",
+        "fixbench:case_095_b51a4a9e"
+      ],
+      "line_jaccard": 0.857
+    },
+    {
+      "cases": [
+        "fixbench:case_071_127bdaac",
+        "fixbench:case_095_b51a4a9e"
+      ],
+      "line_jaccard": 0.69
+    },
+    {
+      "cases": [
+        "fixbench:case_078_2753b21f",
+        "fixbench:case_093_6a2ff03f"
+      ],
+      "line_jaccard": 0.457
+    },
+    {
+      "cases": [
+        "fixbench:case_085_5aa28da7",
+        "fixbench:case_093_6a2ff03f"
+      ],
+      "line_jaccard": 0.432
+    },
+    {
+      "cases": [
+        "fixbench:case_096_5df5a3ac",
+        "fixbench:case_099_c17eedb6"
+      ],
+      "line_jaccard": 0.408
+    }
+  ],
+  "advisory": "Cases in different families can still resemble each other: the descriptions in this dataset were written from a common template, so text similarity alone is not used as a grouping signal.",
+  "suggested_split": {
+    "basis": "usage_sets.json:replay_verified_3q",
+    "train": [
+      "fixbench:case_000_2654b357",
+      "fixbench:case_002_8c22f7e4",
+      "fixbench:case_009_7715cf2f",
+      "fixbench:case_010_609c9260",
+      "fixbench:case_011_21b5f5d3",
+      "fixbench:case_014_de384ea2",
+      "fixbench:case_017_9acf1c43",
+      "fixbench:case_018_a8b822d9",
+      "fixbench:case_020_629f5f43",
+      "fixbench:case_021_c92e0e5b",
+      "fixbench:case_029_befe010d",
+      "fixbench:case_031_7994f605",
+      "fixbench:case_033_da9025fe",
+      "fixbench:case_034_8f20c720",
+      "fixbench:case_037_59ffb946",
+      "fixbench:case_040_14931a4a",
+      "fixbench:case_041_7f3d2c28",
+      "fixbench:case_044_6b00f725",
+      "fixbench:case_046_a734981d",
+      "fixbench:case_048_a15c4652",
+      "fixbench:case_050_2753d7c2",
+      "fixbench:case_051_19a9ea38",
+      "fixbench:case_052_f42abc47",
+      "fixbench:case_055_ac639607",
+      "fixbench:case_057_686bab57",
+      "fixbench:case_058_3e4dc868"
+    ],
+    "test": [
+      "fixbench:case_023_11b890c7",
+      "fixbench:case_024_68902e8f",
+      "fixbench:case_028_3581f420",
+      "fixbench:case_032_bf08fa6e",
+      "fixbench:case_035_2cd94472",
+      "fixbench:case_042_1b3efec7",
+      "fixbench:case_047_bf5c41de",
+      "fixbench:case_049_0bfb474d",
+      "fixbench:case_056_2076920a"
+    ],
+    "test_groups": [
+      "group_023",
+      "group_024",
+      "group_028",
+      "group_032",
+      "group_035",
+      "group_042",
+      "group_047",
+      "group_049",
+      "group_056"
+    ],
+    "family_disjoint": true,
+    "rule": "groups ordered by sha256(group key); whole groups are assigned to test until it holds about a quarter of the trusted cases",
+    "caveat": "35 trusted cases across 30 independent groups is too small for a confident split; treat any score from it as a smoke test"
+  }
+}

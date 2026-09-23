@@ -1,0 +1,3453 @@
+{
+  "source": "Fixbench-RTL",
+  "source_file": "dataset/raw/hf/Fixbench-RTL/Fixbench-RTL.json",
+  "source_sha256": "a0c6543afacb4882a8792fabb3fa262d6351401a8c6945363c5d35173733d524",
+  "generated_by": "training/convert_fixbench_rtl.py",
+  "license": "CC-BY-4.0 (Fixbench-RTL); upstream source licences apply",
+  "total_cases_found": 100,
+  "converted": 100,
+  "skipped": [],
+  "replay": {
+    "cache": "training/fixbench_replay_cache/replay_results.json",
+    "tool_versions": {
+      "iverilog": "Icarus Verilog version 12.0 (stable) ()",
+      "questa": "Questa Sim-64 vsim 2021.2_1 Simulator 2021.05 May 15 2021",
+      "questa_license": "/usr/local/questasim/license.dat"
+    },
+    "procedure": "for each case the supplied testbench was run against the buggy revision and, separately, against the corrected revision, in a scratch directory per revision with its own work library; the testbench was compiled after the design file because 13 testbenches import a package declared in the design",
+    "buggy_verdicts": {
+      "compile_failed": 22,
+      "failed": 55,
+      "passed": 22,
+      "unknown": 1
+    },
+    "corrected_verdicts": {
+      "compile_failed": 15,
+      "failed": 10,
+      "passed": 75
+    },
+    "buggy_verdicts_by_backend": {
+      "iverilog": {
+        "compile_failed": 40,
+        "failed": 46,
+        "passed": 13,
+        "unknown": 1
+      },
+      "questa": {
+        "compile_failed": 21,
+        "failed": 9,
+        "not_attempted": 59,
+        "passed": 9,
+        "unknown": 2
+      }
+    },
+    "replay_classes": {
+      "cannot_build_either_revision": 13,
+      "failure_survives_repair": 11,
+      "no_usable_verdict": 1,
+      "testbench_passes_on_buggy_code": 21,
+      "verified_failure_at_base": 54
+    },
+    "repair_evidence_verified": 54,
+    "testbench_passed_buggy_on_a_backend": 22,
+    "deciding_backend": {
+      "iverilog": 52,
+      "questa": 2
+    },
+    "not_replayed": 0,
+    "policy": "A case counts as repair-evidence-verified only when, under the *same* simulator, the buggy revision fails (compile or run) and the corrected revision passes. Pairs are formed per simulator because a revision can fail to build under one tool and run fine under another. Cases where the testbench passes the buggy revision, where the pair cannot be built at all, where the failure survives the repair, and where no verdict line appears are recorded as their own classes and are not verification."
+  },
+  "record_counts": {
+    "records_3q.jsonl": 100,
+    "records_3q_non_pseudo_labels": 45,
+    "records_5q.jsonl": 0,
+    "records_5q_pseudo_unverified.jsonl": 100,
+    "three_question_only": 0,
+    "evaluation_excluded": 52
+  },
+  "evaluation_exclusions": {
+    "fixbench:case_003_019ab5b7": {
+      "index": 3,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_006_628f065d": {
+      "index": 6,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_008_2d795521": {
+      "index": 8,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_012_30926604": {
+      "index": 12,
+      "reasons": [
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_013_e3f2a9ff": {
+      "index": 13,
+      "reasons": [
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_016_3fe1f78f": {
+      "index": 16,
+      "reasons": [
+        "no_usable_verdict"
+      ],
+      "replay_class": "no_usable_verdict",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_022_85cafe70": {
+      "index": 22,
+      "reasons": [
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_025_067cc4df": {
+      "index": 25,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_027_943baffb": {
+      "index": 27,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_030_c1dc7302": {
+      "index": 30,
+      "reasons": [
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_039_2480547f": {
+      "index": 39,
+      "reasons": [
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_045_764c3938": {
+      "index": 45,
+      "reasons": [
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_059_56c31a91": {
+      "index": 59,
+      "reasons": [
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_060_f416ea9f": {
+      "index": 60,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_061_30bc86ea": {
+      "index": 61,
+      "reasons": [
+        "bug_text_is_upstream_pr_text"
+      ],
+      "replay_class": "verified_failure_at_base",
+      "repair_evidence_verified": true,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_062_7740ab38": {
+      "index": 62,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_063_5ac124bd": {
+      "index": 63,
+      "reasons": [
+        "bug_text_is_upstream_pr_text"
+      ],
+      "replay_class": "verified_failure_at_base",
+      "repair_evidence_verified": true,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_064_0ea61baa": {
+      "index": 64,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_065_3eec1172": {
+      "index": 65,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_066_d1cc6ea4": {
+      "index": 66,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_067_f0daa3a9": {
+      "index": 67,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_068_dc260b90": {
+      "index": 68,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_069_7ce866b2": {
+      "index": 69,
+      "reasons": [
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_070_b5bc7d01": {
+      "index": 70,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_071_127bdaac": {
+      "index": 71,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_072_a9c7e5c1": {
+      "index": 72,
+      "reasons": [
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_073_3f86fce6": {
+      "index": 73,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_074_0392aa15": {
+      "index": 74,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_075_bf9b7471": {
+      "index": 75,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_076_8d9b4d0e": {
+      "index": 76,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_077_0d9c2062": {
+      "index": 77,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_078_2753b21f": {
+      "index": 78,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_079_3df86a62": {
+      "index": 79,
+      "reasons": [
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_080_a6875695": {
+      "index": 80,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_081_afc7468e": {
+      "index": 81,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_082_827829e2": {
+      "index": 82,
+      "reasons": [
+        "failure_survives_repair"
+      ],
+      "replay_class": "failure_survives_repair",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_083_5a46d396": {
+      "index": 83,
+      "reasons": [
+        "bug_text_is_upstream_pr_text"
+      ],
+      "replay_class": "verified_failure_at_base",
+      "repair_evidence_verified": true,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_084_9bca174f": {
+      "index": 84,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_085_5aa28da7": {
+      "index": 85,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_086_58aa02a5": {
+      "index": 86,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_087_33dae361": {
+      "index": 87,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "verified_failure_at_base",
+      "repair_evidence_verified": true,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_088_50d61e92": {
+      "index": 88,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_089_34a618cf": {
+      "index": 89,
+      "reasons": [
+        "bug_text_is_upstream_pr_text"
+      ],
+      "replay_class": "verified_failure_at_base",
+      "repair_evidence_verified": true,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_090_647a1ae5": {
+      "index": 90,
+      "reasons": [
+        "bug_text_is_upstream_pr_text"
+      ],
+      "replay_class": "verified_failure_at_base",
+      "repair_evidence_verified": true,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_092_024f0796": {
+      "index": 92,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_093_6a2ff03f": {
+      "index": 93,
+      "reasons": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_094_99c25e13": {
+      "index": 94,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_095_b51a4a9e": {
+      "index": 95,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_096_5df5a3ac": {
+      "index": 96,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_097_408a689a": {
+      "index": 97,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_098_3417a84f": {
+      "index": 98,
+      "reasons": [
+        "cannot_build_either_revision"
+      ],
+      "replay_class": "cannot_build_either_revision",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    },
+    "fixbench:case_099_c17eedb6": {
+      "index": 99,
+      "reasons": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "replay_class": "testbench_passes_on_buggy_code",
+      "repair_evidence_verified": false,
+      "still_in_records_3q": true
+    }
+  },
+  "root_cause_distribution": {
+    "combinational_logic": 13,
+    "formal_property": 1,
+    "reset_initialization": 2,
+    "security": 5,
+    "sequential_assignment": 14,
+    "state_machine": 8,
+    "syntax_compile": 27,
+    "timing_protocol": 5,
+    "type_width": 5,
+    "unknown": 20
+  },
+  "next_action_distribution": {
+    "constraints": 1,
+    "rtl": 72,
+    "simulation": 8,
+    "testbench": 14,
+    "waveform": 5
+  },
+  "probability_shapes": {
+    "root_cause": {
+      "one_hot": 17,
+      "soft": 83
+    },
+    "next_action": {
+      "one_hot": 8,
+      "soft": 92
+    }
+  },
+  "label_source_distribution": {
+    "next_action": {
+      "codex_pseudo_unverified": 21,
+      "manual_bug_label": 75,
+      "verified_repair": 4
+    },
+    "root_cause_type": {
+      "codex_pseudo_unverified": 44,
+      "manual_bug_label": 31,
+      "verified_repair": 25
+    },
+    "evidence_sufficient": {
+      "codex_pseudo_unverified": 27,
+      "manual_bug_label": 19,
+      "verified_repair": 54
+    }
+  },
+  "evidence_channel": {
+    "bug": 57,
+    "log": 35,
+    "none": 8
+  },
+  "trust_flags": {
+    "bug_text_is_upstream_pr_text": 24,
+    "cannot_build_either_revision": 13,
+    "failure_survives_repair": 11,
+    "no_usable_verdict": 1,
+    "security_relevant_content": 6,
+    "testbench_does_not_detect_the_bug": 22
+  },
+  "cases_flagging_trust": {
+    "case_003_019ab5b7": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_006_628f065d": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_008_2d795521": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_012_30926604": [
+      "failure_survives_repair"
+    ],
+    "case_013_e3f2a9ff": [
+      "failure_survives_repair"
+    ],
+    "case_016_3fe1f78f": [
+      "no_usable_verdict"
+    ],
+    "case_022_85cafe70": [
+      "failure_survives_repair"
+    ],
+    "case_025_067cc4df": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_027_943baffb": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_030_c1dc7302": [
+      "failure_survives_repair"
+    ],
+    "case_039_2480547f": [
+      "failure_survives_repair"
+    ],
+    "case_045_764c3938": [
+      "security_relevant_content",
+      "failure_survives_repair"
+    ],
+    "case_059_56c31a91": [
+      "failure_survives_repair"
+    ],
+    "case_060_f416ea9f": [
+      "bug_text_is_upstream_pr_text",
+      "failure_survives_repair"
+    ],
+    "case_061_30bc86ea": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content"
+    ],
+    "case_062_7740ab38": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_063_5ac124bd": [
+      "bug_text_is_upstream_pr_text"
+    ],
+    "case_064_0ea61baa": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_065_3eec1172": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "case_066_d1cc6ea4": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_067_f0daa3a9": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_068_dc260b90": [
+      "bug_text_is_upstream_pr_text",
+      "failure_survives_repair"
+    ],
+    "case_069_7ce866b2": [
+      "failure_survives_repair"
+    ],
+    "case_070_b5bc7d01": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "case_071_127bdaac": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "case_072_a9c7e5c1": [
+      "cannot_build_either_revision"
+    ],
+    "case_073_3f86fce6": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_074_0392aa15": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_075_bf9b7471": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_076_8d9b4d0e": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_077_0d9c2062": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "case_078_2753b21f": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_079_3df86a62": [
+      "cannot_build_either_revision"
+    ],
+    "case_080_a6875695": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_081_afc7468e": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "case_082_827829e2": [
+      "failure_survives_repair"
+    ],
+    "case_083_5a46d396": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content"
+    ],
+    "case_084_9bca174f": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_085_5aa28da7": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_086_58aa02a5": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "case_087_33dae361": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_088_50d61e92": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content",
+      "cannot_build_either_revision"
+    ],
+    "case_089_34a618cf": [
+      "bug_text_is_upstream_pr_text",
+      "security_relevant_content"
+    ],
+    "case_090_647a1ae5": [
+      "bug_text_is_upstream_pr_text"
+    ],
+    "case_092_024f0796": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_093_6a2ff03f": [
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_094_99c25e13": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "case_095_b51a4a9e": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "case_096_5df5a3ac": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ],
+    "case_097_408a689a": [
+      "bug_text_is_upstream_pr_text",
+      "cannot_build_either_revision"
+    ],
+    "case_098_3417a84f": [
+      "cannot_build_either_revision"
+    ],
+    "case_099_c17eedb6": [
+      "bug_text_is_upstream_pr_text",
+      "testbench_does_not_detect_the_bug"
+    ]
+  },
+  "score_question_policy": {
+    "defensible_5q": "risk and urgency both anchored in source evidence; empty for Fixbench because no case states a deadline or a production/user impact and the risk rubric scores the action, which is local inspection plus routine simulation throughout",
+    "pseudo_5q": "transparent rubric estimate; both score labels are codex_pseudo_unverified and must not be treated as gold",
+    "attestation": "no pseudo risk or urgency is presented as gold anywhere"
+  },
+  "leakage": {
+    "cases_with_findings": {},
+    "findings_total": 0,
+    "checks": [
+      "every line of state.buggy_rtl is a line of the buggy revision",
+      "every line of state.testbench is a line of the supplied testbench",
+      "no repaired-only line appears as a state line (line-exact, so a repaired line that is a prefix of a buggy line is not counted)",
+      "the whole correctcode text is absent from the state",
+      "no replay command in the state references the corrected file",
+      "no banned keys (correctcode/diff/fix.sv)",
+      "state.replay carries buggy-side commands and output only"
+    ]
+  },
+  "post_write_audit": {
+    "records_3q.jsonl": {
+      "records": 100,
+      "unique_ids": 100,
+      "questions_per_record": 3,
+      "problems": []
+    },
+    "records_5q.jsonl": {
+      "records": 0,
+      "unique_ids": 0,
+      "questions_per_record": 5,
+      "problems": []
+    },
+    "records_5q_pseudo_unverified.jsonl": {
+      "records": 100,
+      "unique_ids": 100,
+      "questions_per_record": 5,
+      "problems": []
+    }
+  },
+  "audit_index": [
+    {
+      "case_id": "case_000_2654b357",
+      "index": 0,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "verified_repair",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "one_hot"
+    },
+    {
+      "case_id": "case_001_1390de2d",
+      "index": 1,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "verified_repair",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "one_hot"
+    },
+    {
+      "case_id": "case_002_8c22f7e4",
+      "index": 2,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "verified_repair",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "one_hot"
+    },
+    {
+      "case_id": "case_003_019ab5b7",
+      "index": 3,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "type_width",
+      "root_source": "manual_bug_label",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_004_afd798e1",
+      "index": 4,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_005_93d278aa",
+      "index": 5,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_006_628f065d",
+      "index": 6,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_007_32cd1677",
+      "index": 7,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "none",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_008_2d795521",
+      "index": 8,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_009_7715cf2f",
+      "index": 9,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_010_609c9260",
+      "index": 10,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_011_21b5f5d3",
+      "index": 11,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "one_hot"
+    },
+    {
+      "case_id": "case_012_30926604",
+      "index": 12,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_013_e3f2a9ff",
+      "index": 13,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_014_de384ea2",
+      "index": 14,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_015_2ff57c50",
+      "index": 15,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "none",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_016_3fe1f78f",
+      "index": 16,
+      "replay_verified": false,
+      "replay_class": "no_usable_verdict",
+      "deciding_backend": null,
+      "buggy_verdict": "unknown",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "unknown",
+        "questa": "unknown"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "none",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "simulation",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "no_usable_verdict"
+      ],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "one_hot"
+    },
+    {
+      "case_id": "case_017_9acf1c43",
+      "index": 17,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_018_a8b822d9",
+      "index": 18,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "state_machine",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_019_4114fd4a",
+      "index": 19,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "none",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "simulation",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_020_629f5f43",
+      "index": 20,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_021_c92e0e5b",
+      "index": 21,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "questa",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_022_85cafe70",
+      "index": 22,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_023_11b890c7",
+      "index": 23,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "type_width",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_024_68902e8f",
+      "index": 24,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_025_067cc4df",
+      "index": 25,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "manual_bug_label",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_026_89ee4a92",
+      "index": 26,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "none",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_027_943baffb",
+      "index": 27,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "none",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_028_3581f420",
+      "index": 28,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_029_befe010d",
+      "index": 29,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_030_c1dc7302",
+      "index": 30,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "state_machine",
+      "root_source": "manual_bug_label",
+      "action": "waveform",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_031_7994f605",
+      "index": 31,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "timing_protocol",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_032_bf08fa6e",
+      "index": 32,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "state_machine",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_033_da9025fe",
+      "index": 33,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "state_machine",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_034_8f20c720",
+      "index": 34,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "state_machine",
+      "root_source": "verified_repair",
+      "action": "simulation",
+      "action_source": "verified_repair",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "one_hot"
+    },
+    {
+      "case_id": "case_035_2cd94472",
+      "index": 35,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "timing_protocol",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_036_549d01af",
+      "index": 36,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "none",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_037_59ffb946",
+      "index": 37,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_038_3e823e0a",
+      "index": 38,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "waveform",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_039_2480547f",
+      "index": 39,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "state_machine",
+      "root_source": "manual_bug_label",
+      "action": "waveform",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_040_14931a4a",
+      "index": 40,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "state_machine",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_041_7f3d2c28",
+      "index": 41,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "reset_initialization",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_042_1b3efec7",
+      "index": 42,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_043_7339fc19",
+      "index": 43,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_044_6b00f725",
+      "index": 44,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_045_764c3938",
+      "index": 45,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "security",
+      "root_source": "manual_bug_label",
+      "action": "waveform",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "security_relevant_content",
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_046_a734981d",
+      "index": 46,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "timing_protocol",
+      "root_source": "verified_repair",
+      "action": "testbench",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_047_bf5c41de",
+      "index": 47,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "timing_protocol",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_048_a15c4652",
+      "index": 48,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "timing_protocol",
+      "root_source": "manual_bug_label",
+      "action": "simulation",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_049_0bfb474d",
+      "index": 49,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "state_machine",
+      "root_source": "verified_repair",
+      "action": "simulation",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_050_2753d7c2",
+      "index": 50,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_051_19a9ea38",
+      "index": 51,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_052_f42abc47",
+      "index": 52,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "type_width",
+      "root_source": "manual_bug_label",
+      "action": "simulation",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_053_39762858",
+      "index": 53,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_054_49fc0f2c",
+      "index": 54,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "simulation",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_055_ac639607",
+      "index": 55,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_056_2076920a",
+      "index": 56,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_057_686bab57",
+      "index": 57,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "state_machine",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_058_3e4dc868",
+      "index": 58,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_059_56c31a91",
+      "index": 59,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "security",
+      "root_source": "manual_bug_label",
+      "action": "waveform",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_060_f416ea9f",
+      "index": 60,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "unknown"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_061_30bc86ea",
+      "index": 61,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "verified_repair",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "security_relevant_content"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_062_7740ab38",
+      "index": 62,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "questa"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_063_5ac124bd",
+      "index": 63,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [
+        "bug_text_is_upstream_pr_text"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "one_hot"
+    },
+    {
+      "case_id": "case_064_0ea61baa",
+      "index": 64,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "none",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_065_3eec1172",
+      "index": 65,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_066_d1cc6ea4",
+      "index": 66,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "questa"
+      ],
+      "evidence_channel": "log",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_067_f0daa3a9",
+      "index": 67,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_068_dc260b90",
+      "index": 68,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_069_7ce866b2",
+      "index": 69,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "type_width",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_070_b5bc7d01",
+      "index": 70,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_071_127bdaac",
+      "index": 71,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_072_a9c7e5c1",
+      "index": 72,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "timing_protocol",
+      "root_source": "manual_bug_label",
+      "action": "simulation",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_073_3f86fce6",
+      "index": 73,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "manual_bug_label",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_074_0392aa15",
+      "index": 74,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "questa"
+      ],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_075_bf9b7471",
+      "index": 75,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "questa"
+      ],
+      "evidence_channel": "log",
+      "root_cause": "formal_property",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_076_8d9b4d0e",
+      "index": 76,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "questa"
+      ],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_077_0d9c2062",
+      "index": 77,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_078_2753b21f",
+      "index": 78,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_079_3df86a62",
+      "index": 79,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "sequential_assignment",
+      "root_source": "codex_pseudo_unverified",
+      "action": "simulation",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_080_a6875695",
+      "index": 80,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "sequential_assignment",
+      "root_source": "manual_bug_label",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_081_afc7468e",
+      "index": 81,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_082_827829e2",
+      "index": 82,
+      "replay_verified": false,
+      "replay_class": "failure_survives_repair",
+      "deciding_backend": null,
+      "buggy_verdict": "failed",
+      "correct_verdict": "failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "combinational_logic",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "failure_survives_repair"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "one_hot"
+    },
+    {
+      "case_id": "case_083_5a46d396",
+      "index": 83,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "questa",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "security_relevant_content"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_084_9bca174f",
+      "index": 84,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "questa"
+      ],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "security_relevant_content",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_085_5aa28da7",
+      "index": 85,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "type_width",
+      "root_source": "manual_bug_label",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "manual_bug_label",
+      "evidence_true": true,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_086_58aa02a5",
+      "index": 86,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_087_33dae361",
+      "index": 87,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "questa"
+      ],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_088_50d61e92",
+      "index": 88,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "security_relevant_content",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_089_34a618cf",
+      "index": 89,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "bug",
+      "root_cause": "syntax_compile",
+      "root_source": "manual_bug_label",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "security_relevant_content"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_090_647a1ae5",
+      "index": 90,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [
+        "bug_text_is_upstream_pr_text"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_091_c243581d",
+      "index": 91,
+      "replay_verified": true,
+      "replay_class": "verified_failure_at_base",
+      "deciding_backend": "iverilog",
+      "buggy_verdict": "failed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "verified_repair",
+      "evidence_true": true,
+      "flags": [],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_092_024f0796",
+      "index": 92,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_093_6a2ff03f",
+      "index": 93,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "iverilog"
+      ],
+      "evidence_channel": "bug",
+      "root_cause": "unknown",
+      "root_source": "codex_pseudo_unverified",
+      "action": "testbench",
+      "action_source": "codex_pseudo_unverified",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_094_99c25e13",
+      "index": 94,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_095_b51a4a9e",
+      "index": 95,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_096_5df5a3ac",
+      "index": 96,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "questa"
+      ],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_097_408a689a",
+      "index": 97,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_098_3417a84f",
+      "index": 98,
+      "replay_verified": false,
+      "replay_class": "cannot_build_either_revision",
+      "deciding_backend": null,
+      "buggy_verdict": "compile_failed",
+      "correct_verdict": "compile_failed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "compile_failed"
+      },
+      "testbench_passed_buggy_on": [],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "cannot_build_either_revision"
+      ],
+      "leakage": [],
+      "root_shape": "one_hot",
+      "action_shape": "soft"
+    },
+    {
+      "case_id": "case_099_c17eedb6",
+      "index": 99,
+      "replay_verified": false,
+      "replay_class": "testbench_passes_on_buggy_code",
+      "deciding_backend": null,
+      "buggy_verdict": "passed",
+      "correct_verdict": "passed",
+      "buggy_verdicts_by_backend": {
+        "iverilog": "compile_failed",
+        "questa": "passed"
+      },
+      "testbench_passed_buggy_on": [
+        "questa"
+      ],
+      "evidence_channel": "log",
+      "root_cause": "syntax_compile",
+      "root_source": "codex_pseudo_unverified",
+      "action": "rtl",
+      "action_source": "manual_bug_label",
+      "evidence_source": "codex_pseudo_unverified",
+      "evidence_true": false,
+      "flags": [
+        "bug_text_is_upstream_pr_text",
+        "testbench_does_not_detect_the_bug"
+      ],
+      "leakage": [],
+      "root_shape": "soft",
+      "action_shape": "soft"
+    }
+  ]
+}

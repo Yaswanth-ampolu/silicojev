@@ -1,0 +1,37 @@
+{
+  "format": "SilicoJev/Laya typed-decisions compatible JSONL",
+  "base_question_ids": [
+    "evidence_sufficient",
+    "next_action",
+    "root_cause_type"
+  ],
+  "added_question_ids": [
+    "risk",
+    "urgency"
+  ],
+  "total_cases": 208,
+  "total_decisions": 1040,
+  "source_counts": {
+    "fixbench_rtl": 100,
+    "rtl_benchls": 108
+  },
+  "source_group_counts": {
+    "Fixbench-RTL": 100,
+    "RTL-BenchLS": 108
+  },
+  "risk_label_counts": {
+    "0": 203,
+    "1": 5
+  },
+  "urgency_label_counts": {
+    "0": 199,
+    "1": 9
+  },
+  "insufficient_evidence_counts": {
+    "urgency": 205
+  },
+  "original_question_integrity": "verified_exact_match",
+  "state_integrity": "verified_byte_identical_to_base",
+  "pseudo_label_status": "codex_pseudo_unverified",
+  "standalone": "not merged into dataset/normalized/; exploratory use only"
+}
