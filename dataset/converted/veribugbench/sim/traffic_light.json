@@ -1,0 +1,1238 @@
+{
+ "project_id": "traffic_light",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "n_origin_files": 1,
+ "golden_rc": 0,
+ "golden_hash": "1a89800ca88d4d82",
+ "deterministic": true,
+ "golden_err": null,
+ "sweep_version": 4,
+ "instances": [
+  {
+   "instance": "traffic_light_AssignN2B_115_42",
+   "operator_id": "AssignN2B",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fb33c9c3ca54f697",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeDelete_209_73",
+   "operator_id": "EdgeDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "113b78ef610053fd",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeDelete_278_87",
+   "operator_id": "EdgeDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "386380012acec58d",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeDelete_57_23",
+   "operator_id": "EdgeDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2d04b649186c9fe5",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeFlip_210_73",
+   "operator_id": "EdgeFlip",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5379f1b731dac457",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeFlip_212_73",
+   "operator_id": "EdgeFlip",
+   "replaced": "traffic_light.v",
+   "verdict": "NOT_KILLED",
+   "rc": 0,
+   "behaviour_hash": "1a89800ca88d4d82",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeFlip_279_87",
+   "operator_id": "EdgeFlip",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b247082a2e90426b",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeFlip_281_87",
+   "operator_id": "EdgeFlip",
+   "replaced": "traffic_light.v",
+   "verdict": "NOT_KILLED",
+   "rc": 0,
+   "behaviour_hash": "1a89800ca88d4d82",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeFlip_58_23",
+   "operator_id": "EdgeFlip",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "15ca009c4758fc43",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeInsert_209_73",
+   "operator_id": "EdgeInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f4c1cd3bfd70f581",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_EdgeInsert_57_23",
+   "operator_id": "EdgeInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "086dcd40799b5403",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_195_65",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "596858d43497491f",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_215_74",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d531e6b1b6a2428d",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_223_76",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ebe335a720a147d2",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_224_76",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ebe335a720a147d2",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_236_78",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cbc2edb4ea2ef875",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_237_78",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8a9aae250567bace",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_246_80",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4b8af35c07f5a5f8",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_247_80",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "780a9aacd0106c97",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_257_82",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cbc75e0e127ad06d",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_269_84",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8954fa4784a9ac6a",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_284_88",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "67731c8e355d61d8",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprDelete_64_25",
+   "operator_id": "ExprDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "155c905a63d64c4e",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprInsert_163_55",
+   "operator_id": "ExprInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d0f955b3595767ca",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprInsert_195_65",
+   "operator_id": "ExprInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "596858d43497491f",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprInsert_223_76",
+   "operator_id": "ExprInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dd74783d4a3c8197",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprInsert_224_76",
+   "operator_id": "ExprInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dd74783d4a3c8197",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprInsert_227_76",
+   "operator_id": "ExprInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dd74783d4a3c8197",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprInsert_269_84",
+   "operator_id": "ExprInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8d4b8f94def888c6",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprInsert_284_88",
+   "operator_id": "ExprInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "933867367e5fdee9",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprInsert_64_25",
+   "operator_id": "ExprInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "79c0f632ba702557",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_IOFlip2_12_8",
+   "operator_id": "IOFlip",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e903022afe8f35b3",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_152_53",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f5163c1eb2fd2daf",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_157_54",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bf7d221b3e5c279a",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_166_56",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4c82a2339d9f7739",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_198_66",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "87a264882e680e23",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_250_81",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "18e57e848dc2f205",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_265_84",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "713ebe51694e42ad",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_292_91",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "579fef3735c7165a",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_308_97",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "386380012acec58d",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_67_27",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2d04b649186c9fe5",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_72_28",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9c3fb22cb8d29bf1",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_77_29",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6da2d1be7bbb89cc",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubDelete_82_30",
+   "operator_id": "NSubDelete",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a842c3c86e890b17",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubInsert_146_51",
+   "operator_id": "NSubInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d0f955b3595767ca",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubInsert_91_34",
+   "operator_id": "NSubInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2d04b649186c9fe5",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubInsert_IF_130_45",
+   "operator_id": "NSubInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fa9c9c58f90ed223",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubInsert_IF_162_55",
+   "operator_id": "NSubInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c46d9e4bc15b37d4",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubInsert_IF_214_74",
+   "operator_id": "NSubInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f584c33e23da2bee",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubInsert_IF_222_76",
+   "operator_id": "NSubInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f584c33e23da2bee",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubInsert_IF_245_80",
+   "operator_id": "NSubInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "44526a75a00120ae",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubInsert_IF_283_88",
+   "operator_id": "NSubInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f888019e28cae281",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubInsert_IF_63_25",
+   "operator_id": "NSubInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0804a30d4eb255f8",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_130_45",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0804a30d4eb255f8",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_162_55",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4c82a2339d9f7739",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_194_65",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "87a264882e680e23",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_214_74",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fef2ffb54887b6a0",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_222_76",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "713ebe51694e42ad",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_235_78",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "713ebe51694e42ad",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_245_80",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "713ebe51694e42ad",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_255_82",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "713ebe51694e42ad",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_283_88",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6c74a7ddca26b768",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubMove_63_25",
+   "operator_id": "NSubMove",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6f517a86c50aaa09",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_179_62",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "275a83a35a0c345c",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_184_63",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0804a30d4eb255f8",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_217_75",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "40c20c4b481cce37",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_240_79",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "783005346e9018f9",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_250_81",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "18e57e848dc2f205",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_260_83",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5f84da8b1449a715",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_265_84",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e2cd9f26b6baeb07",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_287_90",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a2e21f4f4ce0c150",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_313_98",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ac707318c32e722b",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_NSubUpdate_77_29",
+   "operator_id": "NSubUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b8d9ca766445deaf",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_PointerInsert_164_55",
+   "operator_id": "PointerInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4c82a2339d9f7739",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_PointerInsert_196_65",
+   "operator_id": "PointerInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "87a264882e680e23",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_PointerInsert_200_66",
+   "operator_id": "PointerInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "87a264882e680e23",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_PointerInsert_202_66",
+   "operator_id": "PointerInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e9e48ef53690afa1",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_PointerInsert_228_76",
+   "operator_id": "PointerInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dd74783d4a3c8197",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_PointerInsert_242_79",
+   "operator_id": "PointerInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1356c90d02615c2f",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_PointerInsert_276_85",
+   "operator_id": "PointerInsert",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "426d8cc84514df99",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprUpdate_131_45",
+   "operator_id": "ExprUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d98fe03722d07d58",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprUpdate_215_74",
+   "operator_id": "ExprUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d531e6b1b6a2428d",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprUpdate_236_78",
+   "operator_id": "ExprUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b3ab1bedf25b9d3f",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprUpdate_237_78",
+   "operator_id": "ExprUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8a9aae250567bace",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprUpdate_246_80",
+   "operator_id": "ExprUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d00f3a06c50b5b07",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprUpdate_257_82",
+   "operator_id": "ExprUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cbc75e0e127ad06d",
+   "err": null
+  },
+  {
+   "instance": "traffic_light_ExprUpdate_284_88",
+   "operator_id": "ExprUpdate",
+   "replaced": "traffic_light.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "67731c8e355d61d8",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "713ebe51694e42ad",
+   "size": 5,
+   "members": [
+    "traffic_light_NSubDelete_265_84",
+    "traffic_light_NSubMove_222_76",
+    "traffic_light_NSubMove_235_78",
+    "traffic_light_NSubMove_245_80",
+    "traffic_light_NSubMove_255_82"
+   ]
+  },
+  {
+   "hash": "dd74783d4a3c8197",
+   "size": 4,
+   "members": [
+    "traffic_light_ExprInsert_223_76",
+    "traffic_light_ExprInsert_224_76",
+    "traffic_light_ExprInsert_227_76",
+    "traffic_light_PointerInsert_228_76"
+   ]
+  },
+  {
+   "hash": "87a264882e680e23",
+   "size": 4,
+   "members": [
+    "traffic_light_NSubDelete_198_66",
+    "traffic_light_NSubMove_194_65",
+    "traffic_light_PointerInsert_196_65",
+    "traffic_light_PointerInsert_200_66"
+   ]
+  },
+  {
+   "hash": "2d04b649186c9fe5",
+   "size": 3,
+   "members": [
+    "traffic_light_EdgeDelete_57_23",
+    "traffic_light_NSubDelete_67_27",
+    "traffic_light_NSubInsert_91_34"
+   ]
+  },
+  {
+   "hash": "4c82a2339d9f7739",
+   "size": 3,
+   "members": [
+    "traffic_light_NSubDelete_166_56",
+    "traffic_light_NSubMove_162_55",
+    "traffic_light_PointerInsert_164_55"
+   ]
+  },
+  {
+   "hash": "0804a30d4eb255f8",
+   "size": 3,
+   "members": [
+    "traffic_light_NSubInsert_IF_63_25",
+    "traffic_light_NSubMove_130_45",
+    "traffic_light_NSubUpdate_184_63"
+   ]
+  },
+  {
+   "hash": "386380012acec58d",
+   "size": 2,
+   "members": [
+    "traffic_light_EdgeDelete_278_87",
+    "traffic_light_NSubDelete_308_97"
+   ]
+  },
+  {
+   "hash": "596858d43497491f",
+   "size": 2,
+   "members": [
+    "traffic_light_ExprDelete_195_65",
+    "traffic_light_ExprInsert_195_65"
+   ]
+  },
+  {
+   "hash": "d531e6b1b6a2428d",
+   "size": 2,
+   "members": [
+    "traffic_light_ExprDelete_215_74",
+    "traffic_light_ExprUpdate_215_74"
+   ]
+  },
+  {
+   "hash": "ebe335a720a147d2",
+   "size": 2,
+   "members": [
+    "traffic_light_ExprDelete_223_76",
+    "traffic_light_ExprDelete_224_76"
+   ]
+  },
+  {
+   "hash": "8a9aae250567bace",
+   "size": 2,
+   "members": [
+    "traffic_light_ExprDelete_237_78",
+    "traffic_light_ExprUpdate_237_78"
+   ]
+  },
+  {
+   "hash": "cbc75e0e127ad06d",
+   "size": 2,
+   "members": [
+    "traffic_light_ExprDelete_257_82",
+    "traffic_light_ExprUpdate_257_82"
+   ]
+  },
+  {
+   "hash": "67731c8e355d61d8",
+   "size": 2,
+   "members": [
+    "traffic_light_ExprDelete_284_88",
+    "traffic_light_ExprUpdate_284_88"
+   ]
+  },
+  {
+   "hash": "d0f955b3595767ca",
+   "size": 2,
+   "members": [
+    "traffic_light_ExprInsert_163_55",
+    "traffic_light_NSubInsert_146_51"
+   ]
+  },
+  {
+   "hash": "18e57e848dc2f205",
+   "size": 2,
+   "members": [
+    "traffic_light_NSubDelete_250_81",
+    "traffic_light_NSubUpdate_250_81"
+   ]
+  },
+  {
+   "hash": "f584c33e23da2bee",
+   "size": 2,
+   "members": [
+    "traffic_light_NSubInsert_IF_214_74",
+    "traffic_light_NSubInsert_IF_222_76"
+   ]
+  },
+  {
+   "hash": "fb33c9c3ca54f697",
+   "size": 1,
+   "members": [
+    "traffic_light_AssignN2B_115_42"
+   ]
+  },
+  {
+   "hash": "113b78ef610053fd",
+   "size": 1,
+   "members": [
+    "traffic_light_EdgeDelete_209_73"
+   ]
+  },
+  {
+   "hash": "5379f1b731dac457",
+   "size": 1,
+   "members": [
+    "traffic_light_EdgeFlip_210_73"
+   ]
+  },
+  {
+   "hash": "b247082a2e90426b",
+   "size": 1,
+   "members": [
+    "traffic_light_EdgeFlip_279_87"
+   ]
+  },
+  {
+   "hash": "15ca009c4758fc43",
+   "size": 1,
+   "members": [
+    "traffic_light_EdgeFlip_58_23"
+   ]
+  },
+  {
+   "hash": "f4c1cd3bfd70f581",
+   "size": 1,
+   "members": [
+    "traffic_light_EdgeInsert_209_73"
+   ]
+  },
+  {
+   "hash": "086dcd40799b5403",
+   "size": 1,
+   "members": [
+    "traffic_light_EdgeInsert_57_23"
+   ]
+  },
+  {
+   "hash": "cbc2edb4ea2ef875",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprDelete_236_78"
+   ]
+  },
+  {
+   "hash": "4b8af35c07f5a5f8",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprDelete_246_80"
+   ]
+  },
+  {
+   "hash": "780a9aacd0106c97",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprDelete_247_80"
+   ]
+  },
+  {
+   "hash": "8954fa4784a9ac6a",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprDelete_269_84"
+   ]
+  },
+  {
+   "hash": "155c905a63d64c4e",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprDelete_64_25"
+   ]
+  },
+  {
+   "hash": "8d4b8f94def888c6",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprInsert_269_84"
+   ]
+  },
+  {
+   "hash": "933867367e5fdee9",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprInsert_284_88"
+   ]
+  },
+  {
+   "hash": "79c0f632ba702557",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprInsert_64_25"
+   ]
+  },
+  {
+   "hash": "e903022afe8f35b3",
+   "size": 1,
+   "members": [
+    "traffic_light_IOFlip2_12_8"
+   ]
+  },
+  {
+   "hash": "f5163c1eb2fd2daf",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubDelete_152_53"
+   ]
+  },
+  {
+   "hash": "bf7d221b3e5c279a",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubDelete_157_54"
+   ]
+  },
+  {
+   "hash": "579fef3735c7165a",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubDelete_292_91"
+   ]
+  },
+  {
+   "hash": "9c3fb22cb8d29bf1",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubDelete_72_28"
+   ]
+  },
+  {
+   "hash": "6da2d1be7bbb89cc",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubDelete_77_29"
+   ]
+  },
+  {
+   "hash": "a842c3c86e890b17",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubDelete_82_30"
+   ]
+  },
+  {
+   "hash": "fa9c9c58f90ed223",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubInsert_IF_130_45"
+   ]
+  },
+  {
+   "hash": "c46d9e4bc15b37d4",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubInsert_IF_162_55"
+   ]
+  },
+  {
+   "hash": "44526a75a00120ae",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubInsert_IF_245_80"
+   ]
+  },
+  {
+   "hash": "f888019e28cae281",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubInsert_IF_283_88"
+   ]
+  },
+  {
+   "hash": "fef2ffb54887b6a0",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubMove_214_74"
+   ]
+  },
+  {
+   "hash": "6c74a7ddca26b768",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubMove_283_88"
+   ]
+  },
+  {
+   "hash": "6f517a86c50aaa09",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubMove_63_25"
+   ]
+  },
+  {
+   "hash": "275a83a35a0c345c",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubUpdate_179_62"
+   ]
+  },
+  {
+   "hash": "40c20c4b481cce37",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubUpdate_217_75"
+   ]
+  },
+  {
+   "hash": "783005346e9018f9",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubUpdate_240_79"
+   ]
+  },
+  {
+   "hash": "5f84da8b1449a715",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubUpdate_260_83"
+   ]
+  },
+  {
+   "hash": "e2cd9f26b6baeb07",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubUpdate_265_84"
+   ]
+  },
+  {
+   "hash": "a2e21f4f4ce0c150",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubUpdate_287_90"
+   ]
+  },
+  {
+   "hash": "ac707318c32e722b",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubUpdate_313_98"
+   ]
+  },
+  {
+   "hash": "b8d9ca766445deaf",
+   "size": 1,
+   "members": [
+    "traffic_light_NSubUpdate_77_29"
+   ]
+  },
+  {
+   "hash": "e9e48ef53690afa1",
+   "size": 1,
+   "members": [
+    "traffic_light_PointerInsert_202_66"
+   ]
+  },
+  {
+   "hash": "1356c90d02615c2f",
+   "size": 1,
+   "members": [
+    "traffic_light_PointerInsert_242_79"
+   ]
+  },
+  {
+   "hash": "426d8cc84514df99",
+   "size": 1,
+   "members": [
+    "traffic_light_PointerInsert_276_85"
+   ]
+  },
+  {
+   "hash": "d98fe03722d07d58",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprUpdate_131_45"
+   ]
+  },
+  {
+   "hash": "b3ab1bedf25b9d3f",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprUpdate_236_78"
+   ]
+  },
+  {
+   "hash": "d00f3a06c50b5b07",
+   "size": 1,
+   "members": [
+    "traffic_light_ExprUpdate_246_80"
+   ]
+  }
+ ],
+ "n_not_killed": 2
+}

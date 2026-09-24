@@ -1,0 +1,236 @@
+{
+ "batch_index": 1,
+ "source_group": "veribugbench:CirFix/first_counter_overflow",
+ "project": "first_counter_overflow",
+ "upstream": "CirFix",
+ "testbench": "// Self-checking testbench for first_counter.v\n// DUT is instantiated in tb, tb will contain a clock generator, reset\n// generator, enable logic generator, compare logic.\n\n\n// step1: create a dummy template that declares inputs to DUT as reg,\n// declare outputs of DUT as wire. Note there is no port list for test\n// bench.\nmodule first_counter_tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\nreg clk, reset, enable;\nreg instrument_clk;\nwire[3:0] counter_out;\nwire overflow_out;\n\n\nfirst_counter U0(\n    .clk (clk),\n    .reset (reset),\n    .enable (enable),\n    .counter_out (counter_out),\n    .overflow_out (overflow_out)\n);\n\n// step2: add clock generator logic. Before this we need to drive all\n// inputs of DUT to some known state.\ninitial begin\n    //wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n // initial block only executes once \n    clk = 0;\n    instrument_clk = 0;\n    reset = 0;\n    enable = 0;\nend\n\nalways\n    #5 clk = !clk;\n\nalways\n    #5 instrument_clk = !instrument_clk; // IMPORTANT: Make sure that this reflects the granularity of the oracle w.r.t. the clock cycle!\n\n\ninteger f;\ninitial begin\n    f = $fopen(\"output.txt\");\n    $display(\"\\t\\ttime,\\tclk,\\treset,\\tenable,\\tcount_out,\\toverflow_out\\n\");\n    $fwrite(f, \"time,counter_out[3],counter_out[2],counter_out[1],counter_out[0],overflow_out\\n\");\n    $monitor(\"%d, \\t%b, \\t%b, \\t%b, \\t%d, \\t\\t%b\", $time, clk, reset, enable, counter_out, overflow_out);\n    forever begin\n    //@(posedge instrument_clk);\n    //#5\n    #1\n    $fwrite(f, \"%0d,%b,%b,%b,%b,%b\\n\", $time, counter_out[3], counter_out[2], counter_out[1], counter_out[0], overflow_out);\n    end\nend\n\n\n\nevent reset_trigger;\nevent reset_done_trigger;\nevent terminate_sim;\n\n\ninitial begin\n    #5\n    forever begin\n        @(reset_trigger);\n        @(negedge clk);\n        reset = 1;\n        @(negedge clk);\n        reset = 0;\n        -> reset_done_trigger;\n    end\nend\n\ninitial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n    @(terminate_sim);\n    #5\n    $fclose(f);\n    $finish;\nend\n\n/*\n// Test Case 1: Assert/Deassert reset\n// trigger the reset_trigger event after 10 time units\ninitial begin: TEST_CASE_1\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n    #10 -> reset_trigger;\nend\n*/\n\n\n\n// Test Case 2: Assert/Deassert enable after reset is applied\n// trigger the reset logic and wait for it to complete. Then drive\n// enable to 1\n/*\nreg temp_event1;\n\ninitial begin\n    temp_event1 = 0;\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n       #10;\n    temp_event1 = 1;\nend\n*/\n/*\ninitial begin: TEST_CASE_2\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n    #10 -> reset_trigger;\n   // @(posedge temp_event1);\n    \n    @(reset_done_trigger);\n    @(negedge clk);\n    enable = 1;\n    repeat (10) begin\n        @(negedge clk);\n    end\n    enable = 0;\n    #5 -> terminate_sim;\nend\n*/\n\ninitial begin: TEST_CASE_4\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n    #10 -> reset_trigger;\n   // @(posedge temp_event1);\n    \n    @(reset_done_trigger);\n    @(negedge clk);\n    enable = 1;\n    repeat (100) begin\n        @(negedge clk);\n    end\n    enable = 0;\n    #5 -> terminate_sim;\nend\n\ninitial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n    #253\n    \n    //@(negedge clk)\n    //#5 $display (\"Simulation SUCCESS!\");\n     -> terminate_sim; // terminate simulation after 100 time units.\n\nend\ninitial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n#2000000\n$finish;\nend\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    // Synchronization with the test harness\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    // Initialize Inputs\n    // We initialize clk to 0 to ensure the clock generator has a valid starting point\n    // in case the original TB's initialization is delayed.\n    clk = 0;\n    reset = 0;\n    enable = 0;\n\n    // Wait for stabilization\n    #10;\n\n    // ---------------------------------------------------------\n    // Test Case 1: Reset Priority & Initialization\n    // ---------------------------------------------------------\n    // Assert Reset and Enable simultaneously. \n    // This targets control flow mutations (e.g., swapping if/else priority).\n    // If priority is swapped, counter might increment instead of reset.\n    @(negedge clk);\n    reset = 1;\n    enable = 1;\n    @(negedge clk);\n    \n    // Deassert Reset, verify counter starts at 0.\n    // Enable is still 1, so counting should start in the next cycle.\n    reset = 0;\n\n    // ---------------------------------------------------------\n    // Test Case 2: Full Count Range & Overflow Logic\n    // ---------------------------------------------------------\n    // Count from 0 to 15 and wrap around to 0.\n    // This targets:\n    // - Operator mutations (e.g., + to -)\n    // - Constant mutations (e.g., changing 15 to 14)\n    // - Bit-width mutations (e.g., counter_out[2:0])\n    // - Overflow logic (verifying the sticky bit behavior at 15->0 transition)\n    \n    // We loop 20 times to ensure we pass the wrap-around point (16 cycles).\n    for (i = 0; i < 20; i = i + 1) begin\n        @(negedge clk);\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 3: Enable Control (Pause/Resume)\n    // ---------------------------------------------------------\n    // Deassert Enable. Counter should hold its value.\n    // Targets enable signal sensitivity and logic deletion.\n    enable = 0;\n    for (i = 0; i < 5; i = i + 1) begin\n        @(negedge clk);\n    end\n\n    // Resume counting to verify state retention and resumption.\n    enable = 1;\n    for (i = 0; i < 5; i = i + 1) begin\n        @(negedge clk);\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 4: Reset Clearing Overflow\n    // ---------------------------------------------------------\n    // Assert reset in the middle of counting to ensure it clears \n    // both the counter and the sticky overflow bit.\n    @(negedge clk);\n    reset = 1;\n    enable = 0;\n    @(negedge clk);\n    reset = 0;\n\n    // ---------------------------------------------------------\n    // Test Case 5: Rapid Control Signal Transitions\n    // ---------------------------------------------------------\n    // Rapidly toggle enable to stress transition logic and expose\n    // potential edge-detection or sensitivity list faults.\n    @(negedge clk);\n    enable = 1;\n    @(negedge clk);\n    enable = 0;\n    @(negedge clk);\n    enable = 1;\n    @(negedge clk);\n    enable = 0;\n\n    // 4. Cleanup / Handover\n    #20;\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (f != 0) $fclose(f);\n    $finish;\nend\n\nendmodule\n",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:9682ffda8a9deb10",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out = #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:5608a4a63401a8a2",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out = #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:a9c36fbd031d9eca",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(negedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:7fa8f0cc30b733ce",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk or negedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:cab244a3fb41811b",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:eb206a3a05546ebc",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:e5e249c1bd1064fc",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:68fee9f5ced3fc90",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:fe3bfa9e0e0fdd71",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if((enable == 1'b1) && (reset == 1'b1)) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:e03aae499cfd4da2",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if((counter_out == 4'b1111) >= (reset == 1'b1)) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:384270431482b85e",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      begin\n      end\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:d4631e948f50f912",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      begin\n      end\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:1aa3a5736b4545da",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      begin\n      end\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:c3c6852c21b11f36",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      begin\n      end\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:f3a62b490a228ab2",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n    overflow_out <= #1 1'b0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:629e56c6fbd47fae",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n      overflow_out <= 1'b1;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:71f73aff385c0c9a",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n      overflow_out <= #1 1'b0;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:c7b569fe62999760",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else begin\n      if(enable == 1'b1) begin\n        counter_out <= #1 counter_out + 1;\n      end \n      overflow_out <= #1 1'b0;\n    end\n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:25bbb945d2945dce",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n      if(enable == 1'b1) begin\n        counter_out <= #1 counter_out + 1;\n      end \n    end else begin\n    end\n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:cbe88417d8beeecb",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n    end else begin\n      counter_out <= #1 counter_out + 1;\n    end\n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:bf1a9bc12fcfaf78",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n    end else begin\n      overflow_out <= 1'b1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:d9d966d1b3f09504",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      overflow_out <= 1'b1;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:5b9c290c0615b293",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      counter_out <= #1 4'b0000;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:80357b6b144d2808",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 4'b0000;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:f52b25b04a868fa3",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= #1 1'b0;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:f224e5a8143d807c",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out[15] <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:00d84891e69defc4",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out[21] <= #1 counter_out + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:7111891f7d0f5641",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out[5] + 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:7e39b25ac9891006",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out[8] == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:c647937a96da4945",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out && 1;\n    end \n    if(counter_out == 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:1297b4a445d33b66",
+   "project": "first_counter_overflow",
+   "buggy_rtl": "\n\nmodule first_counter\n(\n  clk,\n  reset,\n  enable,\n  counter_out,\n  overflow_out\n);\n\n  input clk;\n  input reset;\n  input enable;\n  output [3:0] counter_out;\n  output overflow_out;\n  wire clk;\n  wire reset;\n  wire enable;\n  reg [3:0] counter_out;\n  reg overflow_out;\n\n  always @(posedge clk) begin : COUNTER\n    if(reset == 1'b1) begin\n      counter_out <= #1 4'b0000;\n      overflow_out <= #1 1'b0;\n    end else if(enable == 1'b1) begin\n      counter_out <= #1 counter_out + 1;\n    end \n    if(counter_out && 4'b1111) begin\n      overflow_out <= 1'b1;\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  }
+ ]
+}

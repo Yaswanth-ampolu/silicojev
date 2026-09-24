@@ -1,0 +1,317 @@
+[
+  {
+    "batch_index": 0,
+    "file": "dataset/converted/veribugbench/batches/batch_00_decoder_3_to_8.json",
+    "source_group": "veribugbench:CirFix/decoder_3_to_8",
+    "records": 20,
+    "bytes": 32047
+  },
+  {
+    "batch_index": 1,
+    "file": "dataset/converted/veribugbench/batches/batch_01_first_counter_overflow.json",
+    "source_group": "veribugbench:CirFix/first_counter_overflow",
+    "records": 31,
+    "bytes": 33385
+  },
+  {
+    "batch_index": 2,
+    "file": "dataset/converted/veribugbench/batches/batch_02_flip_flop.json",
+    "source_group": "veribugbench:CirFix/flip_flop",
+    "records": 14,
+    "bytes": 12184
+  },
+  {
+    "batch_index": 3,
+    "file": "dataset/converted/veribugbench/batches/batch_03_fsm_full.json",
+    "source_group": "veribugbench:CirFix/fsm_full",
+    "records": 81,
+    "bytes": 209076
+  },
+  {
+    "batch_index": 4,
+    "file": "dataset/converted/veribugbench/batches/batch_04_i2c.json",
+    "source_group": "veribugbench:CirFix/i2c",
+    "records": 148,
+    "bytes": 598277
+  },
+  {
+    "batch_index": 5,
+    "file": "dataset/converted/veribugbench/batches/batch_05_lshift_reg.json",
+    "source_group": "veribugbench:CirFix/lshift_reg",
+    "records": 36,
+    "bytes": 28623
+  },
+  {
+    "batch_index": 6,
+    "file": "dataset/converted/veribugbench/batches/batch_06_mux_4_1.json",
+    "source_group": "veribugbench:CirFix/mux_4_1",
+    "records": 26,
+    "bytes": 21116
+  },
+  {
+    "batch_index": 7,
+    "file": "dataset/converted/veribugbench/batches/batch_07_pairing.json",
+    "source_group": "veribugbench:CirFix/pairing",
+    "records": 60,
+    "bytes": 113395
+  },
+  {
+    "batch_index": 8,
+    "file": "dataset/converted/veribugbench/batches/batch_08_reed_solomon_decoder.json",
+    "source_group": "veribugbench:CirFix/reed_solomon_decoder",
+    "records": 186,
+    "bytes": 1809868
+  },
+  {
+    "batch_index": 9,
+    "file": "dataset/converted/veribugbench/batches/batch_09_sdram_controller.json",
+    "source_group": "veribugbench:CirFix/sdram_controller",
+    "records": 110,
+    "bytes": 783968
+  },
+  {
+    "batch_index": 10,
+    "file": "dataset/converted/veribugbench/batches/batch_10_sha3_f_permutation.json",
+    "source_group": "veribugbench:CirFix/sha3_f_permutation",
+    "records": 27,
+    "bytes": 97429
+  },
+  {
+    "batch_index": 11,
+    "file": "dataset/converted/veribugbench/batches/batch_11_BandPassFilter.json",
+    "source_group": "veribugbench:Native/BandPassFilter",
+    "records": 148,
+    "bytes": 6881138
+  },
+  {
+    "batch_index": 12,
+    "file": "dataset/converted/veribugbench/batches/batch_12_generic_fifos.json",
+    "source_group": "veribugbench:Native/generic_fifos",
+    "records": 21,
+    "bytes": 69096
+  },
+  {
+    "batch_index": 13,
+    "file": "dataset/converted/veribugbench/batches/batch_13_jpegencode.json",
+    "source_group": "veribugbench:Native/jpegencode",
+    "records": 160,
+    "bytes": 8645760
+  },
+  {
+    "batch_index": 14,
+    "file": "dataset/converted/veribugbench/batches/batch_14_mips_16.json",
+    "source_group": "veribugbench:Native/mips_16",
+    "records": 60,
+    "bytes": 70652
+  },
+  {
+    "batch_index": 15,
+    "file": "dataset/converted/veribugbench/batches/batch_15_pid_controller.json",
+    "source_group": "veribugbench:Native/pid_controller",
+    "records": 80,
+    "bytes": 2149044
+  },
+  {
+    "batch_index": 16,
+    "file": "dataset/converted/veribugbench/batches/batch_16_pipelined_fft_64.json",
+    "source_group": "veribugbench:Native/pipelined_fft_64",
+    "records": 46,
+    "bytes": 204241
+  },
+  {
+    "batch_index": 17,
+    "file": "dataset/converted/veribugbench/batches/batch_17_simple_spi.json",
+    "source_group": "veribugbench:Native/simple_spi",
+    "records": 60,
+    "bytes": 253453
+  },
+  {
+    "batch_index": 18,
+    "file": "dataset/converted/veribugbench/batches/batch_18_spi.json",
+    "source_group": "veribugbench:Native/spi",
+    "records": 56,
+    "bytes": 241470
+  },
+  {
+    "batch_index": 19,
+    "file": "dataset/converted/veribugbench/batches/batch_19_uart.json",
+    "source_group": "veribugbench:Native/uart",
+    "records": 109,
+    "bytes": 151205
+  },
+  {
+    "batch_index": 20,
+    "file": "dataset/converted/veribugbench/batches/batch_20_verilog_axi-interconnect.json",
+    "source_group": "veribugbench:Native/verilog_axi-interconnect",
+    "records": 49,
+    "bytes": 449284
+  },
+  {
+    "batch_index": 21,
+    "file": "dataset/converted/veribugbench/batches/batch_21_verilog_fixed_point_math_library.json",
+    "source_group": "veribugbench:Native/verilog_fixed_point_math_library",
+    "records": 22,
+    "bytes": 46682
+  },
+  {
+    "batch_index": 22,
+    "file": "dataset/converted/veribugbench/batches/batch_22_JC_counter.json",
+    "source_group": "veribugbench:RTLLM/JC_counter",
+    "records": 7,
+    "bytes": 9959
+  },
+  {
+    "batch_index": 23,
+    "file": "dataset/converted/veribugbench/batches/batch_23_LIFObuffer.json",
+    "source_group": "veribugbench:RTLLM/LIFObuffer",
+    "records": 33,
+    "bytes": 48768
+  },
+  {
+    "batch_index": 24,
+    "file": "dataset/converted/veribugbench/batches/batch_24_RAM.json",
+    "source_group": "veribugbench:RTLLM/RAM",
+    "records": 31,
+    "bytes": 33781
+  },
+  {
+    "batch_index": 25,
+    "file": "dataset/converted/veribugbench/batches/batch_25_ROM.json",
+    "source_group": "veribugbench:RTLLM/ROM",
+    "records": 11,
+    "bytes": 12409
+  },
+  {
+    "batch_index": 26,
+    "file": "dataset/converted/veribugbench/batches/batch_26_accu.json",
+    "source_group": "veribugbench:RTLLM/accu",
+    "records": 71,
+    "bytes": 115929
+  },
+  {
+    "batch_index": 27,
+    "file": "dataset/converted/veribugbench/batches/batch_27_barrel_shifter.json",
+    "source_group": "veribugbench:RTLLM/barrel_shifter",
+    "records": 31,
+    "bytes": 99988
+  },
+  {
+    "batch_index": 28,
+    "file": "dataset/converted/veribugbench/batches/batch_28_comparator_3bit.json",
+    "source_group": "veribugbench:RTLLM/comparator_3bit",
+    "records": 16,
+    "bytes": 13043
+  },
+  {
+    "batch_index": 29,
+    "file": "dataset/converted/veribugbench/batches/batch_29_comparator_4bit.json",
+    "source_group": "veribugbench:RTLLM/comparator_4bit",
+    "records": 16,
+    "bytes": 14425
+  },
+  {
+    "batch_index": 30,
+    "file": "dataset/converted/veribugbench/batches/batch_30_counter_12.json",
+    "source_group": "veribugbench:RTLLM/counter_12",
+    "records": 48,
+    "bytes": 50078
+  },
+  {
+    "batch_index": 31,
+    "file": "dataset/converted/veribugbench/batches/batch_31_div_16bit.json",
+    "source_group": "veribugbench:RTLLM/div_16bit",
+    "records": 27,
+    "bytes": 29373
+  },
+  {
+    "batch_index": 32,
+    "file": "dataset/converted/veribugbench/batches/batch_32_freq_div.json",
+    "source_group": "veribugbench:RTLLM/freq_div",
+    "records": 64,
+    "bytes": 75176
+  },
+  {
+    "batch_index": 33,
+    "file": "dataset/converted/veribugbench/batches/batch_33_freq_divbyeven.json",
+    "source_group": "veribugbench:RTLLM/freq_divbyeven",
+    "records": 35,
+    "bytes": 27351
+  },
+  {
+    "batch_index": 34,
+    "file": "dataset/converted/veribugbench/batches/batch_34_freq_divbyfrac.json",
+    "source_group": "veribugbench:RTLLM/freq_divbyfrac",
+    "records": 77,
+    "bytes": 98359
+  },
+  {
+    "batch_index": 35,
+    "file": "dataset/converted/veribugbench/batches/batch_35_fsm.json",
+    "source_group": "veribugbench:RTLLM/fsm",
+    "records": 53,
+    "bytes": 76378
+  },
+  {
+    "batch_index": 36,
+    "file": "dataset/converted/veribugbench/batches/batch_36_instr_reg.json",
+    "source_group": "veribugbench:RTLLM/instr_reg",
+    "records": 47,
+    "bytes": 49349
+  },
+  {
+    "batch_index": 37,
+    "file": "dataset/converted/veribugbench/batches/batch_37_pulse_detect.json",
+    "source_group": "veribugbench:RTLLM/pulse_detect",
+    "records": 43,
+    "bytes": 59959
+  },
+  {
+    "batch_index": 38,
+    "file": "dataset/converted/veribugbench/batches/batch_38_right_shifter.json",
+    "source_group": "veribugbench:RTLLM/right_shifter",
+    "records": 13,
+    "bytes": 11605
+  },
+  {
+    "batch_index": 39,
+    "file": "dataset/converted/veribugbench/batches/batch_39_sequence_detector.json",
+    "source_group": "veribugbench:RTLLM/sequence_detector",
+    "records": 33,
+    "bytes": 45246
+  },
+  {
+    "batch_index": 40,
+    "file": "dataset/converted/veribugbench/batches/batch_40_signal_generator.json",
+    "source_group": "veribugbench:RTLLM/signal_generator",
+    "records": 47,
+    "bytes": 39063
+  },
+  {
+    "batch_index": 41,
+    "file": "dataset/converted/veribugbench/batches/batch_41_square_wave.json",
+    "source_group": "veribugbench:RTLLM/square_wave",
+    "records": 27,
+    "bytes": 20673
+  },
+  {
+    "batch_index": 42,
+    "file": "dataset/converted/veribugbench/batches/batch_42_sub_64bit.json",
+    "source_group": "veribugbench:RTLLM/sub_64bit",
+    "records": 22,
+    "bytes": 18908
+  },
+  {
+    "batch_index": 43,
+    "file": "dataset/converted/veribugbench/batches/batch_43_traffic_light.json",
+    "source_group": "veribugbench:RTLLM/traffic_light",
+    "records": 87,
+    "bytes": 176853
+  },
+  {
+    "batch_index": 44,
+    "file": "dataset/converted/veribugbench/batches/batch_44_width_8to16.json",
+    "source_group": "veribugbench:RTLLM/width_8to16",
+    "records": 54,
+    "bytes": 60510
+  }
+]

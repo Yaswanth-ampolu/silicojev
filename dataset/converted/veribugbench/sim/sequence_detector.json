@@ -1,0 +1,382 @@
+{
+ "project_id": "sequence_detector",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "a9d545098afb2112",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "sequence_detector_EdgeDelete_44_20",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e236061a38592557",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_EdgeFlip_45_20",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fa8388ba6e2fefee",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_EdgeFlip_47_20",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9661640829905c46",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_ExprDelete_142_46",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4f82bc7672526f08",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_ExprDelete_51_21",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "450c61c36b37a703",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_ExprDelete_70_31",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_ExprInsert_107_38",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_ExprInsert_127_40",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "265c18757a04ab53",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_ExprInsert_51_21",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c6535c73749e8bba",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_ExprInsert_70_31",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubDelete_54_22",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5ec7760fd8589cbf",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubDelete_60_25",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubInsert_53_21",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c6535c73749e8bba",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubInsert_68_30",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubInsert_78_34",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubInsert_Case_101_38",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubInsert_Case_111_39",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubInsert_Case_121_40",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubInsert_IF_69_31",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubMove_50_21",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "59a4ce747c72c2a3",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubMove_69_31",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_NSubUpdate_54_22",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5ec7760fd8589cbf",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_PartselectInsert_143_46",
+   "operator_id": "PartselectInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_PointerInsert_100_37",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_PointerInsert_109_38",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cee0e1e1838661b8",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_PointerInsert_129_40",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a332bbb81759d2fb",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_PointerInsert_130_40",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "265c18757a04ab53",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_PointerInsert_143_46",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_PointerInsert_62_25",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_PointerInsert_64_25",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_PointerInsert_85_36",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_ExprUpdate_51_21",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "450c61c36b37a703",
+   "err": null
+  },
+  {
+   "instance": "sequence_detector_ExprUpdate_70_31",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a0ad22659260b124",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "a0ad22659260b124",
+   "size": 18,
+   "members": [
+    "sequence_detector_ExprDelete_70_31",
+    "sequence_detector_ExprInsert_107_38",
+    "sequence_detector_ExprInsert_70_31",
+    "sequence_detector_NSubDelete_60_25",
+    "sequence_detector_NSubInsert_68_30",
+    "sequence_detector_NSubInsert_78_34",
+    "sequence_detector_NSubInsert_Case_101_38",
+    "sequence_detector_NSubInsert_Case_111_39",
+    "sequence_detector_NSubInsert_Case_121_40",
+    "sequence_detector_NSubInsert_IF_69_31",
+    "sequence_detector_NSubMove_69_31",
+    "sequence_detector_PartselectInsert_143_46",
+    "sequence_detector_PointerInsert_100_37",
+    "sequence_detector_PointerInsert_143_46",
+    "sequence_detector_PointerInsert_62_25",
+    "sequence_detector_PointerInsert_64_25",
+    "sequence_detector_PointerInsert_85_36",
+    "sequence_detector_ExprUpdate_70_31"
+   ]
+  },
+  {
+   "hash": "450c61c36b37a703",
+   "size": 2,
+   "members": [
+    "sequence_detector_ExprDelete_51_21",
+    "sequence_detector_ExprUpdate_51_21"
+   ]
+  },
+  {
+   "hash": "265c18757a04ab53",
+   "size": 2,
+   "members": [
+    "sequence_detector_ExprInsert_127_40",
+    "sequence_detector_PointerInsert_130_40"
+   ]
+  },
+  {
+   "hash": "c6535c73749e8bba",
+   "size": 2,
+   "members": [
+    "sequence_detector_ExprInsert_51_21",
+    "sequence_detector_NSubInsert_53_21"
+   ]
+  },
+  {
+   "hash": "5ec7760fd8589cbf",
+   "size": 2,
+   "members": [
+    "sequence_detector_NSubDelete_54_22",
+    "sequence_detector_NSubUpdate_54_22"
+   ]
+  },
+  {
+   "hash": "e236061a38592557",
+   "size": 1,
+   "members": [
+    "sequence_detector_EdgeDelete_44_20"
+   ]
+  },
+  {
+   "hash": "fa8388ba6e2fefee",
+   "size": 1,
+   "members": [
+    "sequence_detector_EdgeFlip_45_20"
+   ]
+  },
+  {
+   "hash": "9661640829905c46",
+   "size": 1,
+   "members": [
+    "sequence_detector_EdgeFlip_47_20"
+   ]
+  },
+  {
+   "hash": "4f82bc7672526f08",
+   "size": 1,
+   "members": [
+    "sequence_detector_ExprDelete_142_46"
+   ]
+  },
+  {
+   "hash": "59a4ce747c72c2a3",
+   "size": 1,
+   "members": [
+    "sequence_detector_NSubMove_50_21"
+   ]
+  },
+  {
+   "hash": "cee0e1e1838661b8",
+   "size": 1,
+   "members": [
+    "sequence_detector_PointerInsert_109_38"
+   ]
+  },
+  {
+   "hash": "a332bbb81759d2fb",
+   "size": 1,
+   "members": [
+    "sequence_detector_PointerInsert_129_40"
+   ]
+  }
+ ]
+}

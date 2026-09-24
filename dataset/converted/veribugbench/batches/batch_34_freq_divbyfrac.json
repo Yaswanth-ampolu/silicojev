@@ -1,0 +1,512 @@
+{
+ "batch_index": 34,
+ "source_group": "veribugbench:RTLLM/freq_divbyfrac",
+ "project": "freq_divbyfrac",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns / 1ps\nmodule freq_divbyfrac_tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n    // Inputs\n    reg clk;\n    reg rst_n;\n    // Outputs\n    wire clk_div;\n \n    // Instantiate the Unit Under Test (UUT)\n    freq_divbyfrac uut (\n        .clk(clk), \n        .rst_n(rst_n), \n        .clk_div(clk_div)\n    );\n    always #5 clk = ~clk;\n    \n    integer error = 0;\n    integer expected_value = 1;\n    integer i;\n    initial begin\n        // Initialize Inputs\n        clk = 1;\n        rst_n = 0;\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n        # 10 rst_n = 1;\n        #120;\n\n        $finish;\n    end\n    initial begin\n        // $monitor(\"clk=%d, clk_div=%d\",clk,clk_div);\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n        #15;\n        for (i = 0; i < 20; i = i + 1) begin\n            if (clk_div !== expected_value) begin\n                error = error + 1; \n                $display(\"Failed at%d: clk=%d, clk_div=%d (expected %d)\", i,clk, clk_div, expected_value);\n            end\n\n            if (i < 2) expected_value = 1; \n            else if (i < 6) expected_value = 0; \n            else if (i < 9) expected_value = 1; \n            else if (i < 13) expected_value = 0; \n            else if (i < 16) expected_value = 1; \n            else if (i < 20) expected_value = 0; \n            else expected_value = 1; // Last five pairs\n            #5;\n        end\n        if (error == 0) begin\n            $display(\"=========== Your Design Passed ===========\");\n            end\n        else begin\n            $display(\"=========== Test completed with %d/20 failures ===========\", error);\n        end\n    end\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"clk_div,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", clk_div);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    $display(\"LLM: Starting Mutation Tests...\");\n\n    // Initialize Inputs\n    rst_n = 0;\n    \n    // Wait for stabilization\n    #20;\n    \n    // ------------------------------------------------------------\n    // Test Case 1: Normal Operation & Period Verification\n    // ------------------------------------------------------------\n    // Release reset on negedge to ensure clean setup\n    @(negedge clk);\n    rst_n = 1;\n    \n    // Run for multiple periods (Period = 7 cycles)\n    // Targets: Operator mutations (cnt limit), Counter width faults\n    // We expect the counter to wrap every 7 cycles.\n    for (i = 0; i < 25; i = i + 1) begin\n        @(posedge clk);\n    end\n    \n    // ------------------------------------------------------------\n    // Test Case 2: Asynchronous Reset Verification\n    // ------------------------------------------------------------\n    // Assert reset strictly between clock edges (Async check).\n    // If the design has lost 'negedge rst_n' sensitivity (mutation), \n    // this async pulse will be ignored or delayed.\n    @(posedge clk);\n    #2; \n    rst_n = 0; // Assert Reset asynchronously\n    #2;        // Pulse width 2ns (inside the high phase)\n    rst_n = 1; // Deassert Reset\n    \n    // Allow time to observe reset effect (output should drop immediately)\n    #10;\n    \n    // ------------------------------------------------------------\n    // Test Case 3: Reset Priority & Recovery\n    // ------------------------------------------------------------\n    // Advance counter to mid-count (non-zero state)\n    @(posedge clk);\n    @(posedge clk);\n    \n    // Assert reset and hold across clock edge\n    // Targets: Priority logic (if reset is synchronous or lower priority)\n    rst_n = 0;\n    #15; // Hold for 1.5 cycles to ensure edge crossing\n    rst_n = 1;\n    \n    // Run to verify recovery and correct sequence generation\n    for (i = 0; i < 15; i = i + 1) begin\n        @(posedge clk);\n    end\n\n    // 4. Handover\n    $display(\"LLM Tests Finished. Handing over to Original TB...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:716357a90ef76eba",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt = 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c692aec7436ef088",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt = cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:479acc0f5d053dd2",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:25b8a2ee64ac1f3e",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:57aa44eb75f308f6",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:71c15cadecbab7cf",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3c7690513ae5de5a",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or posedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d5f8db279c731eaa",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:dcf0db4c7e157b68",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or posedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7dde9ad3b346d69c",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:94c635896e791d81",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or posedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e41dc50a7d203e5e",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n or posedge clk_ave_r) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f299e840fc1f41f0",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2272e206f3f42f25",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:697f1d9d788fe8af",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:91134228a0282a52",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b82ead8a7d1c4ff8",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2c7475f53aa30274",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8771a8b5b6f095c3",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:78fecdcb4cbfe811",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d57eb0e3258fcd67",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3a5f7e0b294c8ca3",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:35f71b1e231fa395",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d717d64d1c33d58f",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == (MUL2_DIV_CLK / 2 + 1 == MUL2_DIV_CLK - 1)) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:afe99492a806e578",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = (clk_adjust_r | clk_ave_r) < !rst_n;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:98a279c66fcd317d",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n + (MUL2_DIV_CLK / 2 + 1)) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:64fc5fa54f1cfddf",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if((cnt == MUL2_DIV_CLK - 1) / (MUL2_DIV_CLK / 2 + 1)) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0fb481afeb1816a2",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == (MUL2_DIV_CLK - 1) ** (MUL2_DIV_CLK - 1)) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1f3a37ca27ee3e11",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n && (cnt == MUL2_DIV_CLK / 2 + 1)) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8309d767dafefe15",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if((cnt == 0) * (cnt == MUL2_DIV_CLK / 2 + 1)) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1175fa6e6e897dc9",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if((cnt == MUL2_DIV_CLK / 2 + 1) | MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a436ebeb13d6951d",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == (MUL2_DIV_CLK / 2 + 1 >> (cnt == MUL2_DIV_CLK / 2 + 1))) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e64d41408c9c28de",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      begin\n      end\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d084df9bb68695ac",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      begin\n      end\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c22b01f9fbaf6bbf",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      begin\n      end\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7997059a58286f0f",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      begin\n      end\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bba48be0b4565a84",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      begin\n      end\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6638880d6f76ceaa",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      begin\n      end\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:697f565c00d6239d",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      begin\n      end\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fc003a3dd3b5144e",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      begin\n      end\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d19ad3f7f0492be7",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      begin\n      end\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b4a4fbe764ba26db",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      begin\n      end\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:79ca74e745ac8149",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      begin\n      end\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b40f980599ba313a",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n      cnt <= 'b0;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5780a4e534d2405c",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n      cnt <= 'b0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:843fc700c83ffd36",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n      cnt <= cnt + 1'b1;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d4a4eeabf439f3b7",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n      clk_adjust_r <= 1;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:dfa150cacc7de088",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n      cnt <= cnt + 1'b1;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:aa176a98f6c35363",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n      clk_ave_r <= 0;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b3d711a50f73cf5f",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else begin\n      if(cnt == 1) begin\n        clk_adjust_r <= 1;\n      end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n        clk_adjust_r <= 1;\n      end else begin\n        clk_adjust_r <= 0;\n      end\n      clk_adjust_r <= 1'b0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3753e2c130e049f8",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n      if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n        clk_adjust_r <= 1;\n      end else begin\n        clk_adjust_r <= 0;\n      end\n    end else begin\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9e798d266db66517",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n    end else begin\n      clk_adjust_r <= 0;\n      clk_adjust_r <= 1;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:62d98cc687c984b5",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else begin\n      if(cnt == MUL2_DIV_CLK - 1) begin\n        cnt <= 'b0;\n      end else begin\n        cnt <= cnt + 1'b1;\n      end\n      cnt <= 'b0;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d5c43dbce3fdb86b",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n    end else begin\n      cnt <= cnt + 1'b1;\n      cnt <= 'b0;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b92323be61414e46",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else begin\n      if(cnt == 0) begin\n        clk_ave_r <= 1;\n      end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n        clk_ave_r <= 1;\n      end else begin\n        clk_ave_r <= 0;\n      end\n      clk_ave_r <= 1'b0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:afd12bcec93488d5",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n      if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n        clk_ave_r <= 1;\n      end else begin\n        clk_ave_r <= 0;\n      end\n    end else begin\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c867df37f572b032",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n      clk_ave_r <= 0;\n    end else begin\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ba6aa5dddd20d97e",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:216e279735bb9043",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:21676c92f7e530f9",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 0;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1f7c73a2a285fbca",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3b8a0db96a142bed",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK[6:6] / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5a928db55400bf1f",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt[12] == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:65f863b5f97c8fd2",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK[31] - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e7cc8b65b7111d23",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt[19] <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4b1ceda49ee7922f",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt[25] <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bb8829040623fcdd",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt <= 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:52ab5db727c1f483",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt || MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8e036f5d24b67869",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == (MUL2_DIV_CLK << 2) + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a8b1bf0d446e73c8",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r % clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7dfb1935c3abe131",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt & MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:11792fec3d080a82",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == (MUL2_DIV_CLK == 1)) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2917527db185a4c6",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt % 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:58505af856ad279d",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(-rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1c2e38946c8bd977",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt >> MUL2_DIV_CLK / 2 + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:dc9aa1275626578a",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 / 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:41d020f224002096",
+   "project": "freq_divbyfrac",
+   "buggy_rtl": "\n\nmodule freq_divbyfrac\n(\n  input rst_n,\n  input clk,\n  output clk_div\n);\n\n  parameter MUL2_DIV_CLK = 7;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 'b0;\n    end else if(cnt == MUL2_DIV_CLK - 1) begin\n      cnt <= 'b0;\n    end else begin\n      cnt <= cnt + 1'b1;\n    end\n  end\n\n  reg clk_ave_r;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_ave_r <= 1'b0;\n    end else if(cnt == 0) begin\n      clk_ave_r <= 1;\n    end else if(cnt == (MUL2_DIV_CLK >= 2) + 1) begin\n      clk_ave_r <= 1;\n    end else begin\n      clk_ave_r <= 0;\n    end\n  end\n\n  reg clk_adjust_r;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      clk_adjust_r <= 1'b0;\n    end else if(cnt == 1) begin\n      clk_adjust_r <= 1;\n    end else if(cnt == MUL2_DIV_CLK / 2 + 1) begin\n      clk_adjust_r <= 1;\n    end else begin\n      clk_adjust_r <= 0;\n    end\n  end\n\n  assign clk_div = clk_adjust_r | clk_ave_r;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

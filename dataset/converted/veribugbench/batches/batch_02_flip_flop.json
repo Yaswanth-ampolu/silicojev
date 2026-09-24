@@ -1,0 +1,134 @@
+{
+ "batch_index": 2,
+ "source_group": "veribugbench:CirFix/flip_flop",
+ "project": "flip_flop",
+ "upstream": "CirFix",
+ "testbench": "module tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n  reg clk;\n  reg instrumented_clk;\n  reg rstn;\n  reg t;\n\n  tff u0 (  .clk(clk),\n            .rstn(rstn),\n            .t(t),\n          .q(q));\n\n  always #5 clk = ~clk;\n  always #20 instrumented_clk = ~instrumented_clk;\n\n  integer f;\n\n  initial begin\n    f = $fopen(\"output.txt\");\n    //$fwrite(f, \"time,rstn,t,q\\n\");\n\t$fwrite(f, \"time,q\\n\");\n    forever begin\n        //@(posedge clk);\n        //#10\n        #1\n        //$fwrite(f, \"%g,%b,%b,%b\\n\", $time,rstn,t,q);\n\t\t$fwrite(f, \"%g,%b\\n\", $time, q);\n    end\n\n  end\n\n  initial begin\n    // [Auto-Moved Vars]\n          reg [4:0] dly = $random;\n\n    {rstn, clk, t, instrumented_clk} <= 0;\n    //$monitor (\"T=%0t rstn=%0b t=%0d q=%0d\", $time, rstn, t, q);\n    repeat(2)\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n @(posedge clk);\n    rstn <= 1;\n\n    for (integer i = 0; i < 20; i = i+1) begin\n\n      #(dly) t <= $random;\n    end\n  // #20 $fclose(f);\n  #20 $finish;\n  end\n  initial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n#2000000\n$finish;\nend\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. Stimuli\n    $display(\"LLM Phase Started: T-Flip Flop Verification\");\n\n    // Initialize Inputs\n    rstn = 0;\n    t = 0;\n\n    // Wait for system stabilization\n    #10;\n\n    // ------------------------------------------------------------\n    // Test Case 1: Synchronous Reset Verification\n    // ------------------------------------------------------------\n    // Assert reset and wait for clock edges\n    // q should remain 0\n    for (i = 0; i < 3; i = i + 1) begin\n        @(posedge clk);\n    end\n\n    // Release reset away from clock edge (negedge) to avoid races\n    @(negedge clk);\n    rstn = 1;\n    \n    // ------------------------------------------------------------\n    // Test Case 2: Hold State (t=0)\n    // ------------------------------------------------------------\n    t = 0;\n    @(posedge clk);\n    // Expected: q = 0 (Hold)\n\n    // ------------------------------------------------------------\n    // Test Case 3: Toggle State (t=1) Transitions\n    // ------------------------------------------------------------\n    // Transition 0 -> 1\n    @(negedge clk);\n    t = 1;\n    @(posedge clk);\n    // Expected: q = 1\n\n    // Transition 1 -> 0\n    @(negedge clk);\n    t = 1; // Keep t=1\n    @(posedge clk);\n    // Expected: q = 0\n\n    // Transition 0 -> 1 again\n    @(negedge clk);\n    t = 1;\n    @(posedge clk);\n    // Expected: q = 1\n\n    // ------------------------------------------------------------\n    // Test Case 4: Hold State at High (q=1, t=0)\n    // ------------------------------------------------------------\n    @(negedge clk);\n    t = 0;\n    @(posedge clk);\n    // Expected: q = 1 (Hold)\n\n    // ------------------------------------------------------------\n    // Test Case 5: Async Reset Mutation Detection\n    // ------------------------------------------------------------\n    // Current state: q=1.\n    // We assert reset at negedge. \n    // Golden (Sync Reset): q stays 1 until posedge.\n    // Mutated (Async Reset): q drops to 0 immediately at negedge.\n    @(negedge clk);\n    rstn = 0;\n    #2; // Small delay to allow potential async reset to propagate\n    \n    // Complete the cycle to verify sync reset behavior\n    @(posedge clk);\n    // Expected: q = 0 (Reset applied synchronously)\n\n    // Release reset\n    @(negedge clk);\n    rstn = 1;\n\n    // ------------------------------------------------------------\n    // Test Case 6: Deterministic Stress Pattern\n    // ------------------------------------------------------------\n    // Pattern: 1 (Toggle), 0 (Hold), 1 (Toggle), 1 (Toggle)\n    \n    // Toggle (0->1)\n    @(negedge clk); t = 1; @(posedge clk);\n    \n    // Hold (1->1)\n    @(negedge clk); t = 0; @(posedge clk);\n    \n    // Toggle (1->0)\n    @(negedge clk); t = 1; @(posedge clk);\n    \n    // Toggle (0->1)\n    @(negedge clk); t = 1; @(posedge clk);\n\n    // ------------------------------------------------------------\n    // Test Case 7: Input Stability/Glitch Test\n    // ------------------------------------------------------------\n    // Change t multiple times before clock edge.\n    // Only the last value before setup time should matter.\n    @(negedge clk);\n    t = 0;\n    #1 t = 1;\n    #1 t = 0; // Final value 0 (Hold)\n    @(posedge clk);\n    // Expected: q holds previous value (1)\n\n    // 3. Handover\n    #100;\n    $display(\"LLM Phase Finished. Handing over to Original TB...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (f != 0) $fclose(f);\n    $finish;\nend\n\nendmodule\n",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:b424923786288f3d",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(negedge clk) begin\n    if(!rstn) q <= 0; \n    else if(t) q <= ~q; \n    else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:4d6b67b99dd8b2f1",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(rstn) q <= 0; \n    else if(t) q <= ~q; \n    else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:fa8a68a09bd90c31",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) q <= 0; \n    else if(t) q <= q; \n    else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:590aa93ed7a14ef4",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn && ~q) q <= 0; \n    else if(t) q <= ~q; \n    else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:21c210512c7419ac",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) q <= 0; \n    else if(t) q <= ~q % !rstn; \n    else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:3811677e95f50ef4",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n    end else if(t) q <= ~q; \n    else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:732315e8c43a26ef",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) q <= 0; \n    else if(t) begin\n    end else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:f377387563dbca57",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) q <= 0; \n    else if(t) q <= ~q; \n    else q <= q;\n    q <= 0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:2be006dd9f621cdc",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n    end else begin\n      if(t) q <= ~q; \n      else q <= q;\n      q <= 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:40831eb42ebef31a",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) q <= 0; \n    else if(t) begin\n      q <= ~q;\n      q <= q;\n    end else begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:06c8757d7b305b26",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) q <= q; \n    else if(t) q <= ~q; \n    else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:59175decb18449c7",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) q <= 0; \n    else if(t) q <= 0; \n    else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:1fe4718cf77a4081",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(!rstn) q <= 0; \n    else if(t) q <= ~q; \n    else q <= 0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:fbc5224cee74a27b",
+   "project": "flip_flop",
+   "buggy_rtl": "\n\nmodule tff\n(\n  input clk,\n  input rstn,\n  input t,\n  output reg q\n);\n\n\n  always @(posedge clk) begin\n    if(^rstn) q <= 0; \n    else if(t) q <= ~q; \n    else q <= q;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  }
+ ]
+}

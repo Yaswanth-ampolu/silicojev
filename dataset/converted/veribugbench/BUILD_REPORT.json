@@ -1,0 +1,29 @@
+{
+  "records_total": 2443,
+  "records_with_judge_gold": 2443,
+  "records_with_measured_verdict": 2041,
+  "records_with_any_gold": 2443,
+  "judge_batches_used": 45,
+  "measured_verdict_counts": {
+    "killed": 1863,
+    "COMPILE_FAIL": 27,
+    "NOT_KILLED": 151
+  },
+  "measured_projects": 39,
+  "swept_instances": 2041,
+  "not_killed_instances": 151,
+  "unswept_projects": [
+    "jpegencode",
+    "pairing",
+    "pipelined_fft_64",
+    "sha3_f_permutation",
+    "simple_spi",
+    "verilog_axi-interconnect"
+  ],
+  "field_sources": {
+    "root_cause_type": "extract (fault_operator -> ontology class) + llm_judge",
+    "evidence_sufficient": "llm_judge, cross-checked against iverilog measurement",
+    "next_action": "llm_judge (no extractable ground truth exists)",
+    "kill_verdict": "programmatic (iverilog -g2012 sweep vs deterministic golden)"
+  }
+}

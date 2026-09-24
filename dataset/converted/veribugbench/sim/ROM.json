@@ -1,0 +1,160 @@
+{
+ "project_id": "ROM",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "e699c2aacc618f3b",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "ROM_PointerInsert_37_11",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7c81ca1ad5e19220",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerInsert_44_12",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0f89e2a79ce0585f",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerInsert_51_13",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "883d5330fe69227e",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerInsert_58_14",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5d294225d1860e08",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerInsert_68_20",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "99ea305f52a0e813",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerInsert_71_20",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "47d88a9d47ef143a",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerInsert_72_20",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "60f750bf091032d5",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerUpdate_38_11",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7c81ca1ad5e19220",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerUpdate_45_12",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0f89e2a79ce0585f",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerUpdate_52_13",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4c1083a8e2d58303",
+   "err": null
+  },
+  {
+   "instance": "ROM_PointerUpdate_59_14",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5d294225d1860e08",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "7c81ca1ad5e19220",
+   "size": 2,
+   "members": [
+    "ROM_PointerInsert_37_11",
+    "ROM_PointerUpdate_38_11"
+   ]
+  },
+  {
+   "hash": "0f89e2a79ce0585f",
+   "size": 2,
+   "members": [
+    "ROM_PointerInsert_44_12",
+    "ROM_PointerUpdate_45_12"
+   ]
+  },
+  {
+   "hash": "5d294225d1860e08",
+   "size": 2,
+   "members": [
+    "ROM_PointerInsert_58_14",
+    "ROM_PointerUpdate_59_14"
+   ]
+  },
+  {
+   "hash": "883d5330fe69227e",
+   "size": 1,
+   "members": [
+    "ROM_PointerInsert_51_13"
+   ]
+  },
+  {
+   "hash": "99ea305f52a0e813",
+   "size": 1,
+   "members": [
+    "ROM_PointerInsert_68_20"
+   ]
+  },
+  {
+   "hash": "47d88a9d47ef143a",
+   "size": 1,
+   "members": [
+    "ROM_PointerInsert_71_20"
+   ]
+  },
+  {
+   "hash": "60f750bf091032d5",
+   "size": 1,
+   "members": [
+    "ROM_PointerInsert_72_20"
+   ]
+  },
+  {
+   "hash": "4c1083a8e2d58303",
+   "size": 1,
+   "members": [
+    "ROM_PointerUpdate_52_13"
+   ]
+  }
+ ]
+}

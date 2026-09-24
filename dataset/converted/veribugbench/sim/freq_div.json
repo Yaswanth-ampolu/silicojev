@@ -1,0 +1,757 @@
+{
+ "project_id": "freq_div",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "66821843f09ad7bf",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "freq_div_EdgeDelete_31_8",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d1c1331963c590b8",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeDelete_53_17",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeDelete_97_31",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "792cf84822624b6c",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeFlip_100_31",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f079efcadb232df9",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeFlip_32_8",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dbd0bcb739c67e04",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeFlip_34_8",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dd27bb8c8f28a2b1",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeFlip_54_17",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2aa23cc17dd42ff0",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeFlip_56_17",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ab62d0c00ce87dec",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeFlip_98_31",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "eb785d8420055b36",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeInsert_31_8",
+   "operator_id": "EdgeInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7003b647a0366e5d",
+   "err": null
+  },
+  {
+   "instance": "freq_div_EdgeInsert_53_17",
+   "operator_id": "EdgeInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0c5ce758f880cc91",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprDelete_117_36",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "15afbc2e3ccaaefd",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprDelete_125_37",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprDelete_137_41",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprDelete_50_13",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5493fa06d89957f4",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprDelete_73_22",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8ab8949f503310b3",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprDelete_81_23",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprDelete_93_27",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprInsert_117_36",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "15afbc2e3ccaaefd",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprInsert_125_37",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprInsert_137_41",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprInsert_50_13",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c4217f16df73ffaa",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprInsert_73_22",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6989a947093be755",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprInsert_93_27",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_111_34",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_121_37",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_127_38",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "07664e9937e1d08e",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_133_41",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_40_10",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "461b342a6c419e06",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_62_19",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "501a47151dedada4",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_67_20",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_77_23",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_83_24",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "49befd4373842a63",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubDelete_89_27",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubInsert_105_32",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b6e6e897357daf2c",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubInsert_120_36",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8db1e41f115714b4",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubInsert_36_8",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubInsert_45_12",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8ab8949f503310b3",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubInsert_58_17",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubInsert_IF_116_36",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b85eef499ba02207",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubMove_103_32",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "03c4b79ac79ba205",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubMove_116_36",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubMove_37_9",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "461b342a6c419e06",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubMove_59_18",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubMove_72_22",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_106_33",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b6e6e897357daf2c",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_111_34",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b6e6e897357daf2c",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_121_37",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_127_38",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8db1e41f115714b4",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_133_41",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f4c3394a4df3d5db",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_40_10",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "461b342a6c419e06",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_46_13",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fad851fa54d65f56",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_67_20",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_77_23",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_NSubUpdate_89_27",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_PointerInsert_113_34",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_PointerInsert_118_36",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_PointerInsert_135_41",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_PointerInsert_74_22",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprUpdate_137_41",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56387abb272f24ef",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprUpdate_50_13",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5493fa06d89957f4",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprUpdate_73_22",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5c4bcb5393fd14fb",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprUpdate_81_23",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  },
+  {
+   "instance": "freq_div_ExprUpdate_93_27",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5f778eb55efe9b",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "ce5f778eb55efe9b",
+   "size": 16,
+   "members": [
+    "freq_div_EdgeDelete_53_17",
+    "freq_div_ExprDelete_81_23",
+    "freq_div_ExprDelete_93_27",
+    "freq_div_ExprInsert_93_27",
+    "freq_div_NSubDelete_67_20",
+    "freq_div_NSubDelete_77_23",
+    "freq_div_NSubDelete_89_27",
+    "freq_div_NSubInsert_58_17",
+    "freq_div_NSubMove_59_18",
+    "freq_div_NSubMove_72_22",
+    "freq_div_NSubUpdate_67_20",
+    "freq_div_NSubUpdate_77_23",
+    "freq_div_NSubUpdate_89_27",
+    "freq_div_PointerInsert_74_22",
+    "freq_div_ExprUpdate_81_23",
+    "freq_div_ExprUpdate_93_27"
+   ]
+  },
+  {
+   "hash": "56387abb272f24ef",
+   "size": 14,
+   "members": [
+    "freq_div_ExprDelete_125_37",
+    "freq_div_ExprDelete_137_41",
+    "freq_div_ExprInsert_125_37",
+    "freq_div_ExprInsert_137_41",
+    "freq_div_NSubDelete_111_34",
+    "freq_div_NSubDelete_121_37",
+    "freq_div_NSubDelete_133_41",
+    "freq_div_NSubInsert_36_8",
+    "freq_div_NSubMove_116_36",
+    "freq_div_NSubUpdate_121_37",
+    "freq_div_PointerInsert_113_34",
+    "freq_div_PointerInsert_118_36",
+    "freq_div_PointerInsert_135_41",
+    "freq_div_ExprUpdate_137_41"
+   ]
+  },
+  {
+   "hash": "461b342a6c419e06",
+   "size": 3,
+   "members": [
+    "freq_div_NSubDelete_40_10",
+    "freq_div_NSubMove_37_9",
+    "freq_div_NSubUpdate_40_10"
+   ]
+  },
+  {
+   "hash": "b6e6e897357daf2c",
+   "size": 3,
+   "members": [
+    "freq_div_NSubInsert_105_32",
+    "freq_div_NSubUpdate_106_33",
+    "freq_div_NSubUpdate_111_34"
+   ]
+  },
+  {
+   "hash": "15afbc2e3ccaaefd",
+   "size": 2,
+   "members": [
+    "freq_div_ExprDelete_117_36",
+    "freq_div_ExprInsert_117_36"
+   ]
+  },
+  {
+   "hash": "5493fa06d89957f4",
+   "size": 2,
+   "members": [
+    "freq_div_ExprDelete_50_13",
+    "freq_div_ExprUpdate_50_13"
+   ]
+  },
+  {
+   "hash": "8ab8949f503310b3",
+   "size": 2,
+   "members": [
+    "freq_div_ExprDelete_73_22",
+    "freq_div_NSubInsert_45_12"
+   ]
+  },
+  {
+   "hash": "8db1e41f115714b4",
+   "size": 2,
+   "members": [
+    "freq_div_NSubInsert_120_36",
+    "freq_div_NSubUpdate_127_38"
+   ]
+  },
+  {
+   "hash": "d1c1331963c590b8",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeDelete_31_8"
+   ]
+  },
+  {
+   "hash": "792cf84822624b6c",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeDelete_97_31"
+   ]
+  },
+  {
+   "hash": "f079efcadb232df9",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeFlip_100_31"
+   ]
+  },
+  {
+   "hash": "dbd0bcb739c67e04",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeFlip_32_8"
+   ]
+  },
+  {
+   "hash": "dd27bb8c8f28a2b1",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeFlip_34_8"
+   ]
+  },
+  {
+   "hash": "2aa23cc17dd42ff0",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeFlip_54_17"
+   ]
+  },
+  {
+   "hash": "ab62d0c00ce87dec",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeFlip_56_17"
+   ]
+  },
+  {
+   "hash": "eb785d8420055b36",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeFlip_98_31"
+   ]
+  },
+  {
+   "hash": "7003b647a0366e5d",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeInsert_31_8"
+   ]
+  },
+  {
+   "hash": "0c5ce758f880cc91",
+   "size": 1,
+   "members": [
+    "freq_div_EdgeInsert_53_17"
+   ]
+  },
+  {
+   "hash": "c4217f16df73ffaa",
+   "size": 1,
+   "members": [
+    "freq_div_ExprInsert_50_13"
+   ]
+  },
+  {
+   "hash": "6989a947093be755",
+   "size": 1,
+   "members": [
+    "freq_div_ExprInsert_73_22"
+   ]
+  },
+  {
+   "hash": "07664e9937e1d08e",
+   "size": 1,
+   "members": [
+    "freq_div_NSubDelete_127_38"
+   ]
+  },
+  {
+   "hash": "501a47151dedada4",
+   "size": 1,
+   "members": [
+    "freq_div_NSubDelete_62_19"
+   ]
+  },
+  {
+   "hash": "49befd4373842a63",
+   "size": 1,
+   "members": [
+    "freq_div_NSubDelete_83_24"
+   ]
+  },
+  {
+   "hash": "b85eef499ba02207",
+   "size": 1,
+   "members": [
+    "freq_div_NSubInsert_IF_116_36"
+   ]
+  },
+  {
+   "hash": "03c4b79ac79ba205",
+   "size": 1,
+   "members": [
+    "freq_div_NSubMove_103_32"
+   ]
+  },
+  {
+   "hash": "f4c3394a4df3d5db",
+   "size": 1,
+   "members": [
+    "freq_div_NSubUpdate_133_41"
+   ]
+  },
+  {
+   "hash": "fad851fa54d65f56",
+   "size": 1,
+   "members": [
+    "freq_div_NSubUpdate_46_13"
+   ]
+  },
+  {
+   "hash": "5c4bcb5393fd14fb",
+   "size": 1,
+   "members": [
+    "freq_div_ExprUpdate_73_22"
+   ]
+  }
+ ]
+}

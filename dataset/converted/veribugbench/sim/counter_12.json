@@ -1,0 +1,589 @@
+{
+ "project_id": "counter_12",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "36b0aaf9e47a1e8b",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "counter_12_AssignN2B_101_32",
+   "operator_id": "AssignN2B",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bd6b790cc3473b55",
+   "err": null
+  },
+  {
+   "instance": "counter_12_EdgeDelete_70_25",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1f09fd168d5d1710",
+   "err": null
+  },
+  {
+   "instance": "counter_12_EdgeFlip_36_13",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f90444a5988bbba7",
+   "err": null
+  },
+  {
+   "instance": "counter_12_EdgeFlip_71_25",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ec32e992e3f023f6",
+   "err": null
+  },
+  {
+   "instance": "counter_12_EdgeFlip_73_25",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b54bfba48df25245",
+   "err": null
+  },
+  {
+   "instance": "counter_12_EdgeInsert_35_13",
+   "operator_id": "EdgeInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bab412e60a19d60c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_EdgeInsert_70_25",
+   "operator_id": "EdgeInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5032c2724c4e09e5",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprDelete_42_14",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b0b9ef9380bee1c7",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprDelete_54_17",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprDelete_66_20",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8fdb8f582830b208",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprDelete_77_26",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ecc8649e6473c469",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprInsert_42_14",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "08cd63bae3a5d1ef",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprInsert_54_17",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprInsert_66_20",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubDelete_101_32",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubDelete_45_15",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "08cd63bae3a5d1ef",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubDelete_57_18",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2557053002edfdd2",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubDelete_62_20",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubDelete_80_27",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "753071f6ebf18dde",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubDelete_85_28",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2a40f46dee8c7829",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubDelete_90_29",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "934e0b286d511384",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubDelete_96_31",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubInsert_40_13",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0e4399e892f0a18e",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubInsert_75_25",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d1d802a523c62521",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubInsert_95_30",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cac63b119abf0607",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubInsert_IF_76_26",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubMove_41_14",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e4e9f5cb1517f1b3",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubMove_50_16",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8ff1428a22cc6180",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubMove_53_17",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubMove_76_26",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubUpdate_101_32",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubUpdate_106_33",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubUpdate_45_15",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "08cd63bae3a5d1ef",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubUpdate_62_20",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubUpdate_80_27",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "753071f6ebf18dde",
+   "err": null
+  },
+  {
+   "instance": "counter_12_NSubUpdate_96_31",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_PointerInsert_100_31",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cde4d0f958bfc9a0",
+   "err": null
+  },
+  {
+   "instance": "counter_12_PointerInsert_105_32",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e0c3e8b989b32583",
+   "err": null
+  },
+  {
+   "instance": "counter_12_PointerInsert_110_33",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "85fe800cb50fcff5",
+   "err": null
+  },
+  {
+   "instance": "counter_12_PointerInsert_47_15",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "08cd63bae3a5d1ef",
+   "err": null
+  },
+  {
+   "instance": "counter_12_PointerInsert_59_18",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2557053002edfdd2",
+   "err": null
+  },
+  {
+   "instance": "counter_12_PointerInsert_64_20",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_PointerInsert_82_27",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "753071f6ebf18dde",
+   "err": null
+  },
+  {
+   "instance": "counter_12_PointerInsert_98_31",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprUpdate_42_14",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b0b9ef9380bee1c7",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprUpdate_54_17",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprUpdate_66_20",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "339b6ebf9d1b0c0c",
+   "err": null
+  },
+  {
+   "instance": "counter_12_ExprUpdate_77_26",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ecc8649e6473c469",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "339b6ebf9d1b0c0c",
+   "size": 17,
+   "members": [
+    "counter_12_ExprDelete_54_17",
+    "counter_12_ExprInsert_54_17",
+    "counter_12_ExprInsert_66_20",
+    "counter_12_NSubDelete_101_32",
+    "counter_12_NSubDelete_62_20",
+    "counter_12_NSubDelete_96_31",
+    "counter_12_NSubInsert_IF_76_26",
+    "counter_12_NSubMove_53_17",
+    "counter_12_NSubMove_76_26",
+    "counter_12_NSubUpdate_101_32",
+    "counter_12_NSubUpdate_106_33",
+    "counter_12_NSubUpdate_62_20",
+    "counter_12_NSubUpdate_96_31",
+    "counter_12_PointerInsert_64_20",
+    "counter_12_PointerInsert_98_31",
+    "counter_12_ExprUpdate_54_17",
+    "counter_12_ExprUpdate_66_20"
+   ]
+  },
+  {
+   "hash": "08cd63bae3a5d1ef",
+   "size": 4,
+   "members": [
+    "counter_12_ExprInsert_42_14",
+    "counter_12_NSubDelete_45_15",
+    "counter_12_NSubUpdate_45_15",
+    "counter_12_PointerInsert_47_15"
+   ]
+  },
+  {
+   "hash": "753071f6ebf18dde",
+   "size": 3,
+   "members": [
+    "counter_12_NSubDelete_80_27",
+    "counter_12_NSubUpdate_80_27",
+    "counter_12_PointerInsert_82_27"
+   ]
+  },
+  {
+   "hash": "b0b9ef9380bee1c7",
+   "size": 2,
+   "members": [
+    "counter_12_ExprDelete_42_14",
+    "counter_12_ExprUpdate_42_14"
+   ]
+  },
+  {
+   "hash": "ecc8649e6473c469",
+   "size": 2,
+   "members": [
+    "counter_12_ExprDelete_77_26",
+    "counter_12_ExprUpdate_77_26"
+   ]
+  },
+  {
+   "hash": "2557053002edfdd2",
+   "size": 2,
+   "members": [
+    "counter_12_NSubDelete_57_18",
+    "counter_12_PointerInsert_59_18"
+   ]
+  },
+  {
+   "hash": "bd6b790cc3473b55",
+   "size": 1,
+   "members": [
+    "counter_12_AssignN2B_101_32"
+   ]
+  },
+  {
+   "hash": "1f09fd168d5d1710",
+   "size": 1,
+   "members": [
+    "counter_12_EdgeDelete_70_25"
+   ]
+  },
+  {
+   "hash": "f90444a5988bbba7",
+   "size": 1,
+   "members": [
+    "counter_12_EdgeFlip_36_13"
+   ]
+  },
+  {
+   "hash": "ec32e992e3f023f6",
+   "size": 1,
+   "members": [
+    "counter_12_EdgeFlip_71_25"
+   ]
+  },
+  {
+   "hash": "b54bfba48df25245",
+   "size": 1,
+   "members": [
+    "counter_12_EdgeFlip_73_25"
+   ]
+  },
+  {
+   "hash": "bab412e60a19d60c",
+   "size": 1,
+   "members": [
+    "counter_12_EdgeInsert_35_13"
+   ]
+  },
+  {
+   "hash": "5032c2724c4e09e5",
+   "size": 1,
+   "members": [
+    "counter_12_EdgeInsert_70_25"
+   ]
+  },
+  {
+   "hash": "8fdb8f582830b208",
+   "size": 1,
+   "members": [
+    "counter_12_ExprDelete_66_20"
+   ]
+  },
+  {
+   "hash": "2a40f46dee8c7829",
+   "size": 1,
+   "members": [
+    "counter_12_NSubDelete_85_28"
+   ]
+  },
+  {
+   "hash": "934e0b286d511384",
+   "size": 1,
+   "members": [
+    "counter_12_NSubDelete_90_29"
+   ]
+  },
+  {
+   "hash": "0e4399e892f0a18e",
+   "size": 1,
+   "members": [
+    "counter_12_NSubInsert_40_13"
+   ]
+  },
+  {
+   "hash": "d1d802a523c62521",
+   "size": 1,
+   "members": [
+    "counter_12_NSubInsert_75_25"
+   ]
+  },
+  {
+   "hash": "cac63b119abf0607",
+   "size": 1,
+   "members": [
+    "counter_12_NSubInsert_95_30"
+   ]
+  },
+  {
+   "hash": "e4e9f5cb1517f1b3",
+   "size": 1,
+   "members": [
+    "counter_12_NSubMove_41_14"
+   ]
+  },
+  {
+   "hash": "8ff1428a22cc6180",
+   "size": 1,
+   "members": [
+    "counter_12_NSubMove_50_16"
+   ]
+  },
+  {
+   "hash": "cde4d0f958bfc9a0",
+   "size": 1,
+   "members": [
+    "counter_12_PointerInsert_100_31"
+   ]
+  },
+  {
+   "hash": "e0c3e8b989b32583",
+   "size": 1,
+   "members": [
+    "counter_12_PointerInsert_105_32"
+   ]
+  },
+  {
+   "hash": "85fe800cb50fcff5",
+   "size": 1,
+   "members": [
+    "counter_12_PointerInsert_110_33"
+   ]
+  }
+ ]
+}

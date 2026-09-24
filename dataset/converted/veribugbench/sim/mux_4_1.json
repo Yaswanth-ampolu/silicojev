@@ -1,0 +1,379 @@
+{
+ "project_id": "mux_4_1",
+ "source_group": "CirFix",
+ "tb": "mux_4_1_tb_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "7aadaa4a15e72cd6",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "mux_4_1_EdgeDelete_40_10",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2c923dd7c2d095c4",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_EdgeFlip_41_10",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7f94582b03bfa8c9",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_EdgeFlip_43_10",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3fd51bfe0703b932",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_EdgeFlip_45_10",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1c722537ff7e4ee8",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_EdgeFlip_47_10",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6638e06d0b5a31dc",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_EdgeFlip_49_10",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b6eea7da81217d31",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubDelete_56_12",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2e4dd809e53405d7",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubDelete_63_13",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9bcc7b62a2c5dbe7",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubDelete_70_14",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "de8366a28a88d4d6",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubDelete_77_15",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "60fa333b5f9e52a2",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubInsert_51_10",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a6dc4b720188f205",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubInsert_Case_54_12",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bc2327e115f76d12",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubInsert_Case_68_14",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4761351a58232814",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubInsert_Case_75_15",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "da1875959919b2f5",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubUpdate_56_12",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1a9b703fed63f832",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_NSubUpdate_63_13",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3be6c0a5b88e3693",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_42_10",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2da205e6a8b0de97",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_44_10",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2c923dd7c2d095c4",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_46_10",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "67c1885ea58cfd01",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_48_10",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6638e06d0b5a31dc",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_50_10",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f35db54982102536",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_53_11",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1ae4fe486bd0f8a4",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_60_12",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c5e85f5ca5542bd5",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_72_14",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "de8366a28a88d4d6",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_79_15",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "60fa333b5f9e52a2",
+   "err": null
+  },
+  {
+   "instance": "mux_4_1_PointerInsert_81_15",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "04158c72d1ab225a",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "2c923dd7c2d095c4",
+   "size": 2,
+   "members": [
+    "mux_4_1_EdgeDelete_40_10",
+    "mux_4_1_PointerInsert_44_10"
+   ]
+  },
+  {
+   "hash": "6638e06d0b5a31dc",
+   "size": 2,
+   "members": [
+    "mux_4_1_EdgeFlip_47_10",
+    "mux_4_1_PointerInsert_48_10"
+   ]
+  },
+  {
+   "hash": "de8366a28a88d4d6",
+   "size": 2,
+   "members": [
+    "mux_4_1_NSubDelete_70_14",
+    "mux_4_1_PointerInsert_72_14"
+   ]
+  },
+  {
+   "hash": "60fa333b5f9e52a2",
+   "size": 2,
+   "members": [
+    "mux_4_1_NSubDelete_77_15",
+    "mux_4_1_PointerInsert_79_15"
+   ]
+  },
+  {
+   "hash": "7f94582b03bfa8c9",
+   "size": 1,
+   "members": [
+    "mux_4_1_EdgeFlip_41_10"
+   ]
+  },
+  {
+   "hash": "3fd51bfe0703b932",
+   "size": 1,
+   "members": [
+    "mux_4_1_EdgeFlip_43_10"
+   ]
+  },
+  {
+   "hash": "1c722537ff7e4ee8",
+   "size": 1,
+   "members": [
+    "mux_4_1_EdgeFlip_45_10"
+   ]
+  },
+  {
+   "hash": "b6eea7da81217d31",
+   "size": 1,
+   "members": [
+    "mux_4_1_EdgeFlip_49_10"
+   ]
+  },
+  {
+   "hash": "2e4dd809e53405d7",
+   "size": 1,
+   "members": [
+    "mux_4_1_NSubDelete_56_12"
+   ]
+  },
+  {
+   "hash": "9bcc7b62a2c5dbe7",
+   "size": 1,
+   "members": [
+    "mux_4_1_NSubDelete_63_13"
+   ]
+  },
+  {
+   "hash": "a6dc4b720188f205",
+   "size": 1,
+   "members": [
+    "mux_4_1_NSubInsert_51_10"
+   ]
+  },
+  {
+   "hash": "bc2327e115f76d12",
+   "size": 1,
+   "members": [
+    "mux_4_1_NSubInsert_Case_54_12"
+   ]
+  },
+  {
+   "hash": "4761351a58232814",
+   "size": 1,
+   "members": [
+    "mux_4_1_NSubInsert_Case_68_14"
+   ]
+  },
+  {
+   "hash": "da1875959919b2f5",
+   "size": 1,
+   "members": [
+    "mux_4_1_NSubInsert_Case_75_15"
+   ]
+  },
+  {
+   "hash": "1a9b703fed63f832",
+   "size": 1,
+   "members": [
+    "mux_4_1_NSubUpdate_56_12"
+   ]
+  },
+  {
+   "hash": "3be6c0a5b88e3693",
+   "size": 1,
+   "members": [
+    "mux_4_1_NSubUpdate_63_13"
+   ]
+  },
+  {
+   "hash": "2da205e6a8b0de97",
+   "size": 1,
+   "members": [
+    "mux_4_1_PointerInsert_42_10"
+   ]
+  },
+  {
+   "hash": "67c1885ea58cfd01",
+   "size": 1,
+   "members": [
+    "mux_4_1_PointerInsert_46_10"
+   ]
+  },
+  {
+   "hash": "f35db54982102536",
+   "size": 1,
+   "members": [
+    "mux_4_1_PointerInsert_50_10"
+   ]
+  },
+  {
+   "hash": "1ae4fe486bd0f8a4",
+   "size": 1,
+   "members": [
+    "mux_4_1_PointerInsert_53_11"
+   ]
+  },
+  {
+   "hash": "c5e85f5ca5542bd5",
+   "size": 1,
+   "members": [
+    "mux_4_1_PointerInsert_60_12"
+   ]
+  },
+  {
+   "hash": "04158c72d1ab225a",
+   "size": 1,
+   "members": [
+    "mux_4_1_PointerInsert_81_15"
+   ]
+  }
+ ]
+}

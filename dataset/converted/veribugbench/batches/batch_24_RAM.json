@@ -1,0 +1,236 @@
+{
+ "batch_index": 24,
+ "source_group": "veribugbench:RTLLM/RAM",
+ "project": "RAM",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns/1ns\n\nmodule tb_RAM;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n    // Parameters\n    parameter CLK_PERIOD = 10; // Clock period in simulation time units\n    \n    // Inputs\n    reg clk;\n    reg rst_n;\n    reg write_en;\n    reg [7:0] write_addr;\n    reg [5:0] write_data;\n    reg read_en;\n    reg [7:0] read_addr;\n    \n    // Outputs\n    wire [5:0] read_data;\n\n    // Instantiate the module\n    RAM uut (\n        .clk(clk),\n        .rst_n(rst_n),\n        .write_en(write_en),\n        .write_addr(write_addr),\n        .write_data(write_data),\n        .read_en(read_en),\n        .read_addr(read_addr),\n        .read_data(read_data)\n    );\n    \n    // Clock generation\n    always #((CLK_PERIOD)/2) clk = ~clk;\n\n    integer error = 0;\n    // Initial block for stimulus generation\n    initial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n        // Initialize inputs\n        clk = 0;\n        rst_n = 1;\n        repeat(100) begin\n            write_en = 0;\n            write_addr = 0;\n            write_data = 0;\n            read_en = 0;\n            read_addr = 0;\n            // Wait for a few clock cycles\n            #((CLK_PERIOD) * 5);\n            // Release reset\n            rst_n = 0;\n            #((CLK_PERIOD) * 2);\n            rst_n = 1;\n            // Write operation\n            write_en = 1;\n            write_addr = 3'b000;\n            write_data = $random;\n            #((CLK_PERIOD) * 1);\n            write_en = 0;\n            #((CLK_PERIOD) * 1);\n            \n            // Read operation\n            read_en = 1;\n            read_addr = 3'b000;\n            #((CLK_PERIOD) * 1);\n            // $display(\"read_data = %b\", read_data); \n            error = (read_data == write_data) ? error : error+1;\n            read_en = 0;\n            #((CLK_PERIOD) * 1);\n            // $display(\"read_data = %b\", read_data); \n            error = (read_data == 0) ? error : error+1;\n        end\n        if (error == 0) begin\n            $display(\"===========Your Design Passed===========\");\n        end\n        else begin\n        $display(\"===========Error===========\", error);\n        end\n        // Finish simulation\n        $finish;\n    end\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"read_data,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", read_data);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n        reg [7:0] addr_iter;\n        reg [5:0] data_pattern;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n\n\n    // 2. THEN WAIT for original tests (Synchronization)\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    // Initialize signals to deterministic states\n    clk = 0;\n    rst_n = 1;\n    write_en = 0;\n    write_addr = 0;\n    write_data = 0;\n    read_en = 0;\n    read_addr = 0;\n\n    // Wait for clock generator to stabilize\n    #10;\n\n    // ---------------------------------------------------------\n    // Test Case 1: Asynchronous Reset Check\n    // ---------------------------------------------------------\n    rst_n = 0;\n    #20;\n    rst_n = 1;\n    #20;\n\n    // ---------------------------------------------------------\n    // Test Case 2: Sequential Write and Read (Addresses 0-11)\n    // Covers basic functionality and address decoding\n    // ---------------------------------------------------------\n    for (i = 0; i < 12; i = i + 1) begin\n        @(negedge clk);\n        write_en = 1;\n        write_addr = i;\n        // Data pattern: Invert index to ensure data != address\n        write_data = (i & 6'h3F) ^ 6'h3F; \n        @(negedge clk);\n        write_en = 0;\n    end\n\n    // Read Back Verification\n    for (i = 0; i < 12; i = i + 1) begin\n        @(negedge clk);\n        read_en = 1;\n        read_addr = i;\n        @(negedge clk);\n        read_en = 0;\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 3: Partial Reset Vulnerability\n    // The DUT loop only resets RAM[0]..RAM[7]. \n    // RAM[8]..RAM[11] are NOT reset. This test exposes that.\n    // ---------------------------------------------------------\n    // Write known values to index 0 (reset range) and 8 (non-reset range)\n    @(negedge clk);\n    write_en = 1;\n    write_addr = 0; write_data = 6'h3F;\n    @(negedge clk);\n    write_addr = 8; write_data = 6'h3F;\n    @(negedge clk);\n    write_en = 0;\n\n    // Apply Reset\n    rst_n = 0;\n    #20;\n    rst_n = 1;\n    #10;\n\n    // Read 0 (Expect 0 due to reset)\n    @(negedge clk);\n    read_en = 1; read_addr = 0;\n    @(negedge clk);\n    \n    // Read 8 (Expect 6'h3F if bug exists, as it's outside reset loop)\n    read_addr = 8;\n    @(negedge clk);\n    read_en = 0;\n\n    // ---------------------------------------------------------\n    // Test Case 4: Walking 1s on Data (Bit-Level Faults)\n    // Target Address 5\n    // ---------------------------------------------------------\n    addr_iter = 5;\n    data_pattern = 6'b000001;\n    for (i = 0; i < 6; i = i + 1) begin\n        @(negedge clk);\n        write_en = 1;\n        write_addr = addr_iter;\n        write_data = data_pattern;\n        @(negedge clk);\n        write_en = 0;\n        \n        // Read immediately to verify\n        read_en = 1;\n        read_addr = addr_iter;\n        @(negedge clk);\n        read_en = 0;\n        \n        data_pattern = data_pattern << 1;\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 5: Simultaneous Read/Write (Blocking/Non-Blocking)\n    // Verify that Read gets OLD value and Write sets NEW value\n    // ---------------------------------------------------------\n    // Setup initial value at address 2\n    @(negedge clk);\n    write_en = 1; write_addr = 2; write_data = 6'h00;\n    @(negedge clk);\n    write_en = 0;\n    \n    // Simultaneous Op\n    @(negedge clk);\n    write_en = 1; write_addr = 2; write_data = 6'h3F;\n    read_en = 1; read_addr = 2;\n    @(negedge clk);\n    write_en = 0; read_en = 0;\n    \n    // Verify New Value was written\n    @(negedge clk);\n    read_en = 1; read_addr = 2;\n    @(negedge clk);\n    read_en = 0;\n\n    // ---------------------------------------------------------\n    // Test Case 6: Read Enable 'Else' Branch\n    // Ensure read_data drops to 0 when read_en is low\n    // ---------------------------------------------------------\n    @(negedge clk);\n    read_en = 1; read_addr = 2;\n    @(negedge clk);\n    read_en = 0; // Output should become 0 here\n    @(negedge clk);\n\n    // ---------------------------------------------------------\n    // Test Case 7: Out of Bounds Access (Address 12)\n    // ---------------------------------------------------------\n    @(negedge clk);\n    write_en = 1; write_addr = 12; write_data = 6'h15;\n    @(negedge clk);\n    write_en = 0;\n    read_en = 1; read_addr = 12;\n    @(negedge clk);\n    read_en = 0;\n\n    // 4. Cleanup / Handover\n    #100;\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:cc6fe1b021c440dc",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] = write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cc222444c50907fb",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:959b7a5969e7ca5b",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:50c95240b19f990b",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d0d4e8a875a68fc4",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or posedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2acdb080875df0df",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n or posedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:85df675eb6270f47",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7d355db45cf3be04",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:34edb182f05d6381",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n > !rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7944d54ebc74ceac",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; (i<8)%(i+1); i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:249d08fe684ec54c",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) begin\n    end else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:df2b490bd26622df",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6fb859b215d6a920",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        begin\n        end\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b283e744cbf67388",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) begin\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e38595869d6b2e45",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n    RAM[i] <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8b3a5f6116e31909",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      read_data <= 'd0;\n      if(read_en) read_data <= RAM[read_addr]; \n      else read_data <= 'd0;\n    end else begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e1e64a2b972fb62d",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) begin\n      read_data <= RAM[read_addr];\n      read_data <= 'd0;\n    end else begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:45186db7baa8359f",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n      if(write_en) RAM[write_addr] <= write_data; \n    end else begin\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:29145a1a6b68aa1c",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) begin\n    end else begin\n      RAM[write_addr] <= write_data;\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:664b5877c5041fca",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= 'd0; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3c54ac8a565182f0",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else RAM[i] <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0ba04b4461a5bf51",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        read_data <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:af74330d38393521",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data[26:26]; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:eb47e2babdbe2882",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data[9] <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bebdb052c6e89e83",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[20][read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:54788590af26d7dd",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr[28]]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3a7d898c86228b31",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data[5] <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0e223b6eac9ac025",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[13][i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d0efada947adb80d",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data[27]; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:042b80e4c6f00a93",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(-rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:63eb148fc0ae4a88",
+   "project": "RAM",
+   "buggy_rtl": "\n\nmodule RAM\n(\n  input clk,\n  input rst_n,\n  input write_en,\n  input [7:0] write_addr,\n  input [5:0] write_data,\n  input read_en,\n  input [7:0] read_addr,\n  output reg [5:0] read_data\n);\n\n  reg [7:0] RAM [11:0];\n  integer i;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) begin\n      for(i=0; i<8; i=i+1) begin\n        RAM[i] <= 'd0;\n      end\n    end else if(write_en) RAM[write_addr] <= write_data; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) read_data <= 'd0; \n    else if(read_en) read_data <= RAM[read_addr]; \n    else read_data <= 'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

@@ -1,0 +1,146 @@
+{
+ "batch_index": 28,
+ "source_group": "veribugbench:RTLLM/comparator_3bit",
+ "project": "comparator_3bit",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns / 1ps\n\nmodule testbench;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n  reg [2:0] A;          // Input A (3 bits)\n  reg [2:0] B;          // Input B (3 bits)\n  wire A_greater;       \n  wire A_equal;         \n  wire A_less;          \n  integer i;            \n  integer error = 0;    \n\n  comparator_3bit uut (\n    .A(A),\n    .B(B),\n    .A_greater(A_greater),\n    .A_equal(A_equal),\n    .A_less(A_less)\n  );\n\n\n  initial begin\n\n    for (i = 0; i < 100; i = i + 1) begin\n      // Generate random 3-bit inputs\n      A = $random % 8;\n      B = $random % 8;\n\n      // Wait for the operation to complete\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n      #10;\n\n      // Calculate expected results\n      if ((A > B && !A_greater) || (A == B && !A_equal) || (A < B && !A_less)) begin\n        error = error + 1;\n        $display(\"Test failed: A = %b, B = %b, A_greater = %b, A_equal = %b, A_less = %b\",\n                  A, B, A_greater, A_equal, A_less);\n      end\n    end\n\n    // Final test result summary\n    if (error == 0) begin\n      $display(\"=========== Your Design Passed ===========\");\n    end\n    else begin\n      $display(\"=========== Test completed with %d /100 failures ===========\", error);\n    end\n\n    $finish;\n  end\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"A_greater,\");\n      $fwrite(file_mantra, \"A_equal,\");\n      $fwrite(file_mantra, \"A_less,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", A_greater);\n        $fwrite(file_mantra, \"%h, \", A_equal);\n        $fwrite(file_mantra, \"%h, \", A_less);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i_idx;\n        integer j_idx;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n\n    // 2. Stimuli Logic\n    // Note: llm_go_signal is initially 1. We run immediately.\n    $display(\"LLM_TEST: Starting deterministic test sequence...\");\n\n    // Strategy: Exhaustive testing for 3-bit comparator (8x8 = 64 states)\n    // Since the state space is small, exhaustive testing guarantees \n    // killing all logic, operator, and bit-level mutations.\n    for (i_idx = 0; i_idx < 8; i_idx = i_idx + 1) begin\n        for (j_idx = 0; j_idx < 8; j_idx = j_idx + 1) begin\n            A = i_idx;\n            B = j_idx;\n            #10;\n        end\n    end\n\n    // 3. Specific Corner Cases & Transitions\n    // Target: Maximize signal toggling (0->1 transitions)\n    \n    // Transition: All Zeros -> All Ones\n    A = 3'b000; B = 3'b000; #10;\n    A = 3'b111; B = 3'b111; #10;\n\n    // Transition: Alternating Bits (0x2 vs 0x5)\n    A = 3'b010; B = 3'b101; #10;\n    A = 3'b101; B = 3'b010; #10;\n\n    // Target: Boundary Values (Min vs Max)\n    A = 3'b000; B = 3'b111; #10; // 0 < 7\n    A = 3'b111; B = 3'b000; #10; // 7 > 0\n\n    // Target: Bit-Select/Pointer Faults (Walking 1s)\n    // Ensure each bit of A independently affects the output against B=0\n    A = 3'b001; B = 3'b000; #10;\n    A = 3'b010; B = 3'b000; #10;\n    A = 3'b100; B = 3'b000; #10;\n\n    // Ensure each bit of B independently affects the output against A=0\n    A = 3'b000; B = 3'b001; #10;\n    A = 3'b000; B = 3'b010; #10;\n    A = 3'b000; B = 3'b100; #10;\n\n    // 4. Handover\n    $display(\"LLM_TEST: Sequence completed. Handing over to original TB.\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:bea0be5b2cd010c6",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (B)? 1'b1 : 1'b0;\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1d37316429840add",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = (B)? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:82579b56cef68175",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = (B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c8f28a9512f22880",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = ((A > B)? 1'b1 : 1'b0) || ((A < B)? 1'b1 : 1'b0);\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3ddf159b1b04b3e4",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = ((A > B) !== ((A < B)? 1'b1 : 1'b0))? 1'b1 : 1'b0;\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:03db3879c4ce6db1",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = ((A == B)? 1'b1 : 1'b0) < (A < B);\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:39144c42b30635de",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = ((A == B) % ((A < B)? 1'b1 : 1'b0))? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:afb3e501e00f9202",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = ((A < B)? 1'b1 : 1'b0) >>> ((A == B)? 1'b1 : 1'b0);\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2cbad0c104eba898",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = ((A < B) == (A < B))? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:dd2bd0850b5c5d34",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A[9] > B)? 1'b1 : 1'b0;\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7efb60ef63a36d0e",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B[16])? 1'b1 : 1'b0;\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9a3fd8c757ad293f",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = (A[5] == B)? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6385af3ffcb5c2eb",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = (A == B[19])? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:921e02ea838e853a",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = (A[18] < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0be9c4e805f6a631",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = (A || B)? 1'b1 : 1'b0;\n  assign A_less = (A < B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4ff377aa16077b53",
+   "project": "comparator_3bit",
+   "buggy_rtl": "\n\nmodule comparator_3bit\n(\n  input [2:0] A,\n  input [2:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  assign A_greater = (A > B)? 1'b1 : 1'b0;\n  assign A_equal = (A == B)? 1'b1 : 1'b0;\n  assign A_less = (A || B)? 1'b1 : 1'b0;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

@@ -1,0 +1,321 @@
+{
+  "veribugbench:ba9a2cd46c3e958c": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.77,
+      "combinational_logic": 0.13,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.02,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.01
+    },
+    "evidence_sufficient": {
+      "true": 0.86,
+      "false": 0.14
+    }
+  },
+  "veribugbench:43500401ce0aa52d": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.77,
+      "combinational_logic": 0.13,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.02,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.01
+    },
+    "evidence_sufficient": {
+      "true": 0.86,
+      "false": 0.14
+    }
+  },
+  "veribugbench:f96a5ac2bf24ef24": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.77,
+      "combinational_logic": 0.13,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.02,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.01
+    },
+    "evidence_sufficient": {
+      "true": 0.86,
+      "false": 0.14
+    }
+  },
+  "veribugbench:110427bd08302086": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.77,
+      "combinational_logic": 0.13,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.02,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.01
+    },
+    "evidence_sufficient": {
+      "true": 0.86,
+      "false": 0.14
+    }
+  },
+  "veribugbench:44795c917c85c610": {
+    "next_action": {
+      "rtl": 0.76,
+      "waveform": 0.09,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.01,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.8,
+      "combinational_logic": 0.11,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.015,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.005
+    },
+    "evidence_sufficient": {
+      "true": 0.87,
+      "false": 0.13
+    }
+  },
+  "veribugbench:65f23c8d0196bcba": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.77,
+      "combinational_logic": 0.13,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.02,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.01
+    },
+    "evidence_sufficient": {
+      "true": 0.88,
+      "false": 0.12
+    }
+  },
+  "veribugbench:54c8bfa82c8498db": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.8,
+      "combinational_logic": 0.11,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.015,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.005
+    },
+    "evidence_sufficient": {
+      "true": 0.88,
+      "false": 0.12
+    }
+  },
+  "veribugbench:eaf5b275be8250fc": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.77,
+      "combinational_logic": 0.13,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.02,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.01
+    },
+    "evidence_sufficient": {
+      "true": 0.86,
+      "false": 0.14
+    }
+  },
+  "veribugbench:d49c1cfe4a7d636b": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.77,
+      "combinational_logic": 0.13,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.02,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.01
+    },
+    "evidence_sufficient": {
+      "true": 0.86,
+      "false": 0.14
+    }
+  },
+  "veribugbench:f409e1e4d8987d45": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.77,
+      "combinational_logic": 0.13,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.02,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.01
+    },
+    "evidence_sufficient": {
+      "true": 0.86,
+      "false": 0.14
+    }
+  },
+  "veribugbench:21c8c72e26da690e": {
+    "next_action": {
+      "rtl": 0.74,
+      "waveform": 0.1,
+      "simulation": 0.06,
+      "abstain": 0.03,
+      "specification": 0.02,
+      "testbench": 0.02,
+      "formal": 0.02,
+      "ask_human": 0.01,
+      "constraints": 0.0
+    },
+    "root_cause_type": {
+      "type_width": 0.77,
+      "combinational_logic": 0.13,
+      "sequential_assignment": 0.03,
+      "reset_initialization": 0.02,
+      "syntax_compile": 0.02,
+      "state_machine": 0.01,
+      "timing_protocol": 0.005,
+      "formal_property": 0.003,
+      "security": 0.002,
+      "unknown": 0.01
+    },
+    "evidence_sufficient": {
+      "true": 0.86,
+      "false": 0.14
+    }
+  }
+}

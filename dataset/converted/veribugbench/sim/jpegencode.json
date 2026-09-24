@@ -1,0 +1,13 @@
+{
+ "project_id": "jpegencode",
+ "source_group": "Native",
+ "tb": "jpeg_top_TB1_enhanced.v",
+ "n_origin_files": 19,
+ "golden_rc": -1,
+ "golden_hash": "6e92b0fac427ae82",
+ "deterministic": true,
+ "golden_err": "COMPILE: cr_huff.v:142: error: Scalar port ``output_reg_count'' has a vectored net declaration [4:0].",
+ "sweep_version": 2,
+ "instances": [],
+ "note": "golden unusable - instances not swept"
+}

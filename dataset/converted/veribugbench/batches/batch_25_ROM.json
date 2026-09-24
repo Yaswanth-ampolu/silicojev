@@ -1,0 +1,116 @@
+{
+ "batch_index": 25,
+ "source_group": "veribugbench:RTLLM/ROM",
+ "project": "ROM",
+ "upstream": "RTLLM",
+ "testbench": "module rom_tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n    reg [7:0] addr_tb;          // Address input for the ROM\n    wire [15:0] dout_tb;        // Data output from the ROM\n\n    ROM rom_inst (\n        .addr(addr_tb),\n        .dout(dout_tb)\n    );\n\n    integer error;\n\n    initial begin\n        // Initialize simulation\n        $display(\"Starting ROM Testbench...\");\n        error = 0;\n\n        // Test reading data from different memory locations\n        addr_tb = 8'h00;  // Read from address 0\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n        #10;\n        if (dout_tb !== 16'hA0A0) begin\n            $display(\"Error: Data read from address 0 is incorrect\");\n            error = error + 1;\n        end\n\n        addr_tb = 8'h01;  // Read from address 1\n        #10;\n        if (dout_tb !== 16'hB1B1) begin\n            $display(\"Error: Data read from address 1 is incorrect\");\n            error = error + 1;\n        end\n\n        addr_tb = 8'h02;  // Read from address 2\n        #10;\n        if (dout_tb !== 16'hC2C2) begin\n            $display(\"Error: Data read from address 2 is incorrect\");\n            error = error + 1;\n        end\n\n        addr_tb = 8'h03;  // Read from address 3\n        #10;\n        if (dout_tb !== 16'hD3D3) begin\n            $display(\"Error: Data read from address 3 is incorrect\");\n            error = error + 1;\n        end\n\n        // Add more test cases here if needed\n\n        // Check for errors\n        if (error == 0) begin\n            $display(\"=========== Your Design Passed ===========\");\n        end else begin\n            $display(\"Test completed with %d errors.\", error);\n        end\n\n        $finish;\n    end\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"dout_tb,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", dout_tb);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    $display(\"LLM: Starting ROM Mutation Tests...\");\n\n    // ---------------------------------------------------------\n    // Phase 1: Known Data Verification (Addresses 0-3)\n    // ---------------------------------------------------------\n    // These addresses have hardcoded values in the DUT.\n    // Testing them verifies basic read functionality and detects\n    // simple operator mutations (e.g., addr+1, addr-1).\n    addr_tb = 8'h00; #10; // Expect 16'hA0A0\n    addr_tb = 8'h01; #10; // Expect 16'hB1B1\n    addr_tb = 8'h02; #10; // Expect 16'hC2C2\n    addr_tb = 8'h03; #10; // Expect 16'hD3D3\n\n    // ---------------------------------------------------------\n    // Phase 2: Walking 1s (Bit-Level Fault Localization)\n    // ---------------------------------------------------------\n    // Excites each address bit individually.\n    // Detects stuck-at-0 faults on address lines and bit-select errors.\n    addr_tb = 8'h01; #10; // Bit 0\n    addr_tb = 8'h02; #10; // Bit 1\n    addr_tb = 8'h04; #10; // Bit 2\n    addr_tb = 8'h08; #10; // Bit 3\n    addr_tb = 8'h10; #10; // Bit 4\n    addr_tb = 8'h20; #10; // Bit 5\n    addr_tb = 8'h40; #10; // Bit 6\n    addr_tb = 8'h80; #10; // Bit 7 (MSB)\n\n    // ---------------------------------------------------------\n    // Phase 3: Walking 0s (Inverse Bit-Level Faults)\n    // ---------------------------------------------------------\n    // Excites all bits except one.\n    // Detects stuck-at-1 faults on address lines.\n    addr_tb = 8'hFE; #10; // ~Bit 0\n    addr_tb = 8'hFD; #10; // ~Bit 1\n    addr_tb = 8'hFB; #10; // ~Bit 2\n    addr_tb = 8'hF7; #10; // ~Bit 3\n    addr_tb = 8'hEF; #10; // ~Bit 4\n    addr_tb = 8'hDF; #10; // ~Bit 5\n    addr_tb = 8'hBF; #10; // ~Bit 6\n    addr_tb = 8'h7F; #10; // ~Bit 7\n\n    // ---------------------------------------------------------\n    // Phase 4: Alternating Patterns & Boundaries\n    // ---------------------------------------------------------\n    // Maximizes switching activity and tests full range.\n    addr_tb = 8'h55; #10; // 01010101\n    addr_tb = 8'hAA; #10; // 10101010\n    addr_tb = 8'h00; #10; // Min Boundary\n    addr_tb = 8'hFF; #10; // Max Boundary\n\n    // ---------------------------------------------------------\n    // Phase 5: Rapid Transitions\n    // ---------------------------------------------------------\n    // Back-to-back reads of disparate addresses to expose timing/latching issues.\n    addr_tb = 8'h00; #10;\n    addr_tb = 8'hFF; #10;\n    addr_tb = 8'h00; #10;\n\n    // 4. Cleanup / Handover\n    $display(\"LLM: Tests Finished. Handing over...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:ba9a2cd46c3e958c",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[14][0] = 16'hA0A0;\n    mem[1] = 16'hB1B1;\n    mem[2] = 16'hC2C2;\n    mem[3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:43500401ce0aa52d",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[0] = 16'hA0A0;\n    mem[22][1] = 16'hB1B1;\n    mem[2] = 16'hC2C2;\n    mem[3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f96a5ac2bf24ef24",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[0] = 16'hA0A0;\n    mem[1] = 16'hB1B1;\n    mem[7][2] = 16'hC2C2;\n    mem[3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:110427bd08302086",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[0] = 16'hA0A0;\n    mem[1] = 16'hB1B1;\n    mem[2] = 16'hC2C2;\n    mem[17][3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:44795c917c85c610",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[0] = 16'hA0A0;\n    mem[1] = 16'hB1B1;\n    mem[2] = 16'hC2C2;\n    mem[3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout[11] = mem[addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:65f23c8d0196bcba",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[0] = 16'hA0A0;\n    mem[1] = 16'hB1B1;\n    mem[2] = 16'hC2C2;\n    mem[3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[21][addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:54c8bfa82c8498db",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[0] = 16'hA0A0;\n    mem[1] = 16'hB1B1;\n    mem[2] = 16'hC2C2;\n    mem[3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[addr[18]];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:eaf5b275be8250fc",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[17] = 16'hA0A0;\n    mem[1] = 16'hB1B1;\n    mem[2] = 16'hC2C2;\n    mem[3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d49c1cfe4a7d636b",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[0] = 16'hA0A0;\n    mem[28] = 16'hB1B1;\n    mem[2] = 16'hC2C2;\n    mem[3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f409e1e4d8987d45",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[0] = 16'hA0A0;\n    mem[1] = 16'hB1B1;\n    mem[16] = 16'hC2C2;\n    mem[3] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:21c8c72e26da690e",
+   "project": "ROM",
+   "buggy_rtl": "\n\nmodule ROM\n(\n  input wire [7:0] addr,\n  output reg [15:0] dout\n);\n\n  reg [15:0] mem [0:255];\n\n  initial begin\n    mem[0] = 16'hA0A0;\n    mem[1] = 16'hB1B1;\n    mem[2] = 16'hC2C2;\n    mem[13] = 16'hD3D3;\n  end\n\n\n  always @(*) begin\n    dout = mem[addr];\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

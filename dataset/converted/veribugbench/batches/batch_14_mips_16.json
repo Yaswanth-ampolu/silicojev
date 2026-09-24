@@ -1,0 +1,410 @@
+{
+ "batch_index": 14,
+ "source_group": "veribugbench:Native/mips_16",
+ "project": "mips_16",
+ "upstream": "Native",
+ "testbench": "////////////////////////////////////////////////////////////////////////////////\n// Company: \n// Engineer:\n//\n// Create Date:   19:38:28 02/09/2012\n// Design Name:   mips_16_core_top\n// Module Name:   F:/Projects/My_MIPS/mips_16/bench/mips_16_core_top/mips_16_core_top_tb_0.v\n// Project Name:  mips_16\n// Target Device:  \n// Tool versions:  \n// Description: \n//\n// Verilog Test Fixture created by ISE for module: mips_16_core_top\n//\n// Dependencies:\n// \n// Revision:\n// Revision 0.01 - File Created\n// Additional Comments:\n// \n////////////////////////////////////////////////////////////////////////////////\n`timescale 1ns/1ps\n`include \"mips_16_defs.v\"\nmodule mips_16_core_top_tb_0_v;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n\t// Inputs\n\treg clk;\n\treg rst;\n\n\t// Outputs\n\twire [`PC_WIDTH-1:0] pc;\n\t\n\tparameter CLK_PERIOD = 10;\n\talways #(CLK_PERIOD /2) \n\t\tclk =~clk;\n\tinteger i;\n\tinteger test;\n\t\n\t// Instantiate the Unit Under Test (UUT)\n\tmips_16_core_top uut (\n\t\t.clk(clk), \n\t\t.rst(rst), \n\t\t.pc(pc)\n\t);\n\t\n\tinitial begin\n\t\t// Initialize Inputs\n\t\tclk = 0;\n\t\trst = 0;\n\n\t\t// Wait 100 ns for global reset to finish\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n\t\t#100;\n        \n\t\t// Add stimulus here\n\t\t#(CLK_PERIOD/2)\n\t\t#1\n\t\tdisplay_debug_message;\n\t\t//test1;\n\t\ttest2;\n\t\t$finish;\n\tend\n      \n\ttask display_debug_message;\n\t\tbegin\n\t\t\t$display(\"\\n***************************\");\n\t\t\t$display(\"mips_16 core test\");\n\t\t\t$display(\"***************************\\n\");\n\t\tend\n\tendtask\n\t\n\ttask sys_reset;\n\t\tbegin\n\t\t\trst = 0;\n\t\t\t#(CLK_PERIOD*1) rst = 1;\n\t\t\t#(CLK_PERIOD*1) rst = 0;\n\t\tend\n\tendtask\n\t\n\t\n\ttask test1;\n\t\tbegin\n\t\t\t$readmemb(\"../bench/mips_16_core_top/test1.prog\",uut.IF_stage_inst.imem.rom);\n\t\t\t$display(\"rom load successfully\\n\");\n\t\t\t$display(\"running test1\\n\");\n\t\t\tsys_reset;\n\t\t\t#1\n\t\t\t\n\t\t\t//#(CLK_PERIOD) test = 1;\n\t\t\t\n\t\t\t$monitor(\"current pc: %d ,instruction: %x\", pc, uut.instruction);\n\t\t\t\n\t\t\t#(CLK_PERIOD*100)\n\t\t\t$monitoroff;\n\t\t\tdisplay_all_regs;\n\t\t\t$display(\"ram[10] = %d\", uut.MEM_stage_inst.dmem.ram[10]);\n\t\t\t//#(CLK_PERIOD*100) test = 0;\n\t\t\tsys_reset;\n\t\t\t\n\t\tend\n\tendtask\n\t\n\ttask test2;\n\t\tbegin\n\t\t\t$readmemb(\"../bench/mips_16_core_top/test2.prog\",uut.IF_stage_inst.imem.rom);\n\t\t\t$display(\"rom load successfully\\n\");\n\t\t\t$display(\"running test2\\n\");\n\t\t\t$display(\"multiply R3=R1*R2\\n\");\n\t\t\tsys_reset;\n\t\t\tdisplay_all_regs;\n\t\t\t#1\n\t\t\ttest = 2;\n\t\t\t\n\t\t\t//#(CLK_PERIOD) test = 1;\n\t\t\t\n\t\t\t$monitor(\"current pc: %d ,instruction: %x\", pc, uut.instruction);\n\t\t\t\n\t\t\t#(CLK_PERIOD*400)\n\t\t\t$monitoroff;\n\t\t\tdisplay_all_regs;\n\t\t\t\n\t\t\ttest = 0;\n\t\t\tsys_reset;\n\t\t\t\n\t\tend\n\tendtask\n\t\n\ttask display_all_regs;\n\t\tbegin\n\t\t\t$display(\"display_all_regs:\");\n\t\t\t$display(\"------------------------------\");\n\t\t\t$display(\"R0\\tR1\\tR2\\tR3\\tR4\\tR5\\tR6\\tR7\");\n\t\t\tfor(i=0; i<8; i=i+1)\n\t\t\t\t\t$write(\"%d\\t\",uut.register_file_inst.reg_array[i]);\n\t\t\t$display(\"\\n------------------------------\");\n\t\tend\n\tendtask\n\t\n\t\n\talways @ (test) begin\n\twait(llm_go_signal==0) begin\n\t    case(test)\n\t\t\t// 1: begin\n\t\t\t    // $display(\"running test1\\n\");\n\t\t\t\t // while(test == 1) begin\n\t\t\t\t    // @(uut.pc)\n\t\t\t\t\t// $display(\"current pc : %d\",uut.pc);\n\t\t\t\t\t// if(uut.pc == 40) begin\n\t\t\t\t\t\t// #1\n\t\t\t\t\t    // branch_taken = 1;\n\t\t\t\t\t\t// branch_offset_imm = -30;\n\t\t\t\t\t\t// #(CLK_PERIOD*1) \n\t\t\t\t\t\t// branch_taken =0;\n\t\t\t\t\t\t// branch_offset_imm = 0;\n\t\t\t\t\t// end\n\t\t\t\t // end\n\t\t\t// end\n\t\t\t\n\t\t\t2: begin\n\t\t\t    $display(\"running test2\\n\");\n\t\t\t\t while(test == 2) begin\n\t\t\t\t    @(pc)\n\t\t\t\t\tif(pc==6) begin\n\t\t\t\t\t\t$display(\"current pc : %d\",uut.pc);\n\t\t\t\t\t\tdisplay_all_regs();\n\t\t\t\t\tend\n\t\t\t\t\t\t\t\n\t\t\t\t end\n\t\t\tend\n\t\t\t\n\t\tendcase\n\tend\n\tend\n\t\n\t        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"pc,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            //#10\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", pc);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n\t\t  // initial begin\n    // wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n// #2000000\n// $finish;\n// end\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. WAIT for original tests (synchronization)\n    wait(llm_go_signal == 1);\n\n    $display(\"LLM: Starting Deterministic Mutation Tests...\");\n\n    // 3. Initialize Instruction Memory (Clear ROM)\n    // Accessing the simulation ROM directly to inject test program\n    for (i = 0; i < 256; i = i + 1) begin\n        uut.IF_stage_inst.imem.rom[i] = 16'h0000;\n    end\n\n    // 4. Load Test Program into ROM\n    // We construct machine code instructions based on mips_16_defs.v\n    \n    // ---------------------------------------------------------\n    // Basic Arithmetic & Logic\n    // ---------------------------------------------------------\n    // 0: ADDI R1, R0, 5      (R1 = 5)\n    // Op: 1001, Dest: 001, Src1: 000, Imm: 000101\n    uut.IF_stage_inst.imem.rom[0] = 16'b1001_001_000_000101; \n    \n    // 1: ADDI R2, R0, 3      (R2 = 3)\n    // Op: 1001, Dest: 010, Src1: 000, Imm: 000011\n    uut.IF_stage_inst.imem.rom[1] = 16'b1001_010_000_000011;\n    \n    // 2: ADD R3, R1, R2      (R3 = 5+3 = 8)\n    // Op: 0001, Dest: 011, Src1: 001, Src2: 010\n    uut.IF_stage_inst.imem.rom[2] = 16'b0001_011_001_010_000;\n    \n    // 3: SUB R4, R1, R2      (R4 = 5-3 = 2)\n    // Op: 0010, Dest: 100, Src1: 001, Src2: 010\n    uut.IF_stage_inst.imem.rom[3] = 16'b0010_100_001_010_000;\n    \n    // 4: AND R5, R1, R2      (R5 = 5&3 = 1)\n    // Op: 0011, Dest: 101, Src1: 001, Src2: 010\n    uut.IF_stage_inst.imem.rom[4] = 16'b0011_101_001_010_000;\n    \n    // 5: OR  R6, R1, R2      (R6 = 5|3 = 7)\n    // Op: 0100, Dest: 110, Src1: 001, Src2: 010\n    uut.IF_stage_inst.imem.rom[5] = 16'b0100_110_001_010_000;\n    \n    // 6: XOR R7, R1, R2      (R7 = 5^3 = 6)\n    // Op: 0101, Dest: 111, Src1: 001, Src2: 010\n    uut.IF_stage_inst.imem.rom[6] = 16'b0101_111_001_010_000;\n\n    // ---------------------------------------------------------\n    // Shift Operations (Signed vs Unsigned)\n    // ---------------------------------------------------------\n    // 7: ADDI R1, R0, -8     (R1 = 0xFFF8)\n    // Imm: -8 = 111000 (6-bit 2's comp)\n    uut.IF_stage_inst.imem.rom[7] = 16'b1001_001_000_111000;\n    \n    // 8: ADDI R2, R0, 1      (R2 = 1)\n    uut.IF_stage_inst.imem.rom[8] = 16'b1001_010_000_000001;\n    \n    // 9: SR  R3, R1, R2      (R3 = 0xFFFC, Arithmetic Shift)\n    // Op: 0111, Dest: 011, Src1: 001, Src2: 010\n    uut.IF_stage_inst.imem.rom[9] = 16'b0111_011_001_010_000;\n    \n    // 10: SRU R4, R1, R2     (R4 = 0x7FFC, Logical Shift)\n    // Op: 1000, Dest: 100, Src1: 001, Src2: 010\n    uut.IF_stage_inst.imem.rom[10] = 16'b1000_100_001_010_000;\n\n    // ---------------------------------------------------------\n    // Memory Operations (Store then Load)\n    // ---------------------------------------------------------\n    // 11: ADDI R1, R0, 15    (R1 = 15)\n    uut.IF_stage_inst.imem.rom[11] = 16'b1001_001_000_001111;\n    \n    // 12: ST R1, R0, 10      (Mem[10] = 15)\n    // Op: 1011, Data(Dest): 001, Base(Src1): 000, Imm: 001010\n    uut.IF_stage_inst.imem.rom[12] = 16'b1011_001_000_001010;\n    \n    // 13: NOP (Wait for write)\n    uut.IF_stage_inst.imem.rom[13] = 16'h0000;\n    \n    // 14: LD R2, R0, 10      (R2 = Mem[10] = 15)\n    // Op: 1010, Dest: 010, Base(Src1): 000, Imm: 001010\n    uut.IF_stage_inst.imem.rom[14] = 16'b1010_010_000_001010;\n\n    // ---------------------------------------------------------\n    // Branching (Taken and Not Taken)\n    // ---------------------------------------------------------\n    // 15: ADDI R5, R0, 0     (R5 = 0)\n    uut.IF_stage_inst.imem.rom[15] = 16'b1001_101_000_000000;\n    \n    // 16: BZ R5, offset=2    (Branch Taken, Skip next)\n    // Op: 1100, Cond(Dest): 000(Z), Src1: 101, Imm: 000010\n    uut.IF_stage_inst.imem.rom[16] = 16'b1100_000_101_000010;\n    \n    // 17: ADDI R6, R0, 99    (Should be skipped)\n    uut.IF_stage_inst.imem.rom[17] = 16'b1001_110_000_111111;\n    \n    // 18: ADDI R6, R0, 1     (Target, R6 = 1)\n    uut.IF_stage_inst.imem.rom[18] = 16'b1001_110_000_000001;\n    \n    // ---------------------------------------------------------\n    // Pipeline Hazard (RAW)\n    // ---------------------------------------------------------\n    // 19: ADD R1, R6, R6     (R1 = 1+1 = 2)\n    uut.IF_stage_inst.imem.rom[19] = 16'b0001_001_110_110_000;\n    \n    // 20: ADD R2, R1, R1     (R2 = 2+2 = 4) - RAW Hazard on R1\n    // This tests the hazard detection unit's ability to stall\n    uut.IF_stage_inst.imem.rom[20] = 16'b0001_010_001_001_000;\n\n    // 5. Apply Reset to Start Execution\n    rst = 1;\n    #20;\n    rst = 0;\n\n    // 6. Wait for Execution\n    // Approx 25 instructions * 5 cycles/inst * 10ns/cycle = 1250ns\n    // Adding buffer to ensure all instructions complete\n    #2000;\n\n    // 7. Handover\n    $display(\"LLM: Tests Finished. Handing over to Original TB...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #2000000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule\n\n",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:f8e03abd1f48e643",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] = pipeline_reg_in[21:0];\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:c77cf0f28f3cb67c",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] = ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:93b5e6a6f734659a",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(negedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:d88e6de4d422a985",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk or posedge alu_src1) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:9d257ee02df02cf5",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  input ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:ece0d12b409edad0",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      begin\n      end\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:477a0ba5fa070d21",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n    end\n    pipeline_reg_out[37:0] <= 0;\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:2e533b295d2ee2b7",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n      pipeline_reg_out[37:0] <= 0;\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:19182e006d6af138",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n      pipeline_reg_out[37:0] <= 0;\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:67d3e21bb4588afc",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[37:0] <= 0;\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:c6df668c936f76bc",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in;\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:eff895c657c87355",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in;\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:5cfcb68ebc735b9a",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in;\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:0] <= pipeline_reg_in[21:0];\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:73d4ae193227c6dd",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule EX_stage\n(\n  input clk,\n  input rst,\n  input [56:0] pipeline_reg_in,\n  output reg [37:0] pipeline_reg_out,\n  output [2:0] ex_op_dest\n);\n\n  wire [2:0] alu_cmd = pipeline_reg_in[56:54];\n  wire [15:0] alu_src1 = pipeline_reg_in[53:38];\n  wire [15:0] alu_src2 = pipeline_reg_in[37:22];\n  wire [15:0] ex_alu_result;\n\n  alu\n  alu_inst\n  (\n    .a(alu_src1),\n    .b(alu_src2),\n    .cmd(alu_cmd),\n    .r(ex_alu_result)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[37:0] <= 0;\n    end else begin\n      pipeline_reg_out[37:22] <= ex_alu_result;\n      pipeline_reg_out[21:6] <= pipeline_reg_in[21:0];\n    end\n  end\n\n  assign ex_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:5eea46621e899c67",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  output [2:0] mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in[37:22];\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(negedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[36:0] <= 0;\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      pipeline_reg_out[4:0] <= pipeline_reg_in[4:0];\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:cb17926c8f007261",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  output [2:0] mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in[37:22];\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(posedge clk or posedge mem_write_en) begin\n    if(rst) begin\n      pipeline_reg_out[36:0] <= 0;\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      pipeline_reg_out[4:0] <= pipeline_reg_in[4:0];\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:c041f55f7d072004",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  input mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in[37:22];\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[36:0] <= 0;\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      pipeline_reg_out[4:0] <= pipeline_reg_in[4:0];\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:1ceeb904cc2d9169",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  output [2:0] mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in[37:22];\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[36:0] <= 0;\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      begin\n      end\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:3b943a2ba28994bd",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  output [2:0] mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in[37:22];\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[36:0] <= 0;\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      pipeline_reg_out[4:0] <= pipeline_reg_in[4:0];\n      pipeline_reg_out[36:0] <= 0;\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:22b6eefa4b51efc9",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  output [2:0] mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in[37:22];\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      pipeline_reg_out[4:0] <= pipeline_reg_in[4:0];\n      pipeline_reg_out[36:0] <= 0;\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:c4b7bb70067cfe89",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  output [2:0] mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in[37:22];\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[36:0] <= 0;\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      pipeline_reg_out[36:21] <= ex_alu_result;\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:16ac980d67761ca3",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  output [2:0] mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in[37:22];\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[36:0] <= 0;\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      pipeline_reg_out[4:0] <= pipeline_reg_in[4:0];\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in;\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:361cbd121adef2cd",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  output [2:0] mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in;\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[36:0] <= 0;\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      pipeline_reg_out[4:0] <= pipeline_reg_in[4:0];\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:b1503b922e71f3bb",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule MEM_stage\n(\n  input clk,\n  input rst,\n  input [37:0] pipeline_reg_in,\n  output reg [36:0] pipeline_reg_out,\n  output [2:0] mem_op_dest\n);\n\n  wire [15:0] ex_alu_result = pipeline_reg_in[37:22];\n  wire mem_write_en = pipeline_reg_in[21];\n  wire [15:0] mem_write_data = pipeline_reg_in[20:5];\n  wire [15:0] mem_read_data;\n\n  data_mem\n  dmem\n  (\n    .clk(clk),\n    .mem_access_addr(ex_alu_result),\n    .mem_write_data(mem_write_data),\n    .mem_write_en(mem_write_en),\n    .mem_read_data(mem_read_data)\n  );\n\n\n  always @(posedge clk) begin\n    if(rst) begin\n      pipeline_reg_out[36:0] <= 0;\n    end else begin\n      pipeline_reg_out[36:21] <= ex_alu_result;\n      pipeline_reg_out[20:5] <= mem_read_data;\n      pipeline_reg_out[4:0] <= pipeline_reg_in[4:3];\n    end\n  end\n\n  assign mem_op_dest = pipeline_reg_in[3:1];\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:cd99e68021aa2e37",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n <= 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:e719e38a7543ec31",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest)) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:a526e62adb87ddb4",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && (ex_op_dest || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:83b45b0f9a550ee2",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || mem_op_dest || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:701ec5fcd20bd9e8",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || wb_op_dest)) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:033a49ed9f34a485",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest)) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:84e96b29b435a80e",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if(0 && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:94779e79f53e5ba7",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && (decoding_op_src2 == wb_op_dest)) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:d138b034314f5eac",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && (ex_op_dest || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:625bdef3474d653d",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || mem_op_dest || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:700456df5bcec798",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if(((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) >> ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:2390f9a022cce1b9",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) ** ((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:bac07fb3f6d82a45",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest)) / (decoding_op_src1 == ex_op_dest)) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:e5ff99cddf65ce5d",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && (((decoding_op_src1 == ex_op_dest) >>> ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:76c919b88386f8bd",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || ((decoding_op_src1 == mem_op_dest) << ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:686980f4812e362f",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) / ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest)) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:7b77fc2cb5af8117",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && (((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest)) <= (decoding_op_src1 == ex_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:052900c23b1aa89e",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest) ~^ ((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:a62e96ef054aca35",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  output ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:9eaca3564e8fa7da",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  output mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:9b42017ab338a179",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  output wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:47c1f553e883caef",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  output decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:dd597884d9e366e8",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) begin\n    end else begin\n      pipeline_stall_n = 0;\n    end\n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:95e7744420cb1ae3",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) begin\n    end else begin\n      pipeline_stall_n = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:1b0f6f32d40ae2df",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest[6]))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:e28be912f7d301ec",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule mips_16_core_top\n(\n  input clk,\n  input rst,\n  output [1:0] pc\n);\n\n  wire pipeline_stall_n;\n  wire [5:0] branch_offset_imm;\n  wire branch_taken;\n  wire [15:0] instruction;\n  wire [56:0] ID_pipeline_reg_out;\n  wire [37:0] EX_pipeline_reg_out;\n  wire [36:0] MEM_pipeline_reg_out;\n  wire [2:0] reg_read_addr_1;\n  wire [2:0] reg_read_addr_2;\n  wire [15:0] reg_read_data_1;\n  wire [15:0] reg_read_data_2;\n  wire [2:0] decoding_op_src1;\n  wire [2:0] decoding_op_src2;\n  wire [2:0] ex_op_dest;\n  wire [2:0] mem_op_dest;\n  wire [2:0] wb_op_dest;\n  wire reg_write_en;\n  wire [2:0] reg_write_dest;\n  wire [15:0] reg_write_data;\n\n  IF_stage\n  IF_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .instruction_fetch_en(pipeline_stall_n),\n    .branch_offset_imm(branch_offset_imm),\n    .branch_taken(branch_taken),\n    .pc(pc),\n    .instruction(instruction)\n  );\n\n\n  ID_stage\n  ID_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .instruction_decode_en(pipeline_stall_n),\n    .pipeline_reg_out(ID_pipeline_reg_out),\n    .instruction(instruction),\n    .branch_offset_imm(branch_offset_imm),\n    .branch_taken(branch_taken),\n    .reg_read_addr_1(reg_read_addr_1),\n    .reg_read_addr_2(reg_read_addr_2),\n    .reg_read_data_1(reg_read_data_1),\n    .reg_read_data_2(reg_read_data_2),\n    .decoding_op_src1(decoding_op_src1),\n    .decoding_op_src2(decoding_op_src2)\n  );\n\n\n  EX_stage\n  EX_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .pipeline_reg_in(ID_pipeline_reg_out),\n    .pipeline_reg_out(EX_pipeline_reg_out),\n    .ex_op_dest(ex_op_dest)\n  );\n\n\n  MEM_stage\n  MEM_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .pipeline_reg_in(EX_pipeline_reg_out),\n    .pipeline_reg_out(MEM_pipeline_reg_out),\n    .mem_op_dest(mem_op_dest)\n  );\n\n\n  WB_stage\n  WB_stage_inst\n  (\n    .pipeline_reg_in(MEM_pipeline_reg_out),\n    .reg_write_en(reg_write_en),\n    .reg_write_dest(reg_write_dest),\n    .reg_write_data(reg_write_data),\n    .wb_op_dest(wb_op_dest)\n  );\n\n\n  register_file\n  register_file_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .reg_write_en(reg_write_en),\n    .reg_write_dest(reg_write_dest),\n    .reg_write_data(reg_write_data),\n    .reg_read_addr_1(reg_read_addr_1),\n    .reg_read_data_1(reg_read_data_1),\n    .reg_read_addr_2(reg_read_addr_2),\n    .reg_read_data_2(reg_read_data_2)\n  );\n\n\n  hazard_detection_unit\n  hazard_detection_unit_inst\n  (\n    .decoding_op_src1(decoding_op_src1),\n    .decoding_op_src2(decoding_op_src2),\n    .ex_op_dest(ex_op_dest),\n    .mem_op_dest(mem_op_dest),\n    .wb_op_dest(wb_op_dest),\n    .pipeline_stall_n(pipeline_stall_n)\n  );\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:2709ecc00d7b2ea3",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule mips_16_core_top\n(\n  input clk,\n  input rst,\n  input pc\n);\n\n  wire pipeline_stall_n;\n  wire [5:0] branch_offset_imm;\n  wire branch_taken;\n  wire [15:0] instruction;\n  wire [56:0] ID_pipeline_reg_out;\n  wire [37:0] EX_pipeline_reg_out;\n  wire [36:0] MEM_pipeline_reg_out;\n  wire [2:0] reg_read_addr_1;\n  wire [2:0] reg_read_addr_2;\n  wire [15:0] reg_read_data_1;\n  wire [15:0] reg_read_data_2;\n  wire [2:0] decoding_op_src1;\n  wire [2:0] decoding_op_src2;\n  wire [2:0] ex_op_dest;\n  wire [2:0] mem_op_dest;\n  wire [2:0] wb_op_dest;\n  wire reg_write_en;\n  wire [2:0] reg_write_dest;\n  wire [15:0] reg_write_data;\n\n  IF_stage\n  IF_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .instruction_fetch_en(pipeline_stall_n),\n    .branch_offset_imm(branch_offset_imm),\n    .branch_taken(branch_taken),\n    .pc(pc),\n    .instruction(instruction)\n  );\n\n\n  ID_stage\n  ID_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .instruction_decode_en(pipeline_stall_n),\n    .pipeline_reg_out(ID_pipeline_reg_out),\n    .instruction(instruction),\n    .branch_offset_imm(branch_offset_imm),\n    .branch_taken(branch_taken),\n    .reg_read_addr_1(reg_read_addr_1),\n    .reg_read_addr_2(reg_read_addr_2),\n    .reg_read_data_1(reg_read_data_1),\n    .reg_read_data_2(reg_read_data_2),\n    .decoding_op_src1(decoding_op_src1),\n    .decoding_op_src2(decoding_op_src2)\n  );\n\n\n  EX_stage\n  EX_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .pipeline_reg_in(ID_pipeline_reg_out),\n    .pipeline_reg_out(EX_pipeline_reg_out),\n    .ex_op_dest(ex_op_dest)\n  );\n\n\n  MEM_stage\n  MEM_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .pipeline_reg_in(EX_pipeline_reg_out),\n    .pipeline_reg_out(MEM_pipeline_reg_out),\n    .mem_op_dest(mem_op_dest)\n  );\n\n\n  WB_stage\n  WB_stage_inst\n  (\n    .pipeline_reg_in(MEM_pipeline_reg_out),\n    .reg_write_en(reg_write_en),\n    .reg_write_dest(reg_write_dest),\n    .reg_write_data(reg_write_data),\n    .wb_op_dest(wb_op_dest)\n  );\n\n\n  register_file\n  register_file_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .reg_write_en(reg_write_en),\n    .reg_write_dest(reg_write_dest),\n    .reg_write_data(reg_write_data),\n    .reg_read_addr_1(reg_read_addr_1),\n    .reg_read_data_1(reg_read_data_1),\n    .reg_read_addr_2(reg_read_addr_2),\n    .reg_read_data_2(reg_read_data_2)\n  );\n\n\n  hazard_detection_unit\n  hazard_detection_unit_inst\n  (\n    .decoding_op_src1(decoding_op_src1),\n    .decoding_op_src2(decoding_op_src2),\n    .ex_op_dest(ex_op_dest),\n    .mem_op_dest(mem_op_dest),\n    .wb_op_dest(wb_op_dest),\n    .pipeline_stall_n(pipeline_stall_n)\n  );\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:7230a391dca38569",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule mips_16_core_top\n(\n  input clk,\n  input rst,\n  output [8-1:0] pc\n);\n\n  wire pipeline_stall_n;\n  wire [5:0] branch_offset_imm;\n  wire branch_taken;\n  wire [15:0] instruction;\n  wire [56:0] ID_pipeline_reg_out;\n  wire [37:0] EX_pipeline_reg_out;\n  wire [36:0] MEM_pipeline_reg_out;\n  wire [2:0] reg_read_addr_1;\n  wire [2:0] reg_read_addr_2;\n  wire [15:0] reg_read_data_1;\n  wire [15:0] reg_read_data_2;\n  wire [2:0] decoding_op_src1;\n  wire [2:0] decoding_op_src2;\n  wire [2:0] ex_op_dest;\n  wire [2:0] mem_op_dest;\n  wire [2:0] wb_op_dest;\n  wire reg_write_en;\n  wire [2:0] reg_write_dest;\n  wire [15:0] reg_write_data;\n\n  IF_stage\n  IF_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .instruction_fetch_en(pipeline_stall_n),\n    .branch_offset_imm(branch_offset_imm),\n    .branch_taken(branch_taken),\n    .pc(pc),\n    .instruction(instruction)\n  );\n\n\n  ID_stage\n  ID_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .instruction_decode_en(pipeline_stall_n),\n    .pipeline_reg_out(ID_pipeline_reg_out),\n    .instruction(instruction[6]),\n    .branch_offset_imm(branch_offset_imm),\n    .branch_taken(branch_taken),\n    .reg_read_addr_1(reg_read_addr_1),\n    .reg_read_addr_2(reg_read_addr_2),\n    .reg_read_data_1(reg_read_data_1),\n    .reg_read_data_2(reg_read_data_2),\n    .decoding_op_src1(decoding_op_src1),\n    .decoding_op_src2(decoding_op_src2)\n  );\n\n\n  EX_stage\n  EX_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .pipeline_reg_in(ID_pipeline_reg_out),\n    .pipeline_reg_out(EX_pipeline_reg_out),\n    .ex_op_dest(ex_op_dest)\n  );\n\n\n  MEM_stage\n  MEM_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .pipeline_reg_in(EX_pipeline_reg_out),\n    .pipeline_reg_out(MEM_pipeline_reg_out),\n    .mem_op_dest(mem_op_dest)\n  );\n\n\n  WB_stage\n  WB_stage_inst\n  (\n    .pipeline_reg_in(MEM_pipeline_reg_out),\n    .reg_write_en(reg_write_en),\n    .reg_write_dest(reg_write_dest),\n    .reg_write_data(reg_write_data),\n    .wb_op_dest(wb_op_dest)\n  );\n\n\n  register_file\n  register_file_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .reg_write_en(reg_write_en),\n    .reg_write_dest(reg_write_dest),\n    .reg_write_data(reg_write_data),\n    .reg_read_addr_1(reg_read_addr_1),\n    .reg_read_data_1(reg_read_data_1),\n    .reg_read_addr_2(reg_read_addr_2),\n    .reg_read_data_2(reg_read_data_2)\n  );\n\n\n  hazard_detection_unit\n  hazard_detection_unit_inst\n  (\n    .decoding_op_src1(decoding_op_src1),\n    .decoding_op_src2(decoding_op_src2),\n    .ex_op_dest(ex_op_dest),\n    .mem_op_dest(mem_op_dest),\n    .wb_op_dest(wb_op_dest),\n    .pipeline_stall_n(pipeline_stall_n)\n  );\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:10724b3e14398d4a",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule mips_16_core_top\n(\n  input clk,\n  input rst,\n  output [8-1:0] pc\n);\n\n  wire pipeline_stall_n;\n  wire [5:0] branch_offset_imm;\n  wire branch_taken;\n  wire [15:0] instruction;\n  wire [56:0] ID_pipeline_reg_out;\n  wire [37:0] EX_pipeline_reg_out;\n  wire [36:0] MEM_pipeline_reg_out;\n  wire [2:0] reg_read_addr_1;\n  wire [2:0] reg_read_addr_2;\n  wire [15:0] reg_read_data_1;\n  wire [15:0] reg_read_data_2;\n  wire [2:0] decoding_op_src1;\n  wire [2:0] decoding_op_src2;\n  wire [2:0] ex_op_dest;\n  wire [2:0] mem_op_dest;\n  wire [2:0] wb_op_dest;\n  wire reg_write_en;\n  wire [2:0] reg_write_dest;\n  wire [15:0] reg_write_data;\n\n  IF_stage\n  IF_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .instruction_fetch_en(pipeline_stall_n),\n    .branch_offset_imm(branch_offset_imm),\n    .branch_taken(branch_taken),\n    .pc(pc),\n    .instruction(instruction)\n  );\n\n\n  ID_stage\n  ID_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .instruction_decode_en(pipeline_stall_n),\n    .pipeline_reg_out(ID_pipeline_reg_out),\n    .instruction(instruction),\n    .branch_offset_imm(branch_offset_imm),\n    .branch_taken(branch_taken),\n    .reg_read_addr_1(reg_read_addr_1),\n    .reg_read_addr_2(reg_read_addr_2),\n    .reg_read_data_1(reg_read_data_1),\n    .reg_read_data_2(reg_read_data_2),\n    .decoding_op_src1(decoding_op_src1),\n    .decoding_op_src2(decoding_op_src2)\n  );\n\n\n  EX_stage\n  EX_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .pipeline_reg_in(ID_pipeline_reg_out),\n    .pipeline_reg_out(EX_pipeline_reg_out),\n    .ex_op_dest(ex_op_dest)\n  );\n\n\n  MEM_stage\n  MEM_stage_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .pipeline_reg_in(EX_pipeline_reg_out),\n    .pipeline_reg_out(MEM_pipeline_reg_out),\n    .mem_op_dest(mem_op_dest)\n  );\n\n\n  WB_stage\n  WB_stage_inst\n  (\n    .pipeline_reg_in(MEM_pipeline_reg_out),\n    .reg_write_en(reg_write_en),\n    .reg_write_dest(reg_write_dest),\n    .reg_write_data(reg_write_data),\n    .wb_op_dest(wb_op_dest)\n  );\n\n\n  register_file\n  register_file_inst\n  (\n    .clk(clk),\n    .rst(rst),\n    .reg_write_en(reg_write_en),\n    .reg_write_dest(reg_write_dest),\n    .reg_write_data(reg_write_data),\n    .reg_read_addr_1(reg_read_addr_1),\n    .reg_read_data_1(reg_read_data_1),\n    .reg_read_addr_2(reg_read_addr_2),\n    .reg_read_data_2(reg_read_data_2)\n  );\n\n\n  hazard_detection_unit\n  hazard_detection_unit_inst\n  (\n    .decoding_op_src1(decoding_op_src1),\n    .decoding_op_src2(decoding_op_src2),\n    .ex_op_dest(ex_op_dest),\n    .mem_op_dest(mem_op_dest[24]),\n    .wb_op_dest(wb_op_dest),\n    .pipeline_stall_n(pipeline_stall_n)\n  );\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:65c84cdd86217899",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) - ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:106e9adafe838b2d",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest)) ~^ (decoding_op_src1 == wb_op_dest)) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:6fd4444011b1406d",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 <= wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:0acbfe5ac320aa41",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) !== ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:b074013ab24bafde",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) ** (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:40f9904f3441a1d1",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && (decoding_op_src2 - ex_op_dest || (decoding_op_src2 == mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  },
+  {
+   "id": "veribugbench:067e76266e2cf17b",
+   "project": "mips_16",
+   "buggy_rtl": "\n\nmodule hazard_detection_unit\n(\n  input [2:0] decoding_op_src1,\n  input [2:0] decoding_op_src2,\n  input [2:0] ex_op_dest,\n  input [2:0] mem_op_dest,\n  input [2:0] wb_op_dest,\n  output reg pipeline_stall_n\n);\n\n\n  always @(*) begin\n    pipeline_stall_n = 1;\n    if((decoding_op_src1 != 0) && ((decoding_op_src1 == ex_op_dest) || (decoding_op_src1 == mem_op_dest) || (decoding_op_src1 == wb_op_dest))) pipeline_stall_n = 0; \n    if((decoding_op_src2 != 0) && ((decoding_op_src2 == ex_op_dest) || (decoding_op_src2 << mem_op_dest) || (decoding_op_src2 == wb_op_dest))) pipeline_stall_n = 0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "Native"
+  }
+ ]
+}

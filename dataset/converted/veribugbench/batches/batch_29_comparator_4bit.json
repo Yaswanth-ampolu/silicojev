@@ -1,0 +1,146 @@
+{
+ "batch_index": 29,
+ "source_group": "veribugbench:RTLLM/comparator_4bit",
+ "project": "comparator_4bit",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns / 1ps\n\nmodule testbench;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n  reg [3:0] A;          // Input A (4 bits)\n  reg [3:0] B;          // Input B (4 bits)\n  wire A_greater;       \n  wire A_equal;         \n  wire A_less;          \n  integer i;            \n  integer error = 0;    \n\n  comparator_4bit uut (\n    .A(A),\n    .B(B),\n    .A_greater(A_greater),\n    .A_equal(A_equal),\n    .A_less(A_less)\n  );\n\n\n  initial begin\n\n    for (i = 0; i < 100; i = i + 1) begin\n      // Generate random 4-bit inputs\n      A = $random % 16;\n      B = $random % 16;\n\n      // Wait for the operation to complete\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n      #10;\n\n      // Calculate expected results\n      if ((A > B && !A_greater) || (A == B && !A_equal) || (A < B && !A_less)) begin\n        error = error + 1;\n        $display(\"Test failed: A = %b, B = %b, A_greater = %b, A_equal = %b, A_less = %b\",\n                  A, B, A_greater, A_equal, A_less);\n      end\n    end\n\n    // Final test result summary\n    if (error == 0) begin\n      $display(\"=========== Your Design Passed ===========\");\n    end\n    else begin\n      $display(\"=========== Test completed with %d /100 failures ===========\", error);\n    end\n\n    $finish;\n  end\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"A_greater,\");\n      $fwrite(file_mantra, \"A_equal,\");\n      $fwrite(file_mantra, \"A_less,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", A_greater);\n        $fwrite(file_mantra, \"%h, \", A_equal);\n        $fwrite(file_mantra, \"%h, \", A_less);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer k;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    $display(\"LLM_TEST: Starting deterministic mutation tests...\");\n\n    // 3. THEN execute logic\n    \n    // --- Equality Checks (Targeting A_equal) ---\n    // Test 0: Zeros (Boundary Min)\n    A = 4'h0; B = 4'h0; #10;\n    // Test 1: Max Values (Boundary Max)\n    A = 4'hF; B = 4'hF; #10;\n    // Test 2: Alternating Pattern 1 (Bit-level independence)\n    A = 4'hA; B = 4'hA; #10;\n    // Test 3: Alternating Pattern 2\n    A = 4'h5; B = 4'h5; #10;\n\n    // --- Greater Than Checks (Targeting A_greater) ---\n    // Test 4: Min + 1 > Min (Boundary)\n    A = 4'h1; B = 4'h0; #10;\n    // Test 5: Max > Max - 1 (Boundary)\n    A = 4'hF; B = 4'hE; #10;\n    // Test 6: Max > Min (Extreme)\n    A = 4'hF; B = 4'h0; #10;\n    // Test 7: Mid Range Transition\n    A = 4'h8; B = 4'h7; #10;\n\n    // --- Less Than Checks (Targeting A_less / Borrow Logic) ---\n    // Test 8: Min < Min + 1 (Boundary)\n    A = 4'h0; B = 4'h1; #10;\n    // Test 9: Max - 1 < Max (Boundary)\n    A = 4'hE; B = 4'hF; #10;\n    // Test 10: Min < Max (Extreme)\n    A = 4'h0; B = 4'hF; #10;\n    // Test 11: Mid Range Transition\n    A = 4'h7; B = 4'h8; #10;\n\n    // --- Bit-Level & Walking 1s (Targeting Stuck-at & Coupling) ---\n    // Walking 1s on A, B=0\n    A = 4'h1; B = 4'h0; #10;\n    A = 4'h2; B = 4'h0; #10;\n    A = 4'h4; B = 4'h0; #10;\n    A = 4'h8; B = 4'h0; #10;\n\n    // Walking 1s on B, A=15 (Targeting Subtraction/Borrow Logic)\n    // 15 - 1 = 14 (No Borrow)\n    A = 4'hF; B = 4'h1; #10;\n    // 15 - 2 = 13\n    A = 4'hF; B = 4'h2; #10;\n    // 15 - 4 = 11\n    A = 4'hF; B = 4'h4; #10;\n    // 15 - 8 = 7\n    A = 4'hF; B = 4'h8; #10;\n\n    // --- Specific Mutation Targets ---\n    // Operator Replacement (+ instead of -)\n    // A=1, B=1. A-B=0 (Eq). A+B=2 (Gt).\n    A = 4'h1; B = 4'h1; #10;\n    \n    // Bitwise Operator Replacement (& instead of -)\n    // A=3 (0011), B=1 (0001). A-B=2. A&B=1.\n    A = 4'h3; B = 4'h1; #10;\n    \n    // Borrow Logic Stress (Ripple Carry)\n    // A=8 (1000), B=1 (0001) -> 7 (0111). Ripples 3 bits.\n    A = 4'h8; B = 4'h1; #10;\n    \n    // Underflow Check\n    // A=0, B=1 -> Underflow (Borrow=1, Diff=1111)\n    A = 4'h0; B = 4'h1; #10;\n\n    // 4. Handover\n    $display(\"LLM_TEST: Tests Finished. Handing over to Original TB...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:60af1d4272da3f42",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = B;\n  assign A_greater = ~cout && (diff != 4'b0000);\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c3a5ce08b59abe03",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = diff != 4'b0000;\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3abee89a698726f5",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = cout && (diff != 4'b0000);\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:207ad5d143213836",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = ~cout && 4'b0000;\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a62fcb8587f02d90",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = ~cout && (diff != 4'b0000);\n  assign A_equal = B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:94ae580f857567ed",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B >> (diff != 4'b0000);\n  assign A_greater = ~cout && (diff != 4'b0000);\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:efecc4046c28f6bf",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = (~cout && (diff != 4'b0000)) != A - B;\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:66cb291d5bdcebc5",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = (~cout >= (~cout && (diff != 4'b0000))) && (diff != 4'b0000);\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:044d8e9b8c6098b0",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = ~cout && (diff != 4'b0000) + (A - B);\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:17cd6b53f6422c8b",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = ~cout && (diff != 4'b0000);\n  assign A_equal = (A == B) << ~cout;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:53ae35288339f455",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B[20];\n  assign A_greater = ~cout && (diff != 4'b0000);\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:aae0d130d2d25a45",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = ~cout && (diff[7] != 4'b0000);\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ddb9953fe80291f5",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = ~cout && (diff != 4'b0000);\n  assign A_equal = A[19] == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3a40ce6368a43508",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A ~^ B;\n  assign A_greater = ~cout && (diff != 4'b0000);\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:885a8093f76d711f",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = ~cout && (diff >= 4'b0000);\n  assign A_equal = A == B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0c74071122c2ccf4",
+   "project": "comparator_4bit",
+   "buggy_rtl": "\n\nmodule comparator_4bit\n(\n  input [3:0] A,\n  input [3:0] B,\n  output A_greater,\n  output A_equal,\n  output A_less\n);\n\n  wire [3:0] diff;\n  wire cout;\n  assign { cout, diff } = A - B;\n  assign A_greater = ~cout && (diff != 4'b0000);\n  assign A_equal = A || B;\n  assign A_less = cout;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

@@ -1,0 +1,205 @@
+{
+ "veribugbench:2a9257f19b05d24e": {
+  "evidence_sufficient": {
+   "true": 0.48,
+   "false": 0.52
+  },
+  "next_action": {
+   "abstain": 0.01,
+   "ask_human": 0.02,
+   "constraints": 0.03,
+   "formal": 0.05,
+   "rtl": 0.4,
+   "simulation": 0.12,
+   "specification": 0.02,
+   "testbench": 0.13,
+   "waveform": 0.22
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.03,
+   "formal_property": 0.002,
+   "reset_initialization": 0.45,
+   "security": 0.001,
+   "sequential_assignment": 0.33,
+   "state_machine": 0.01,
+   "syntax_compile": 0.002,
+   "timing_protocol": 0.1,
+   "type_width": 0.005,
+   "unknown": 0.07
+  }
+ },
+ "veribugbench:3bb078185ef7bca4": {
+  "evidence_sufficient": {
+   "true": 0.62,
+   "false": 0.38
+  },
+  "next_action": {
+   "abstain": 0.01,
+   "ask_human": 0.01,
+   "constraints": 0.02,
+   "formal": 0.05,
+   "rtl": 0.46,
+   "simulation": 0.13,
+   "specification": 0.01,
+   "testbench": 0.07,
+   "waveform": 0.24
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.03,
+   "formal_property": 0.002,
+   "reset_initialization": 0.44,
+   "security": 0.002,
+   "sequential_assignment": 0.34,
+   "state_machine": 0.01,
+   "syntax_compile": 0.002,
+   "timing_protocol": 0.12,
+   "type_width": 0.004,
+   "unknown": 0.05
+  }
+ },
+ "veribugbench:f27e8615b77e0f4b": {
+  "evidence_sufficient": {
+   "true": 0.7,
+   "false": 0.3
+  },
+  "next_action": {
+   "abstain": 0.005,
+   "ask_human": 0.005,
+   "constraints": 0.01,
+   "formal": 0.04,
+   "rtl": 0.58,
+   "simulation": 0.12,
+   "specification": 0.01,
+   "testbench": 0.05,
+   "waveform": 0.18
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.06,
+   "formal_property": 0.002,
+   "reset_initialization": 0.66,
+   "security": 0.002,
+   "sequential_assignment": 0.15,
+   "state_machine": 0.04,
+   "syntax_compile": 0.002,
+   "timing_protocol": 0.03,
+   "type_width": 0.004,
+   "unknown": 0.05
+  }
+ },
+ "veribugbench:ded2e27a04144a73": {
+  "evidence_sufficient": {
+   "true": 0.66,
+   "false": 0.34
+  },
+  "next_action": {
+   "abstain": 0.005,
+   "ask_human": 0.005,
+   "constraints": 0.01,
+   "formal": 0.05,
+   "rtl": 0.52,
+   "simulation": 0.13,
+   "specification": 0.01,
+   "testbench": 0.05,
+   "waveform": 0.22
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.05,
+   "formal_property": 0.002,
+   "reset_initialization": 0.63,
+   "security": 0.001,
+   "sequential_assignment": 0.19,
+   "state_machine": 0.04,
+   "syntax_compile": 0.002,
+   "timing_protocol": 0.02,
+   "type_width": 0.005,
+   "unknown": 0.06
+  }
+ },
+ "veribugbench:b5a67715705e3dbe": {
+  "evidence_sufficient": {
+   "true": 0.68,
+   "false": 0.32
+  },
+  "next_action": {
+   "abstain": 0.005,
+   "ask_human": 0.005,
+   "constraints": 0.01,
+   "formal": 0.05,
+   "rtl": 0.5,
+   "simulation": 0.16,
+   "specification": 0.01,
+   "testbench": 0.06,
+   "waveform": 0.2
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.06,
+   "formal_property": 0.002,
+   "reset_initialization": 0.27,
+   "security": 0.001,
+   "sequential_assignment": 0.52,
+   "state_machine": 0.04,
+   "syntax_compile": 0.002,
+   "timing_protocol": 0.02,
+   "type_width": 0.005,
+   "unknown": 0.08
+  }
+ },
+ "veribugbench:52610b4b0b16b15f": {
+  "evidence_sufficient": {
+   "true": 0.64,
+   "false": 0.36
+  },
+  "next_action": {
+   "abstain": 0.005,
+   "ask_human": 0.005,
+   "constraints": 0.01,
+   "formal": 0.05,
+   "rtl": 0.52,
+   "simulation": 0.13,
+   "specification": 0.01,
+   "testbench": 0.06,
+   "waveform": 0.21
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.07,
+   "formal_property": 0.002,
+   "reset_initialization": 0.58,
+   "security": 0.001,
+   "sequential_assignment": 0.24,
+   "state_machine": 0.02,
+   "syntax_compile": 0.002,
+   "timing_protocol": 0.01,
+   "type_width": 0.005,
+   "unknown": 0.07
+  }
+ },
+ "veribugbench:ceba6eab2f64d3f0": {
+  "evidence_sufficient": {
+   "true": 0.58,
+   "false": 0.42
+  },
+  "next_action": {
+   "abstain": 0.005,
+   "ask_human": 0.005,
+   "constraints": 0.01,
+   "formal": 0.05,
+   "rtl": 0.5,
+   "simulation": 0.13,
+   "specification": 0.01,
+   "testbench": 0.06,
+   "waveform": 0.23
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.04,
+   "formal_property": 0.0005,
+   "reset_initialization": 0.35,
+   "security": 0.0005,
+   "sequential_assignment": 0.12,
+   "state_machine": 0.005,
+   "syntax_compile": 0.001,
+   "timing_protocol": 0.003,
+   "type_width": 0.4,
+   "unknown": 0.08
+  }
+ }
+}

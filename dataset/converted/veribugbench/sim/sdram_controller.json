@@ -1,0 +1,1543 @@
+{
+ "project_id": "sdram_controller",
+ "source_group": "CirFix",
+ "tb": "sdram_controller_tb_t1_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "6cb45619181883ad",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "sdram_controller_AssignB2N_569_235",
+   "operator_id": "AssignB2N",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dfe0956c42fc51ae",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_AssignN2B_446_188",
+   "operator_id": "AssignN2B",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e741dcd5bf3026b1",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_EdgeFlip_401_173",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce5bddba445b1a52",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_EdgeFlip_521_217",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e0ed14b3ea41e32d",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_EdgeInsert_520_217",
+   "operator_id": "EdgeInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "957e1257bbebec08",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_263_139",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "013766a94fbaf1f6",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_369_166",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "94a0f1860d868f69",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_389_168",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "75783c66c9b23cb7",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_404_174",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2326f88e1f10a366",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_457_191",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c922644598bb906d",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_49_49",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4a6d406bee0fa969",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_524_218",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "16c6ff0bac127a63",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_544_224",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "16c6ff0bac127a63",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_584_238",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c3f85c346be4efc6",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_587_238",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c3f85c346be4efc6",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_614_241",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dca377b11823d4ce",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_665_266",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e37718bd02889cb9",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprDelete_700_284",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "64b5d6001f04dbd2",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprInsert_365_166",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a9c8ae32eda1a439",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprInsert_388_168",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5cd370c433ef78ae",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprInsert_389_168",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ed76f7ed5c1bb240",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprInsert_468_194",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0cb69194621a7575",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprInsert_532_221",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5abeeb984a9b4fd4",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprInsert_587_238",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "69d68853ce0e9537",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprInsert_696_282",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6fa1728e85acaab5",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprInsert_69_58",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "16c6ff0bac127a63",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_IOFlip1_187_108",
+   "operator_id": "IOFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a5d20f89b15a0813",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_IOFlip2_194_109",
+   "operator_id": "IOFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "464b4a2c3e46b211",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_IOFlip2_209_120",
+   "operator_id": "IOFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ec9c859e0563a550",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_407_176",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3ee1f27a9c577647",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_412_177",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2b3b93078d4654d9",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_417_178",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6e059274c3a4f3e1",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_446_188",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "84b6cafff8624489",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_451_189",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5d60dfa9db1c4216",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_464_194",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6e059274c3a4f3e1",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_473_197",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6132c10f992180c0",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_483_201",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c43ae280efd8e2e2",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_493_205",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3e6ed1abe5c58954",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_507_210",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "baa8390c53a60b52",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_526_219",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "16c6ff0bac127a63",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubDelete_540_224",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "16c6ff0bac127a63",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_550_229",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "53e389149f066bbb",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_684_279",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2c7c08b64d9d6d05",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_729_295",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f7db195e65a10856",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_753_309",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2fc6226735ed55e7",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_774_318",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "02542d61abe68765",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_800_328",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "69d227babe03558c",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_839_343",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3828641c1e81332d",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_873_360",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1e86dd14fd185dce",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_925_386",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bc417a69bf631b5f",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_IF_403_174",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7efd1b67f86a90fe",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_IF_551_230",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1d9e83b700ae7a0e",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_IF_619_243",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "495bac2a11ac0768",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_IF_695_282",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "93d20c0d5db88210",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_IF_727_294",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1f2908ae468c8753",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubInsert_IF_746_305",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6e059274c3a4f3e1",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_403_174",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e010ebf419852d2d",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_456_191",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6e059274c3a4f3e1",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_478_199",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dee4ee1dc7625174",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_512_211",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6237a6b3b55dfe27",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_523_218",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "16c6ff0bac127a63",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_551_230",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1808136513e3620c",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_619_243",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "77472787e18e5044",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_664_266",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7ed3dc5c146f6ff2",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_695_282",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6e059274c3a4f3e1",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_714_289",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9b1876332d2ed6d9",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubMove_746_305",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4c3127b823fa6d90",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_407_176",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3ee1f27a9c577647",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_417_178",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a4f0c0c3c3f7572f",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_422_180",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9c833c5df9a5d0b5",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_446_188",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "84b6cafff8624489",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_451_189",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "936d0b0eaf2c3ca7",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_464_194",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6e059274c3a4f3e1",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_473_197",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6132c10f992180c0",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_483_201",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "90ac5fc50e778372",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_514_212",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4595927f68b2aac8",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_NSubUpdate_526_219",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "16c6ff0bac127a63",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PartselectDelete_343_163",
+   "operator_id": "PartselectDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c267e550650307f2",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PartselectDelete_356_165",
+   "operator_id": "PartselectDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2e3367f85c4478c1",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PartselectDelete_595_240",
+   "operator_id": "PartselectDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "56e8ad935e438877",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PartselectDelete_607_241",
+   "operator_id": "PartselectDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "501c7b506b1f1d33",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PartselectDelete_632_247",
+   "operator_id": "PartselectDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "95e0ad226e1890fd",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PartselectDelete_658_263",
+   "operator_id": "PartselectDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "464d0fa45e7ae567",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PartselectUpdate_346_163",
+   "operator_id": "PartselectUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "97418eb2de08d393",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PartselectUpdate_613_241",
+   "operator_id": "PartselectUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8c84bd0560819681",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PartselectUpdate_663_263",
+   "operator_id": "PartselectUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e7daa116492c38ef",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerDelete_366_166",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "94a0f1860d868f69",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerDelete_552_230",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2e097b8797e815a2",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_355_165",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e83d640a4f50733f",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_390_168",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "78ef88ad55c8ad2a",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_533_221",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "976a16ad303b50a0",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_601_240",
+   "operator_id": "PointerInsert",
+   "verdict": "COMPILE_FAIL",
+   "rc": -1,
+   "behaviour_hash": "0d865b67866ac256",
+   "err": "COMPILE: sdram_controller_PointerInsert_601_240.v:124: error: part select haddr_r[23:4294967294] is"
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_666_266",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8baf30df1e39cd75",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_687_280",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "84b6cafff8624489",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_708_286",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9b797c2b7b239760",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_75_61",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "16c6ff0bac127a63",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_834_340",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3828641c1e81332d",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_842_344",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a7d61cdb2e561483",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerInsert_946_393",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7360dc84421227ee",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerUpdate_354_165",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1e5dbd0cbee8091b",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerUpdate_368_166",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0c768d3160548639",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerUpdate_382_166",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "90e02bd092cb96de",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_PointerUpdate_554_230",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "05f364086cebaee7",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprUpdate_240_133",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a644cfbddf6bb22f",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprUpdate_457_191",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4f8cf428063fffb3",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprUpdate_532_221",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f4c97e4a048049fb",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprUpdate_655_262",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "893a03b61e79783d",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprUpdate_660_263",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "94a0d574813c481b",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprUpdate_700_284",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6707795f6c8097e4",
+   "err": null
+  },
+  {
+   "instance": "sdram_controller_ExprUpdate_70_58",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "64b5d6001f04dbd2",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "16c6ff0bac127a63",
+   "size": 8,
+   "members": [
+    "sdram_controller_ExprDelete_524_218",
+    "sdram_controller_ExprDelete_544_224",
+    "sdram_controller_ExprInsert_69_58",
+    "sdram_controller_NSubDelete_526_219",
+    "sdram_controller_NSubDelete_540_224",
+    "sdram_controller_NSubMove_523_218",
+    "sdram_controller_NSubUpdate_526_219",
+    "sdram_controller_PointerInsert_75_61"
+   ]
+  },
+  {
+   "hash": "6e059274c3a4f3e1",
+   "size": 6,
+   "members": [
+    "sdram_controller_NSubDelete_417_178",
+    "sdram_controller_NSubDelete_464_194",
+    "sdram_controller_NSubInsert_IF_746_305",
+    "sdram_controller_NSubMove_456_191",
+    "sdram_controller_NSubMove_695_282",
+    "sdram_controller_NSubUpdate_464_194"
+   ]
+  },
+  {
+   "hash": "84b6cafff8624489",
+   "size": 3,
+   "members": [
+    "sdram_controller_NSubDelete_446_188",
+    "sdram_controller_NSubUpdate_446_188",
+    "sdram_controller_PointerInsert_687_280"
+   ]
+  },
+  {
+   "hash": "94a0f1860d868f69",
+   "size": 2,
+   "members": [
+    "sdram_controller_ExprDelete_369_166",
+    "sdram_controller_PointerDelete_366_166"
+   ]
+  },
+  {
+   "hash": "c3f85c346be4efc6",
+   "size": 2,
+   "members": [
+    "sdram_controller_ExprDelete_584_238",
+    "sdram_controller_ExprDelete_587_238"
+   ]
+  },
+  {
+   "hash": "64b5d6001f04dbd2",
+   "size": 2,
+   "members": [
+    "sdram_controller_ExprDelete_700_284",
+    "sdram_controller_ExprUpdate_70_58"
+   ]
+  },
+  {
+   "hash": "3ee1f27a9c577647",
+   "size": 2,
+   "members": [
+    "sdram_controller_NSubDelete_407_176",
+    "sdram_controller_NSubUpdate_407_176"
+   ]
+  },
+  {
+   "hash": "6132c10f992180c0",
+   "size": 2,
+   "members": [
+    "sdram_controller_NSubDelete_473_197",
+    "sdram_controller_NSubUpdate_473_197"
+   ]
+  },
+  {
+   "hash": "3828641c1e81332d",
+   "size": 2,
+   "members": [
+    "sdram_controller_NSubInsert_839_343",
+    "sdram_controller_PointerInsert_834_340"
+   ]
+  },
+  {
+   "hash": "dfe0956c42fc51ae",
+   "size": 1,
+   "members": [
+    "sdram_controller_AssignB2N_569_235"
+   ]
+  },
+  {
+   "hash": "e741dcd5bf3026b1",
+   "size": 1,
+   "members": [
+    "sdram_controller_AssignN2B_446_188"
+   ]
+  },
+  {
+   "hash": "ce5bddba445b1a52",
+   "size": 1,
+   "members": [
+    "sdram_controller_EdgeFlip_401_173"
+   ]
+  },
+  {
+   "hash": "e0ed14b3ea41e32d",
+   "size": 1,
+   "members": [
+    "sdram_controller_EdgeFlip_521_217"
+   ]
+  },
+  {
+   "hash": "957e1257bbebec08",
+   "size": 1,
+   "members": [
+    "sdram_controller_EdgeInsert_520_217"
+   ]
+  },
+  {
+   "hash": "013766a94fbaf1f6",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprDelete_263_139"
+   ]
+  },
+  {
+   "hash": "75783c66c9b23cb7",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprDelete_389_168"
+   ]
+  },
+  {
+   "hash": "2326f88e1f10a366",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprDelete_404_174"
+   ]
+  },
+  {
+   "hash": "c922644598bb906d",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprDelete_457_191"
+   ]
+  },
+  {
+   "hash": "4a6d406bee0fa969",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprDelete_49_49"
+   ]
+  },
+  {
+   "hash": "dca377b11823d4ce",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprDelete_614_241"
+   ]
+  },
+  {
+   "hash": "e37718bd02889cb9",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprDelete_665_266"
+   ]
+  },
+  {
+   "hash": "a9c8ae32eda1a439",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprInsert_365_166"
+   ]
+  },
+  {
+   "hash": "5cd370c433ef78ae",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprInsert_388_168"
+   ]
+  },
+  {
+   "hash": "ed76f7ed5c1bb240",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprInsert_389_168"
+   ]
+  },
+  {
+   "hash": "0cb69194621a7575",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprInsert_468_194"
+   ]
+  },
+  {
+   "hash": "5abeeb984a9b4fd4",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprInsert_532_221"
+   ]
+  },
+  {
+   "hash": "69d68853ce0e9537",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprInsert_587_238"
+   ]
+  },
+  {
+   "hash": "6fa1728e85acaab5",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprInsert_696_282"
+   ]
+  },
+  {
+   "hash": "a5d20f89b15a0813",
+   "size": 1,
+   "members": [
+    "sdram_controller_IOFlip1_187_108"
+   ]
+  },
+  {
+   "hash": "464b4a2c3e46b211",
+   "size": 1,
+   "members": [
+    "sdram_controller_IOFlip2_194_109"
+   ]
+  },
+  {
+   "hash": "ec9c859e0563a550",
+   "size": 1,
+   "members": [
+    "sdram_controller_IOFlip2_209_120"
+   ]
+  },
+  {
+   "hash": "2b3b93078d4654d9",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubDelete_412_177"
+   ]
+  },
+  {
+   "hash": "5d60dfa9db1c4216",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubDelete_451_189"
+   ]
+  },
+  {
+   "hash": "c43ae280efd8e2e2",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubDelete_483_201"
+   ]
+  },
+  {
+   "hash": "3e6ed1abe5c58954",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubDelete_493_205"
+   ]
+  },
+  {
+   "hash": "baa8390c53a60b52",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubDelete_507_210"
+   ]
+  },
+  {
+   "hash": "53e389149f066bbb",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_550_229"
+   ]
+  },
+  {
+   "hash": "2c7c08b64d9d6d05",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_684_279"
+   ]
+  },
+  {
+   "hash": "f7db195e65a10856",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_729_295"
+   ]
+  },
+  {
+   "hash": "2fc6226735ed55e7",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_753_309"
+   ]
+  },
+  {
+   "hash": "02542d61abe68765",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_774_318"
+   ]
+  },
+  {
+   "hash": "69d227babe03558c",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_800_328"
+   ]
+  },
+  {
+   "hash": "1e86dd14fd185dce",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_873_360"
+   ]
+  },
+  {
+   "hash": "bc417a69bf631b5f",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_925_386"
+   ]
+  },
+  {
+   "hash": "7efd1b67f86a90fe",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_IF_403_174"
+   ]
+  },
+  {
+   "hash": "1d9e83b700ae7a0e",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_IF_551_230"
+   ]
+  },
+  {
+   "hash": "495bac2a11ac0768",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_IF_619_243"
+   ]
+  },
+  {
+   "hash": "93d20c0d5db88210",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_IF_695_282"
+   ]
+  },
+  {
+   "hash": "1f2908ae468c8753",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubInsert_IF_727_294"
+   ]
+  },
+  {
+   "hash": "e010ebf419852d2d",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubMove_403_174"
+   ]
+  },
+  {
+   "hash": "dee4ee1dc7625174",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubMove_478_199"
+   ]
+  },
+  {
+   "hash": "6237a6b3b55dfe27",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubMove_512_211"
+   ]
+  },
+  {
+   "hash": "1808136513e3620c",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubMove_551_230"
+   ]
+  },
+  {
+   "hash": "77472787e18e5044",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubMove_619_243"
+   ]
+  },
+  {
+   "hash": "7ed3dc5c146f6ff2",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubMove_664_266"
+   ]
+  },
+  {
+   "hash": "9b1876332d2ed6d9",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubMove_714_289"
+   ]
+  },
+  {
+   "hash": "4c3127b823fa6d90",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubMove_746_305"
+   ]
+  },
+  {
+   "hash": "a4f0c0c3c3f7572f",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubUpdate_417_178"
+   ]
+  },
+  {
+   "hash": "9c833c5df9a5d0b5",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubUpdate_422_180"
+   ]
+  },
+  {
+   "hash": "936d0b0eaf2c3ca7",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubUpdate_451_189"
+   ]
+  },
+  {
+   "hash": "90ac5fc50e778372",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubUpdate_483_201"
+   ]
+  },
+  {
+   "hash": "4595927f68b2aac8",
+   "size": 1,
+   "members": [
+    "sdram_controller_NSubUpdate_514_212"
+   ]
+  },
+  {
+   "hash": "c267e550650307f2",
+   "size": 1,
+   "members": [
+    "sdram_controller_PartselectDelete_343_163"
+   ]
+  },
+  {
+   "hash": "2e3367f85c4478c1",
+   "size": 1,
+   "members": [
+    "sdram_controller_PartselectDelete_356_165"
+   ]
+  },
+  {
+   "hash": "56e8ad935e438877",
+   "size": 1,
+   "members": [
+    "sdram_controller_PartselectDelete_595_240"
+   ]
+  },
+  {
+   "hash": "501c7b506b1f1d33",
+   "size": 1,
+   "members": [
+    "sdram_controller_PartselectDelete_607_241"
+   ]
+  },
+  {
+   "hash": "95e0ad226e1890fd",
+   "size": 1,
+   "members": [
+    "sdram_controller_PartselectDelete_632_247"
+   ]
+  },
+  {
+   "hash": "464d0fa45e7ae567",
+   "size": 1,
+   "members": [
+    "sdram_controller_PartselectDelete_658_263"
+   ]
+  },
+  {
+   "hash": "97418eb2de08d393",
+   "size": 1,
+   "members": [
+    "sdram_controller_PartselectUpdate_346_163"
+   ]
+  },
+  {
+   "hash": "8c84bd0560819681",
+   "size": 1,
+   "members": [
+    "sdram_controller_PartselectUpdate_613_241"
+   ]
+  },
+  {
+   "hash": "e7daa116492c38ef",
+   "size": 1,
+   "members": [
+    "sdram_controller_PartselectUpdate_663_263"
+   ]
+  },
+  {
+   "hash": "2e097b8797e815a2",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerDelete_552_230"
+   ]
+  },
+  {
+   "hash": "e83d640a4f50733f",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerInsert_355_165"
+   ]
+  },
+  {
+   "hash": "78ef88ad55c8ad2a",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerInsert_390_168"
+   ]
+  },
+  {
+   "hash": "976a16ad303b50a0",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerInsert_533_221"
+   ]
+  },
+  {
+   "hash": "0d865b67866ac256",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerInsert_601_240"
+   ]
+  },
+  {
+   "hash": "8baf30df1e39cd75",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerInsert_666_266"
+   ]
+  },
+  {
+   "hash": "9b797c2b7b239760",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerInsert_708_286"
+   ]
+  },
+  {
+   "hash": "a7d61cdb2e561483",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerInsert_842_344"
+   ]
+  },
+  {
+   "hash": "7360dc84421227ee",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerInsert_946_393"
+   ]
+  },
+  {
+   "hash": "1e5dbd0cbee8091b",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerUpdate_354_165"
+   ]
+  },
+  {
+   "hash": "0c768d3160548639",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerUpdate_368_166"
+   ]
+  },
+  {
+   "hash": "90e02bd092cb96de",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerUpdate_382_166"
+   ]
+  },
+  {
+   "hash": "05f364086cebaee7",
+   "size": 1,
+   "members": [
+    "sdram_controller_PointerUpdate_554_230"
+   ]
+  },
+  {
+   "hash": "a644cfbddf6bb22f",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprUpdate_240_133"
+   ]
+  },
+  {
+   "hash": "4f8cf428063fffb3",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprUpdate_457_191"
+   ]
+  },
+  {
+   "hash": "f4c97e4a048049fb",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprUpdate_532_221"
+   ]
+  },
+  {
+   "hash": "893a03b61e79783d",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprUpdate_655_262"
+   ]
+  },
+  {
+   "hash": "94a0d574813c481b",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprUpdate_660_263"
+   ]
+  },
+  {
+   "hash": "6707795f6c8097e4",
+   "size": 1,
+   "members": [
+    "sdram_controller_ExprUpdate_700_284"
+   ]
+  }
+ ]
+}

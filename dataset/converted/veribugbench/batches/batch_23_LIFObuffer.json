@@ -1,0 +1,248 @@
+{
+ "batch_index": 23,
+ "source_group": "veribugbench:RTLLM/LIFObuffer",
+ "project": "LIFObuffer",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns / 1ps\n\nmodule LIFObuffer_tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n// Inputs\nreg [3:0] dataIn;\nreg RW;\nreg EN;\nreg Rst;\nreg Clk;\n\n// Outputs\nwire [3:0] dataOut;\nwire EMPTY;\nwire FULL;\n\n// Instantiate the Unit Under Test (UUT)\nLIFObuffer uut (\n    .dataIn(dataIn),\n    .dataOut(dataOut),\n    .RW(RW),\n    .EN(EN),\n    .Rst(Rst),\n    .EMPTY(EMPTY),\n    .FULL(FULL),\n    .Clk(Clk)\n);\ninteger error = 0;\ninitial begin\n    // Initialize Inputs\n    dataIn = 4'h0;\n    RW = 1'b0;\n    EN = 1'b0;\n    Rst = 1'b1;\n    Clk = 1'b0;\n\n    // Wait 100 ns for global reset to finish\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n    #100;\n\n    // Add stimulus here\n    EN = 1'b1;\n    Rst = 1'b1;\n    #40;\n    Rst = 1'b0;\n    RW = 1'b0;\n    dataIn = 4'h0;\n    #20;\n    dataIn = 4'h2;\n    #20;\n    dataIn = 4'h4;\n    #20;\n    dataIn = 4'h6;\n    #20;\n    RW = 1'b1;\n    #5;\n    // $display(FULL,EMPTY);\n    error = (FULL && !EMPTY) ? error : error+1;\n    #20;\n    // $display(dataOut);\n    error = (dataOut==6) ? error : error+1;\n    #20;\n    // $display(dataOut);\n    error = (dataOut==4) ? error : error+1;\n    if (error == 0) begin\n            $display(\"=========== Your Design Passed ===========\");\n            end\n        else begin\n            $display(\"=========== Test completed with %d/20 failures ===========\", error);\n    end\n    $finish;\nend\n\nalways #10 Clk = ~Clk;\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"dataOut,\");\n      $fwrite(file_mantra, \"EMPTY,\");\n      $fwrite(file_mantra, \"FULL,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", dataOut);\n        $fwrite(file_mantra, \"%h, \", EMPTY);\n        $fwrite(file_mantra, \"%h, \", FULL);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    // Initialize Inputs\n    dataIn = 4'h0;\n    RW = 1'b0;\n    EN = 1'b0;\n    Rst = 1'b1;\n\n    // Wait for global reset stabilization\n    #100;\n\n    // Sync to clock for deterministic behavior\n    @(negedge Clk);\n\n    // -------------------------------------------------------\n    // Test Case 1: Reset Verification\n    // -------------------------------------------------------\n    // Assert Reset\n    Rst = 1'b1;\n    EN = 1'b1;\n    @(negedge Clk);\n    // Expect: EMPTY=1, FULL=0, SP=4\n\n    // -------------------------------------------------------\n    // Test Case 2: Enable Low (Write should be ignored)\n    // -------------------------------------------------------\n    Rst = 1'b0;\n    EN = 1'b0;\n    RW = 1'b0; // Write mode\n    dataIn = 4'hA;\n    @(negedge Clk);\n    @(negedge Clk); // Hold to ensure no write happens\n    // Expect: No change, EMPTY=1\n\n    // -------------------------------------------------------\n    // Test Case 3: Sequential Push (Fill Stack)\n    // -------------------------------------------------------\n    EN = 1'b1;\n    RW = 1'b0; // Write\n\n    // Push 0x1 (SP -> 3)\n    dataIn = 4'h1;\n    @(negedge Clk);\n\n    // Push 0x2 (SP -> 2)\n    dataIn = 4'h2;\n    @(negedge Clk);\n\n    // Push 0x4 (SP -> 1)\n    dataIn = 4'h4;\n    @(negedge Clk);\n\n    // Push 0x8 (SP -> 0)\n    dataIn = 4'h8;\n    @(negedge Clk);\n\n    // Stack should be FULL now (SP=0)\n\n    // -------------------------------------------------------\n    // Test Case 4: Overflow Protection\n    // -------------------------------------------------------\n    // Try to push 0xF into FULL stack\n    dataIn = 4'hF;\n    @(negedge Clk);\n    // Expect: FULL=1, Internal Memory[0] should still be 0x8\n\n    // -------------------------------------------------------\n    // Test Case 5: Sequential Pop (Empty Stack)\n    // -------------------------------------------------------\n    RW = 1'b1; // Read\n\n    // Pop (Expect 0x8, SP -> 1)\n    @(negedge Clk);\n\n    // Pop (Expect 0x4, SP -> 2)\n    @(negedge Clk);\n\n    // Pop (Expect 0x2, SP -> 3)\n    @(negedge Clk);\n\n    // Pop (Expect 0x1, SP -> 4)\n    @(negedge Clk);\n\n    // Stack should be EMPTY now (SP=4)\n\n    // -------------------------------------------------------\n    // Test Case 6: Underflow Protection\n    // -------------------------------------------------------\n    // Try to pop from EMPTY stack\n    @(negedge Clk);\n    // Expect: EMPTY=1, SP=4\n\n    // -------------------------------------------------------\n    // Test Case 7: Interleaved Operations & Data Patterns\n    // -------------------------------------------------------\n    RW = 1'b0; // Write\n\n    // Push 0xA (Alternating 1010)\n    dataIn = 4'hA;\n    @(negedge Clk);\n\n    // Push 0x5 (Alternating 0101)\n    dataIn = 4'h5;\n    @(negedge Clk);\n\n    // Switch to Read\n    RW = 1'b1;\n    // Pop 0x5\n    @(negedge Clk);\n\n    // Switch to Write\n    RW = 1'b0;\n    // Push 0xC (1100)\n    dataIn = 4'hC;\n    @(negedge Clk);\n\n    // -------------------------------------------------------\n    // Test Case 8: Reset during operation\n    // -------------------------------------------------------\n    Rst = 1'b1;\n    @(negedge Clk);\n    // Expect: EMPTY=1, FULL=0, SP=4\n    Rst = 1'b0;\n    @(negedge Clk);\n\n    // -------------------------------------------------------\n    // Test Case 9: Boundary Values (0 and F)\n    // -------------------------------------------------------\n    RW = 1'b0; // Write\n    dataIn = 4'h0;\n    @(negedge Clk);\n\n    dataIn = 4'hF;\n    @(negedge Clk);\n\n    RW = 1'b1; // Read\n    @(negedge Clk); // Pop F\n    @(negedge Clk); // Pop 0\n\n    // 4. Cleanup / Handover\n    #20;\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:82143c7ba22671f5",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY <= SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b3ee3f890ac6396b",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP <= SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8e57e90050030ecf",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP <= SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:13f6cba7273ed33c",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(negedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:62ecd88acdf6e9f2",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cfe9a762e486469d",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if(RW == 1'b1) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:59aee14721aef55a",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if(1'b0 && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5d808d6073b1c0c3",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && 1'b1) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:51d810fcc8c3132b",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:523eba301cbeceab",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e4377ca53d3b85c4",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1 === ((SP)? 0 : 1);\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8688e75e956783d6",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1) * (RW == 1'b0)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c0f964060ef228ae",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1 != (EMPTY == 1'b0);\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fa01cab4be706477",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if((Rst == 1) + (RW == 1'b0)) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e59c6494d1a2a80c",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          stack_mem[SP] = dataIn;\n        end else begin\n          if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n            dataOut = stack_mem[SP];\n            stack_mem[SP] = 0;\n            SP = SP + 1;\n            FULL = (SP)? 0 : 1;\n            EMPTY = SP[2];\n          end else begin\n          end\n          EMPTY = SP[2];\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:539dd9ca29745712",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n        if(Rst == 0) begin\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          dataOut = 4'hx;\n          if((FULL == 1'b0) && (RW == 1'b0)) begin\n            SP = SP - 1'b1;\n            FULL = (SP)? 0 : 1;\n            EMPTY = SP[2];\n            stack_mem[SP] = dataIn;\n          end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n            dataOut = stack_mem[SP];\n            stack_mem[SP] = 0;\n            SP = SP + 1;\n            FULL = (SP)? 0 : 1;\n            EMPTY = SP[2];\n          end else begin\n          end\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7551093692f4b729",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP;\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5c1b170e1a93e1be",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP;\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a1514abf51585f70",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP;\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:97fb67ae24ce61e3",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP;\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4f5c53fa356369cb",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP[28])? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:27fc2b785f3a4caf",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut[28] = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cd75e3f9e35925e2",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP[2] - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3c8cc4000f54e02b",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut[29] = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c6911e96ddb60d70",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[7];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cad8d2a02e514ad8",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[22];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cdceb35c6d87d52e",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[16];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:28cd6a4f76e8f52e",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[10];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b579962cb562bdd5",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL !== 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b1f22d87c47682f9",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && RW + 1'b0) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5e6d1c64da89530a",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP >= 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7497c0283825639f",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) >= (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP + 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:696a0ab2aaffa115",
+   "project": "LIFObuffer",
+   "buggy_rtl": "\n\nmodule LIFObuffer\n(\n  input [3:0] dataIn,\n  input RW,\n  input EN,\n  input Rst,\n  input Clk,\n  output reg EMPTY,\n  output reg FULL,\n  output reg [3:0] dataOut\n);\n\n  reg [3:0] stack_mem [0:3];\n  reg [2:0] SP;\n  integer i;\n\n  always @(posedge Clk) begin\n    if(EN == 0) begin\n    end else begin\n      if(Rst == 1) begin\n        SP = 3'd4;\n        EMPTY = SP[2];\n        dataOut = 4'h0;\n        for(i=0; i<4; i=i+1) begin\n          stack_mem[i] = 0;\n        end\n      end else if(Rst == 0) begin\n        FULL = (SP)? 0 : 1;\n        EMPTY = SP[2];\n        dataOut = 4'hx;\n        if((FULL == 1'b0) && (RW == 1'b0)) begin\n          SP = SP - 1'b1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n          stack_mem[SP] = dataIn;\n        end else if((EMPTY == 1'b0) && (RW == 1'b1)) begin\n          dataOut = stack_mem[SP];\n          stack_mem[SP] = 0;\n          SP = SP == 1;\n          FULL = (SP)? 0 : 1;\n          EMPTY = SP[2];\n        end else begin\n        end\n      end else begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

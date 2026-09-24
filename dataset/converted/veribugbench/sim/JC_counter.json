@@ -1,0 +1,100 @@
+{
+ "project_id": "JC_counter",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "fc9ccf853de0769c",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "JC_counter_EdgeDelete_19_9",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "17c1b13856df9dd2",
+   "err": null
+  },
+  {
+   "instance": "JC_counter_EdgeFlip_22_9",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bdf0216ab94500ad",
+   "err": null
+  },
+  {
+   "instance": "JC_counter_ExprDelete_26_10",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "47cbdeae32216901",
+   "err": null
+  },
+  {
+   "instance": "JC_counter_NSubDelete_28_10",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "17c1b13856df9dd2",
+   "err": null
+  },
+  {
+   "instance": "JC_counter_NSubMove_25_10",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "17c1b13856df9dd2",
+   "err": null
+  },
+  {
+   "instance": "JC_counter_NSubUpdate_28_10",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "47cbdeae32216901",
+   "err": null
+  },
+  {
+   "instance": "JC_counter_PointerInsert_30_10",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5ea0248bad90c298",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "17c1b13856df9dd2",
+   "size": 3,
+   "members": [
+    "JC_counter_EdgeDelete_19_9",
+    "JC_counter_NSubDelete_28_10",
+    "JC_counter_NSubMove_25_10"
+   ]
+  },
+  {
+   "hash": "47cbdeae32216901",
+   "size": 2,
+   "members": [
+    "JC_counter_ExprDelete_26_10",
+    "JC_counter_NSubUpdate_28_10"
+   ]
+  },
+  {
+   "hash": "bdf0216ab94500ad",
+   "size": 1,
+   "members": [
+    "JC_counter_EdgeFlip_22_9"
+   ]
+  },
+  {
+   "hash": "5ea0248bad90c298",
+   "size": 1,
+   "members": [
+    "JC_counter_PointerInsert_30_10"
+   ]
+  }
+ ]
+}

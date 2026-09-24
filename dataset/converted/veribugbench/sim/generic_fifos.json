@@ -1,0 +1,313 @@
+{
+ "project_id": "generic_fifos",
+ "source_group": "Native",
+ "tb": "rtl/verilog/test_bench_top_enhanced.v",
+ "n_origin_files": 8,
+ "golden_rc": 0,
+ "golden_hash": "b2f796b986dfca1b",
+ "deterministic": true,
+ "golden_err": null,
+ "sweep_version": 3,
+ "instances": [
+  {
+   "instance": "generic_dpram_EdgeFlip_93_159",
+   "operator_id": "EdgeFlip",
+   "replaced": "generic_dpram.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0516de57d4602110",
+   "err": null
+  },
+  {
+   "instance": "generic_dpram_ExprDelete_43_129",
+   "operator_id": "ExprDelete",
+   "replaced": "generic_dpram.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d965de92b03d8270",
+   "err": null
+  },
+  {
+   "instance": "generic_dpram_IOFlip1_63_137",
+   "operator_id": "IOFlip",
+   "replaced": "generic_dpram.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7bfd9ca01ec47a90",
+   "err": null
+  },
+  {
+   "instance": "generic_dpram_NSubDelete_119_168",
+   "operator_id": "NSubDelete",
+   "replaced": "generic_dpram.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "62c36a37f93a2e53",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_dc_EdgeInsert_229_204",
+   "operator_id": "EdgeInsert",
+   "replaced": "generic_fifo_dc.v",
+   "verdict": "NOT_KILLED",
+   "rc": 0,
+   "behaviour_hash": "b2f796b986dfca1b",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_dc_ExprInsert_242_205",
+   "operator_id": "ExprInsert",
+   "replaced": "generic_fifo_dc.v",
+   "verdict": "COMPILE_FAIL",
+   "rc": -1,
+   "behaviour_hash": "b76c852ed10d7158",
+   "err": "COMPILE: generic_fifo_dc_ExprInsert_242_205.v:73: error: A reference to a wire or reg (`wp[(aw)-('sd1):'sd0]') is not allowed in a constant expression"
+  },
+  {
+   "instance": "generic_fifo_dc_NSubDelete_209_200",
+   "operator_id": "NSubDelete",
+   "replaced": "generic_fifo_dc.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b1a2313c28b2cd34",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_dc_NSubDelete_297_222",
+   "operator_id": "NSubDelete",
+   "replaced": "generic_fifo_dc.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b1a2313c28b2cd34",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_dc_NSubMove_261_209",
+   "operator_id": "NSubMove",
+   "replaced": "generic_fifo_dc.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "607cd997b9efa196",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_dc_NSubUpdate_297_222",
+   "operator_id": "NSubUpdate",
+   "replaced": "generic_fifo_dc.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b1a2313c28b2cd34",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_ExprDelete_166_201",
+   "operator_id": "ExprDelete",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e45a7917247f0cd0",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_ExprInsert_284_233",
+   "operator_id": "ExprInsert",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "20d371023508729f",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_IOFlip2_53_159",
+   "operator_id": "IOFlip",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8761aa3d89168ca1",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_NSubDelete_179_211",
+   "operator_id": "NSubDelete",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b5e0d84deaa993d4",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_NSubMove_176_211",
+   "operator_id": "NSubMove",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9931331def711b9e",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_NSubMove_205_215",
+   "operator_id": "NSubMove",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1667b1db157f9876",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_NSubMove_259_224",
+   "operator_id": "NSubMove",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "95ac16619f55e05e",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_NSubUpdate_179_211",
+   "operator_id": "NSubUpdate",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "972ce63e63bc7e8a",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_NSubUpdate_233_220",
+   "operator_id": "NSubUpdate",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b5e0d84deaa993d4",
+   "err": null
+  },
+  {
+   "instance": "generic_fifo_sc_b_PointerInsert_155_197",
+   "operator_id": "PointerInsert",
+   "replaced": "generic_fifo_sc_b.v",
+   "verdict": "COMPILE_FAIL",
+   "rc": -1,
+   "behaviour_hash": "3bb7bb46a33d1b5e",
+   "err": "COMPILE: generic_fifo_sc_b_PointerInsert_155_197.v:63: error: can not select part of scalar: clk"
+  },
+  {
+   "instance": "generic_dpram_ExprUpdate_116_167",
+   "operator_id": "ExprUpdate",
+   "replaced": "generic_dpram.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "55a5cb06d2281ee1",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "b1a2313c28b2cd34",
+   "size": 3,
+   "members": [
+    "generic_fifo_dc_NSubDelete_209_200",
+    "generic_fifo_dc_NSubDelete_297_222",
+    "generic_fifo_dc_NSubUpdate_297_222"
+   ]
+  },
+  {
+   "hash": "b5e0d84deaa993d4",
+   "size": 2,
+   "members": [
+    "generic_fifo_sc_b_NSubDelete_179_211",
+    "generic_fifo_sc_b_NSubUpdate_233_220"
+   ]
+  },
+  {
+   "hash": "0516de57d4602110",
+   "size": 1,
+   "members": [
+    "generic_dpram_EdgeFlip_93_159"
+   ]
+  },
+  {
+   "hash": "d965de92b03d8270",
+   "size": 1,
+   "members": [
+    "generic_dpram_ExprDelete_43_129"
+   ]
+  },
+  {
+   "hash": "7bfd9ca01ec47a90",
+   "size": 1,
+   "members": [
+    "generic_dpram_IOFlip1_63_137"
+   ]
+  },
+  {
+   "hash": "62c36a37f93a2e53",
+   "size": 1,
+   "members": [
+    "generic_dpram_NSubDelete_119_168"
+   ]
+  },
+  {
+   "hash": "607cd997b9efa196",
+   "size": 1,
+   "members": [
+    "generic_fifo_dc_NSubMove_261_209"
+   ]
+  },
+  {
+   "hash": "e45a7917247f0cd0",
+   "size": 1,
+   "members": [
+    "generic_fifo_sc_b_ExprDelete_166_201"
+   ]
+  },
+  {
+   "hash": "20d371023508729f",
+   "size": 1,
+   "members": [
+    "generic_fifo_sc_b_ExprInsert_284_233"
+   ]
+  },
+  {
+   "hash": "8761aa3d89168ca1",
+   "size": 1,
+   "members": [
+    "generic_fifo_sc_b_IOFlip2_53_159"
+   ]
+  },
+  {
+   "hash": "9931331def711b9e",
+   "size": 1,
+   "members": [
+    "generic_fifo_sc_b_NSubMove_176_211"
+   ]
+  },
+  {
+   "hash": "1667b1db157f9876",
+   "size": 1,
+   "members": [
+    "generic_fifo_sc_b_NSubMove_205_215"
+   ]
+  },
+  {
+   "hash": "95ac16619f55e05e",
+   "size": 1,
+   "members": [
+    "generic_fifo_sc_b_NSubMove_259_224"
+   ]
+  },
+  {
+   "hash": "972ce63e63bc7e8a",
+   "size": 1,
+   "members": [
+    "generic_fifo_sc_b_NSubUpdate_179_211"
+   ]
+  },
+  {
+   "hash": "55a5cb06d2281ee1",
+   "size": 1,
+   "members": [
+    "generic_dpram_ExprUpdate_116_167"
+   ]
+  }
+ ],
+ "n_not_killed": 1
+}

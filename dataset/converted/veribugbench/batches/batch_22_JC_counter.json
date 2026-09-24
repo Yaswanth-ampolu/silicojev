@@ -1,0 +1,92 @@
+{
+ "batch_index": 22,
+ "source_group": "veribugbench:RTLLM/JC_counter",
+ "project": "JC_counter",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns/1ns\n\nmodule testbench;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n    // Parameters\n    parameter CLK_PERIOD = 10; // Clock period in simulation time units\n    \n    // Inputs\n    reg clk;\n    reg rst_n;\n    \n    // Outputs\n    wire [63:0] Q;\n\n    // Instantiate the module\n    JC_counter uut (\n        .clk(clk),\n        .rst_n(rst_n),\n        .Q(Q)\n    );\n    \n    // Clock generation\n    always #((CLK_PERIOD)/2) clk = ~clk;\n    \n    integer error=0;\n    // Initial block for stimulus generation\n    initial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n        // Initialize inputs\n        clk = 0;\n        rst_n = 1;\n        \n        // Wait for a few clock cycles\n        #((CLK_PERIOD) * 2);\n        \n        // Release reset\n        rst_n = 0;\n        #((CLK_PERIOD) * 2);\n        rst_n = 1;\n        \n        // Simulate for a number of clock cycles\n        #((CLK_PERIOD) * 20);\n        error = (Q ==64'b 1111111111111111111100000000000000000000000000000000000000000000)? error : error+1;\n        #((CLK_PERIOD) * 44);\n        error = (Q ==64'b 1111111111111111111111111111111111111111111111111111111111111111)? error : error+1;\n        #((CLK_PERIOD) * 1);\n        error = (Q ==64'b 0111111111111111111111111111111111111111111111111111111111111111)? error : error+1;\n        #((CLK_PERIOD) * 62);\n        error = (Q ==64'b 0000000000000000000000000000000000000000000000000000000000000001)? error : error+1;\n\n        if (error == 0) begin\n            $display(\"===========Your Design Passed===========\");\n        end\n        else begin\n        $display(\"===========Error===========\");\n        end\n        // $display(\"Q = %b\", Q); \n        \n        // Finish simulation\n        $finish;\n    end\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"Q,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", Q);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for synchronization\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    $display(\"LLM: Starting Mutation Tests for JC_counter...\");\n\n    // Initialize Inputs\n    rst_n = 1;\n    #10;\n\n    // ---------------------------------------------------------\n    // Test Case 1: Global Reset Verification\n    // ---------------------------------------------------------\n    // Assert reset low for sufficient time to cover clock edges\n    rst_n = 0;\n    #20;\n    rst_n = 1;\n\n    // ---------------------------------------------------------\n    // Test Case 2: Full Johnson Counter Sequence (State Coverage)\n    // ---------------------------------------------------------\n    // The 64-bit Johnson counter has a cycle length of 128 states.\n    // Sequence: 0 -> 1..0 -> 1..1 -> 0..1 -> 0\n    // We loop 140 times to ensure full coverage of:\n    // - The 'if(!Q[0])' branch (filling with 1s)\n    // - The 'else' branch (filling with 0s)\n    // - All bit-shift positions [63:1]\n    for (i = 0; i < 140; i = i + 1) begin\n        @(posedge clk);\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 3: Asynchronous Reset Sensitivity (Corner Case)\n    // ---------------------------------------------------------\n    // Target: Sensitivity list faults and Sync/Async mutations.\n    // Action: Assert reset on negedge (away from posedge) and release before next posedge.\n    // Expectation: Q should clear immediately. If Sync reset, Q won't change.\n    @(negedge clk);\n    rst_n = 0;\n    #2; // Short pulse between clock edges\n    rst_n = 1;\n\n    // ---------------------------------------------------------\n    // Test Case 4: Recovery Check\n    // ---------------------------------------------------------\n    // Verify the counter resumes correct operation from 0 after async reset.\n    for (i = 0; i < 20; i = i + 1) begin\n        @(posedge clk);\n    end\n\n    // 4. Handover to Original Testbench\n    $display(\"LLM: Tests Finished. Handing over...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:2a9257f19b05d24e",
+   "project": "JC_counter",
+   "buggy_rtl": "\n\nmodule JC_counter\n(\n  input clk,\n  input rst_n,\n  output reg [63:0] Q\n);\n\n\n  always @(posedge clk) begin\n    if(!rst_n) Q <= 'd0; \n    else if(!Q[0]) Q <= { 1'b1, Q[63:1] }; \n    else Q <= { 1'b0, Q[63:1] };\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3bb078185ef7bca4",
+   "project": "JC_counter",
+   "buggy_rtl": "\n\nmodule JC_counter\n(\n  input clk,\n  input rst_n,\n  output reg [63:0] Q\n);\n\n\n  always @(posedge clk or posedge rst_n) begin\n    if(!rst_n) Q <= 'd0; \n    else if(!Q[0]) Q <= { 1'b1, Q[63:1] }; \n    else Q <= { 1'b0, Q[63:1] };\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f27e8615b77e0f4b",
+   "project": "JC_counter",
+   "buggy_rtl": "\n\nmodule JC_counter\n(\n  input clk,\n  input rst_n,\n  output reg [63:0] Q\n);\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) Q <= 'd0; \n    else if(!Q[0]) Q <= { 1'b1, Q[63:1] }; \n    else Q <= { 1'b0, Q[63:1] };\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ded2e27a04144a73",
+   "project": "JC_counter",
+   "buggy_rtl": "\n\nmodule JC_counter\n(\n  input clk,\n  input rst_n,\n  output reg [63:0] Q\n);\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else if(!Q[0]) Q <= { 1'b1, Q[63:1] }; \n    else Q <= { 1'b0, Q[63:1] };\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b5a67715705e3dbe",
+   "project": "JC_counter",
+   "buggy_rtl": "\n\nmodule JC_counter\n(\n  input clk,\n  input rst_n,\n  output reg [63:0] Q\n);\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else begin\n      if(!Q[0]) Q <= { 1'b1, Q[63:1] }; \n      else Q <= { 1'b0, Q[63:1] };\n      Q <= 'd0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:52610b4b0b16b15f",
+   "project": "JC_counter",
+   "buggy_rtl": "\n\nmodule JC_counter\n(\n  input clk,\n  input rst_n,\n  output reg [63:0] Q\n);\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) Q <= { 1'b1, Q[63:1] }; \n    else if(!Q[0]) Q <= { 1'b1, Q[63:1] }; \n    else Q <= { 1'b0, Q[63:1] };\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ceba6eab2f64d3f0",
+   "project": "JC_counter",
+   "buggy_rtl": "\n\nmodule JC_counter\n(\n  input clk,\n  input rst_n,\n  output reg [63:0] Q\n);\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) Q[14] <= 'd0; \n    else if(!Q[0]) Q <= { 1'b1, Q[63:1] }; \n    else Q <= { 1'b0, Q[63:1] };\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

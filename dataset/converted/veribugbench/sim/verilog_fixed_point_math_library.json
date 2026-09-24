@@ -1,0 +1,314 @@
+{
+ "project_id": "verilog_fixed_point_math_library",
+ "source_group": "Native",
+ "tb": "TestMultS_enhanced.v",
+ "n_origin_files": 4,
+ "golden_rc": 0,
+ "golden_hash": "8510270fd4bd3817",
+ "deterministic": true,
+ "golden_err": null,
+ "sweep_version": 2,
+ "instances": [
+  {
+   "instance": "qmults_ExprDelete_70_40",
+   "operator_id": "ExprDelete",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "209719586bce2d37",
+   "err": null
+  },
+  {
+   "instance": "qmults_ExprInsert_140_59",
+   "operator_id": "ExprInsert",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "68a100237696cc6e",
+   "err": null
+  },
+  {
+   "instance": "qmults_ExprInsert_214_74",
+   "operator_id": "ExprInsert",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cc6cd3e504570ad6",
+   "err": null
+  },
+  {
+   "instance": "qmults_ExprInsert_55_37",
+   "operator_id": "ExprInsert",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cc6cd3e504570ad6",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubDelete_149_61",
+   "operator_id": "NSubDelete",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e4fcbbe16fcfff74",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubDelete_154_62",
+   "operator_id": "NSubDelete",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "06f2dc6c8c777f30",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubDelete_184_68",
+   "operator_id": "NSubDelete",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cc6cd3e504570ad6",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubDelete_219_75",
+   "operator_id": "NSubDelete",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cc6cd3e504570ad6",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubDelete_226_77",
+   "operator_id": "NSubDelete",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "caf13a43e384fdf2",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubDelete_245_82",
+   "operator_id": "NSubDelete",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e4fcbbe16fcfff74",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubInsert_138_58",
+   "operator_id": "NSubInsert",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "06f2dc6c8c777f30",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubInsert_143_59",
+   "operator_id": "NSubInsert",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "04329346c539af80",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubInsert_IF_139_59",
+   "operator_id": "NSubInsert",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "68a100237696cc6e",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubMove_139_59",
+   "operator_id": "NSubMove",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1ca9ec05d2e36d76",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubMove_209_73",
+   "operator_id": "NSubMove",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cc6cd3e504570ad6",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubMove_213_74",
+   "operator_id": "NSubMove",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cbd364cff036736b",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubUpdate_164_64",
+   "operator_id": "NSubUpdate",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "06f2dc6c8c777f30",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubUpdate_219_75",
+   "operator_id": "NSubUpdate",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cc6cd3e504570ad6",
+   "err": null
+  },
+  {
+   "instance": "qmults_NSubUpdate_233_78",
+   "operator_id": "NSubUpdate",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ef8d0dacf1c48a61",
+   "err": null
+  },
+  {
+   "instance": "qmults_PartselectUpdate_104_53",
+   "operator_id": "PartselectUpdate",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e89d5eb0bb07a54a",
+   "err": null
+  },
+  {
+   "instance": "qmults_PartselectUpdate_192_68",
+   "operator_id": "PartselectUpdate",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b0d2c561fe45f2b4",
+   "err": null
+  },
+  {
+   "instance": "qmults_PointerDelete_117_54",
+   "operator_id": "PointerDelete",
+   "replaced": "qmults.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8c9624da931fe160",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "cc6cd3e504570ad6",
+   "size": 6,
+   "members": [
+    "qmults_ExprInsert_214_74",
+    "qmults_ExprInsert_55_37",
+    "qmults_NSubDelete_184_68",
+    "qmults_NSubDelete_219_75",
+    "qmults_NSubMove_209_73",
+    "qmults_NSubUpdate_219_75"
+   ]
+  },
+  {
+   "hash": "06f2dc6c8c777f30",
+   "size": 3,
+   "members": [
+    "qmults_NSubDelete_154_62",
+    "qmults_NSubInsert_138_58",
+    "qmults_NSubUpdate_164_64"
+   ]
+  },
+  {
+   "hash": "68a100237696cc6e",
+   "size": 2,
+   "members": [
+    "qmults_ExprInsert_140_59",
+    "qmults_NSubInsert_IF_139_59"
+   ]
+  },
+  {
+   "hash": "e4fcbbe16fcfff74",
+   "size": 2,
+   "members": [
+    "qmults_NSubDelete_149_61",
+    "qmults_NSubDelete_245_82"
+   ]
+  },
+  {
+   "hash": "209719586bce2d37",
+   "size": 1,
+   "members": [
+    "qmults_ExprDelete_70_40"
+   ]
+  },
+  {
+   "hash": "caf13a43e384fdf2",
+   "size": 1,
+   "members": [
+    "qmults_NSubDelete_226_77"
+   ]
+  },
+  {
+   "hash": "04329346c539af80",
+   "size": 1,
+   "members": [
+    "qmults_NSubInsert_143_59"
+   ]
+  },
+  {
+   "hash": "1ca9ec05d2e36d76",
+   "size": 1,
+   "members": [
+    "qmults_NSubMove_139_59"
+   ]
+  },
+  {
+   "hash": "cbd364cff036736b",
+   "size": 1,
+   "members": [
+    "qmults_NSubMove_213_74"
+   ]
+  },
+  {
+   "hash": "ef8d0dacf1c48a61",
+   "size": 1,
+   "members": [
+    "qmults_NSubUpdate_233_78"
+   ]
+  },
+  {
+   "hash": "e89d5eb0bb07a54a",
+   "size": 1,
+   "members": [
+    "qmults_PartselectUpdate_104_53"
+   ]
+  },
+  {
+   "hash": "b0d2c561fe45f2b4",
+   "size": 1,
+   "members": [
+    "qmults_PartselectUpdate_192_68"
+   ]
+  },
+  {
+   "hash": "8c9624da931fe160",
+   "size": 1,
+   "members": [
+    "qmults_PointerDelete_117_54"
+   ]
+  }
+ ],
+ "n_not_killed": 0
+}

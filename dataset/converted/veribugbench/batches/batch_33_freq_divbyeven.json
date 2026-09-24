@@ -1,0 +1,260 @@
+{
+ "batch_index": 33,
+ "source_group": "veribugbench:RTLLM/freq_divbyeven",
+ "project": "freq_divbyeven",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns / 1ps\nmodule testb_div_even;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n    // Inputs\n    reg clk;\n    reg rst_n;\n    // Outputs\n    wire clk_div;\n \n    // Instantiate the Unit Under Test (UUT)\n    freq_divbyeven uut (\n        .clk(clk), \n        .rst_n(rst_n), \n        .clk_div(clk_div)\n    );\n    always #5 clk = ~clk;\n    \n    integer error = 0;\n    integer expected_value = 0;\n    integer i;\n    initial begin\n        // Initialize Inputs\n        clk = 1;\n        rst_n = 0;\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n        # 10 rst_n = 1;\n        #100;\n\n        $finish;\n    end\n    initial begin\n        // $monitor(\"clk=%d, clk_div=%d\",clk,clk_div);\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n        #5;\n        for (i = 1; i < 20; i = i + 1) begin\n            if (clk_div !== expected_value) begin\n                error = error + 1; \n                $display(\"Failed at%d: clk=%d, clk_div=%d (expected %d)\", i,clk, clk_div, expected_value);\n            end\n\n            if (i < 6) expected_value = 0; // First five pairs\n            else if (i < 12) expected_value = 1; // Next five pairs\n            else if (i < 18) expected_value = 0; // Next five pairs\n            else expected_value = 1; // Last five pairs\n            #5;\n        end\n        if (error == 0) begin\n            $display(\"=========== Your Design Passed ===========\");\n            end\n        else begin\n            $display(\"=========== Test completed with %d/20 failures ===========\", error);\n        end\n    end\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"clk_div,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", clk_div);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    // Initialize Inputs\n    clk = 0;\n    rst_n = 0;\n    \n    // Hold Reset to ensure clean state\n    #20;\n    \n    // Release Reset\n    rst_n = 1;\n    #10;\n\n    // Test Sequence 1: Normal Operation\n    // Verify frequency division (Divide by 6)\n    // Run for 24 clock cycles (4 full output periods) to establish baseline behavior\n    for (i = 0; i < 24; i = i + 1) begin\n        #5 clk = 1;\n        #5 clk = 0;\n    end\n\n    // Test Sequence 2: Asynchronous Reset Verification\n    // Drive partial sequence to increment counter to non-zero state\n    #5 clk = 1; \n    #5 clk = 0; // cnt -> 1\n    #5 clk = 1; \n    #5 clk = 0; // cnt -> 2 (Critical state before toggle)\n    \n    // Assert Reset Asynchronously (clk is low)\n    // This checks if reset works independently of clock edge\n    #2 rst_n = 0;\n    #5 rst_n = 1;\n    \n    // Verify recovery (cnt should reset to 0, delaying the next toggle)\n    for (i = 0; i < 12; i = i + 1) begin\n        #5 clk = 1;\n        #5 clk = 0;\n    end\n\n    // Test Sequence 3: Reset Sensitivity during Clock High\n    // Targets edge sensitivity and priority logic (Async reset should work even if clk is high)\n    #5 clk = 1;\n    #2 rst_n = 0; // Assert reset while clk is high\n    #2 rst_n = 1; // Release reset\n    #1 clk = 0;\n    \n    // Run cycles to ensure state is clean and DUT recovers\n    for (i = 0; i < 6; i = i + 1) begin\n        #5 clk = 1;\n        #5 clk = 0;\n    end\n\n    // Test Sequence 4: Clock Duty Cycle Variation\n    // Targets edge detection logic robustness and potential hold time mutations\n    for (i = 0; i < 6; i = i + 1) begin\n        #2 clk = 1;\n        #8 clk = 0;\n    end\n\n    // 4. Handover to Original Testbench\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:77c4b5ecfdc3f421",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f0dbd957ba51c29d",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(negedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1dfd4b1b9d406f6e",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or posedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cd0db02c69bbdee9",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a77ca1d8a5eafddd",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6690d48de4e598d4",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3eba37e283189978",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3d971b21c91afe72",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:66166b9ebd3d70ba",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f9a54447fd5a01c8",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n < NUM_DIV / 2) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3cae42f32b40afce",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if((cnt < NUM_DIV / 2 - 1) !== (cnt < NUM_DIV / 2 - 1)) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:39d2f7ceb3ce4417",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < (NUM_DIV / 2 - 1) ** (NUM_DIV / 2 - 1)) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c81fa637d701ab1f",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1 <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:966314d37b51ad3c",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div % ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:12d24e6838d90f27",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    begin\n    end\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9b19ac3943d211bf",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    begin\n    end\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:614ec4515ef8faee",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    begin\n    end\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3b9356c5e9b6e5f7",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6b081b61c53f0db6",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n    cnt <= 4'd0;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0768e198bf72638b",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    clk_div <= 1'b0;\n  end else begin\n    if(cnt < NUM_DIV / 2 - 1) begin\n      cnt <= cnt + 1'b1;\n      clk_div <= clk_div;\n    end else begin\n      cnt <= 4'd0;\n      clk_div <= ~clk_div;\n    end\n    cnt <= 4'd0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:088e4803a66648e7",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n    clk_div <= clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0912c7c570e3474b",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:789a1827ed426bc5",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    clk_div <= 1'b0;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:96bfa0440a0e2ed1",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    cnt <= 4'd0;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d1478407d4d05a2e",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= cnt + 1'b1;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:afd46af2711dd6b5",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:55e2aaf527fbac72",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt[7] <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:76075d33790a26b6",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV[18] / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0a442715a881c8fe",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt[7] <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:af59808610ce0160",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt[14] <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7e0252ae9a370ea0",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt > NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ecb363d9996e3b48",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 + 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:80d555be071d485b",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < (NUM_DIV ^ 2) - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:01e4b1d5a8395d95",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt - 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= ~clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fbc307f39f484812",
+   "project": "freq_divbyeven",
+   "buggy_rtl": "\n\nmodule freq_divbyeven\n(\n  clk,\n  rst_n,\n  clk_div\n);\n\n  input clk;\n  input rst_n;\n  output clk_div;\n  reg clk_div;\n  parameter NUM_DIV = 6;\n  reg [3:0] cnt;\n\n  always @(posedge clk or negedge rst_n) if(!rst_n) begin\n    cnt <= 4'd0;\n    clk_div <= 1'b0;\n  end else if(cnt < NUM_DIV / 2 - 1) begin\n    cnt <= cnt + 1'b1;\n    clk_div <= clk_div;\n  end else begin\n    cnt <= 4'd0;\n    clk_div <= |clk_div;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

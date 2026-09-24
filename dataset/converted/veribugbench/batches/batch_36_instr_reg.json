@@ -1,0 +1,332 @@
+{
+ "batch_index": 36,
+ "source_group": "veribugbench:RTLLM/instr_reg",
+ "project": "instr_reg",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns / 1ps\n\nmodule instr_reg_tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\nreg clk;\nreg rst;\nreg [1:0] fetch;\nreg [7:0] data;\n\nwire [2:0] ins;\nwire [4:0] ad1;\nwire [7:0] ad2;\n\ninstr_reg uut (\n    .clk(clk),\n    .rst(rst),\n    .fetch(fetch),\n    .data(data),\n    .ins(ins),\n    .ad1(ad1),\n    .ad2(ad2)\n);\n\ninteger error;\ninteger expected_ins;\ninteger expected_ad1;\ninteger expected_ad2;\n\ninitial begin\n    // Initialize Inputs\n    clk = 0;\n    rst = 0;\n    fetch = 2'b00;\n    data = 8'h00;\n    error = 0;\n\n    // Wait 100 ns for initialization\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n    #100;\n\n    // De-assert reset\n    rst = 1;\n    #10;\n\n    // Perform fetch operation 1 from register\n    fetch = 2'b01;\n    #5;\n    data = 8'b01011100;\n    expected_ins = 3'b010;\n    expected_ad1 = 5'b11100;\n    expected_ad2 = 8'b00;\n    #20;\n\n    // Check the values\n    if (ins !== expected_ins) begin\n        error = error + 1; \n        $display(\"Failed at fetch operation 1: clk=%d, ins=%b (expected %d)\", clk, ins, expected_ins);\n    end\n\n    if (ad1 !== expected_ad1) begin\n        error = error + 1; \n        $display(\"Failed at fetch operation 1: clk=%d, ad1=%b (expected %d)\", clk, ad1, expected_ad1);\n    end\n\n    if (ad2 !== expected_ad2) begin\n        error = error + 1; \n        $display(\"Failed at fetch operation 1: clk=%d, ad2=%b (expected %d)\", clk, ad2, expected_ad2);\n    end\n\n    // Additional test cases can be added here\n\n    // Finish simulation and display total errors\n    if (error == 0) begin\n            $display(\"=========== Your Design Passed ===========\");\n            end\n    else begin\n        $display(\"=========== Test completed with %d failures ===========\", error);\n    end\n    $finish;\nend\n\nalways #5 clk = ~clk;\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"ins,\");\n      $fwrite(file_mantra, \"ad1,\");\n      $fwrite(file_mantra, \"ad2,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", ins);\n        $fwrite(file_mantra, \"%h, \", ad1);\n        $fwrite(file_mantra, \"%h, \", ad2);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    $display(\"LLM: Starting Mutation Testing Stimuli...\");\n\n    // Initialize Inputs\n    rst = 0;\n    fetch = 2'b00;\n    data = 8'h00;\n\n    // Hold Reset for initialization\n    #20;\n    rst = 1;\n    #10;\n\n    // ------------------------------------------------------------\n    // TEST CASE 1: Fetch 01 (Load ins_p1) - Boundary & Bit Patterns\n    // ------------------------------------------------------------\n    // Target: Verify 'ins' (bits 7:5) and 'ad1' (bits 4:0) logic\n    fetch = 2'b01;\n\n    // Pattern: All Zeros\n    data = 8'h00;\n    #10;\n\n    // Pattern: All Ones (Checks max values for ins and ad1)\n    data = 8'hFF;\n    #10;\n\n    // Pattern: Boundary Check - Bit 5 (LSB of ins)\n    // 8'h20 = 0010_0000 -> Expected: ins=1, ad1=0\n    data = 8'h20;\n    #10;\n\n    // Pattern: Boundary Check - Bit 4 (MSB of ad1)\n    // 8'h10 = 0001_0000 -> Expected: ins=0, ad1=16\n    data = 8'h10;\n    #10;\n\n    // Pattern: Alternating Bits (0xAA = 10101010)\n    data = 8'hAA;\n    #10;\n\n    // Pattern: Alternating Bits (0x55 = 01010101)\n    data = 8'h55;\n    #10;\n\n    // Walking 1s on ins_p1 to verify every bit connection and slice boundaries\n    for (i = 0; i < 8; i = i + 1) begin\n        data = 1 << i;\n        #10;\n    end\n\n    // ------------------------------------------------------------\n    // TEST CASE 2: Fetch 10 (Load ins_p2) - Independence Check\n    // ------------------------------------------------------------\n    // Target: Verify 'ad2' updates and 'ins/ad1' hold their values\n    fetch = 2'b10;\n\n    // Load ins_p2 with Walking 1s\n    for (i = 0; i < 8; i = i + 1) begin\n        data = 1 << i;\n        #10;\n    end\n\n    // Load ins_p2 with 0xFF\n    data = 8'hFF;\n    #10;\n\n    // ------------------------------------------------------------\n    // TEST CASE 3: Fetch 00 & 11 (Hold State)\n    // ------------------------------------------------------------\n    // Change data, but fetch is 00 -> Should Hold previous values\n    fetch = 2'b00;\n    data = 8'h00;\n    #10;\n    \n    data = 8'hAA;\n    #10;\n\n    // Change data, but fetch is 11 -> Should Hold previous values\n    fetch = 2'b11;\n    data = 8'h55;\n    #10;\n\n    // ------------------------------------------------------------\n    // TEST CASE 4: Reset Dominance\n    // ------------------------------------------------------------\n    // Assert reset while trying to write to registers\n    fetch = 2'b01;\n    data = 8'hFF;\n    #5;\n    rst = 0; // Active Low Reset\n    #10;\n    // Release Reset\n    rst = 1;\n    #10;\n\n    // ------------------------------------------------------------\n    // TEST CASE 5: Rapid Switching (Control Flow)\n    // ------------------------------------------------------------\n    // Write p1\n    fetch = 2'b01;\n    data = 8'hF0;\n    #10;\n    \n    // Write p2\n    fetch = 2'b10;\n    data = 8'h0F;\n    #10;\n    \n    // Write p1 again\n    fetch = 2'b01;\n    data = 8'hCC;\n    #10;\n\n    // 4. Cleanup\n    $display(\"LLM: Tests Finished. Handing over to Original TB...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:fcf5bdde15ac88c1",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c3eac56f24743eca",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(negedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e936a1c4bc44ec1b",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or posedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ca954fa11097cfbc",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:440b603a01c3d4c2",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7ddb95bb31b2d607",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b9714abfcc9ef637",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst % (fetch == 2'b10)) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5e4b75345b92f1d7",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if((fetch == 2'b01) > (fetch == 2'b01)) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6c617eabac464269",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if((fetch == 2'b10) >>> (fetch == 2'b10)) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:395e283332e74b8b",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  input ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1fe60a2ea6b2fc28",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  input ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:62894cc419bff6d4",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  input ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:68416084a17d0b10",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      begin\n      end\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ab840951c27c0cf0",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      begin\n      end\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6ea8c0517335de56",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        begin\n        end\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ef9733454d5d861c",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        begin\n        end\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4fd0fc9f4758d584",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n        ins_p1 <= data;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b7dd564c10a80ec1",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n    ins_p2 <= data;\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cd446bd508dc80d7",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n      ins_p2 <= ins_p2;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3e3a9a4523a8b532",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n      ins_p1 <= ins_p1;\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7fdfdd6c16e73511",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n        ins_p1 <= ins_p1;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:23b60536b7daf951",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n        ins_p1 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5d42cfae97b63e99",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n      ins_p2 <= ins_p2;\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4a614e11dcb1ea2b",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else begin\n        if(fetch == 2'b10) begin\n          ins_p1 <= ins_p1;\n          ins_p2 <= data;\n        end else begin\n          ins_p1 <= ins_p1;\n          ins_p2 <= ins_p2;\n        end\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fedb8fad56ab3b4f",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n        ins_p2 <= ins_p2;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b40d4f27eed58d9a",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n      ins_p1 <= 8'd0;\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5586178f23ee76fd",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n        if(fetch == 2'b10) begin\n          ins_p1 <= ins_p1;\n          ins_p2 <= data;\n        end else begin\n          ins_p1 <= ins_p1;\n          ins_p2 <= ins_p2;\n        end\n      end else begin\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2f3bd4f9df5d194d",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= 8'd0;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:056457ed5e1df9e9",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= data;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e81fadd68fc912df",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p2 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3add26154e3cccd1",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= data;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0803511a0dc57de5",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p1 <= 8'd0;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:91f5c0dc03f4ac80",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1;\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7cf58be748714601",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2[4:4] <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8e78ad3c05841b04",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:4];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8fa87fec44b0e20f",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1[30];\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:60334adb1696949d",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2[13];\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7bb5e058ca4ee986",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1[21] = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4555e553f718c4c6",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2[2] = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8a0298985b9a32bd",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2[15];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b329960ac8d0c8cc",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1[30] <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:46066009c4b2b8bb",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2[19] <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8a15bd06467143a3",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1[8] <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8d826e2bbe6c8f1b",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2[30];\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:feed132b1695b5ac",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1[20];\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:23182ab82408663b",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch || 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch == 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4dced6bcf12b724c",
+   "project": "instr_reg",
+   "buggy_rtl": "\n\nmodule instr_reg\n(\n  input clk,\n  input rst,\n  input [1:0] fetch,\n  input [7:0] data,\n  output [2:0] ins,\n  output [4:0] ad1,\n  output [7:0] ad2\n);\n\n  reg [7:0] ins_p1;reg [7:0] ins_p2;\n  reg [2:0] state;\n\n  always @(posedge clk or negedge rst) begin\n    if(!rst) begin\n      ins_p1 <= 8'd0;\n      ins_p2 <= 8'd0;\n    end else begin\n      if(fetch == 2'b01) begin\n        ins_p1 <= data;\n        ins_p2 <= ins_p2;\n      end else if(fetch != 2'b10) begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= data;\n      end else begin\n        ins_p1 <= ins_p1;\n        ins_p2 <= ins_p2;\n      end\n    end\n  end\n\n  assign ins = ins_p1[7:5];\n  assign ad1 = ins_p1[4:0];\n  assign ad2 = ins_p2;\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

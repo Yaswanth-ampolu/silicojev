@@ -1,0 +1,13 @@
+{
+ "project_id": "pairing",
+ "source_group": "CirFix",
+ "tb": "test_duursma_lee_algo_t1_enhanced.v",
+ "n_origin_files": 8,
+ "golden_rc": 124,
+ "golden_hash": "5e2bbd6275ebaea4",
+ "deterministic": false,
+ "golden_err": "LLM: Starting deterministic test patterns ...\n\n@@output_test_duursma_lee_algo_t1.txt\ntime, done, out\n1, x, xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+ "sweep_version": 2,
+ "instances": [],
+ "note": "golden unusable - instances not swept"
+}

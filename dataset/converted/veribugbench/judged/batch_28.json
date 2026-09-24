@@ -1,0 +1,466 @@
+{
+ "veribugbench:bea0be5b2cd010c6": {
+  "next_action": {
+   "rtl": 0.88,
+   "waveform": 0.04,
+   "simulation": 0.04,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.93,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.03,
+   "timing_protocol": 0.01,
+   "syntax_compile": 0.01,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.02
+  },
+  "evidence_sufficient": {
+   "true": 0.95,
+   "false": 0.05
+  }
+ },
+ "veribugbench:1d37316429840add": {
+  "next_action": {
+   "rtl": 0.88,
+   "waveform": 0.04,
+   "simulation": 0.04,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.93,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.03,
+   "timing_protocol": 0.01,
+   "syntax_compile": 0.01,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.02
+  },
+  "evidence_sufficient": {
+   "true": 0.95,
+   "false": 0.05
+  }
+ },
+ "veribugbench:82579b56cef68175": {
+  "next_action": {
+   "rtl": 0.88,
+   "waveform": 0.04,
+   "simulation": 0.04,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.92,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.04,
+   "timing_protocol": 0.01,
+   "syntax_compile": 0.01,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.02
+  },
+  "evidence_sufficient": {
+   "true": 0.94,
+   "false": 0.06
+  }
+ },
+ "veribugbench:c8f28a9512f22880": {
+  "next_action": {
+   "rtl": 0.87,
+   "waveform": 0.05,
+   "simulation": 0.04,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.91,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.04,
+   "timing_protocol": 0.01,
+   "syntax_compile": 0.01,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.03
+  },
+  "evidence_sufficient": {
+   "true": 0.93,
+   "false": 0.07
+  }
+ },
+ "veribugbench:3ddf159b1b04b3e4": {
+  "next_action": {
+   "rtl": 0.83,
+   "waveform": 0.06,
+   "simulation": 0.06,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.02,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.82,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.09,
+   "timing_protocol": 0.02,
+   "syntax_compile": 0.02,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.05
+  },
+  "evidence_sufficient": {
+   "true": 0.86,
+   "false": 0.14
+  }
+ },
+ "veribugbench:03db3879c4ce6db1": {
+  "next_action": {
+   "rtl": 0.84,
+   "waveform": 0.06,
+   "simulation": 0.05,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.02,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.78,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.13,
+   "timing_protocol": 0.02,
+   "syntax_compile": 0.02,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.05
+  },
+  "evidence_sufficient": {
+   "true": 0.87,
+   "false": 0.13
+  }
+ },
+ "veribugbench:39144c42b30635de": {
+  "next_action": {
+   "rtl": 0.84,
+   "waveform": 0.06,
+   "simulation": 0.05,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.02,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.78,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.13,
+   "timing_protocol": 0.02,
+   "syntax_compile": 0.02,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.05
+  },
+  "evidence_sufficient": {
+   "true": 0.88,
+   "false": 0.12
+  }
+ },
+ "veribugbench:afb3e501e00f9202": {
+  "next_action": {
+   "rtl": 0.7,
+   "waveform": 0.08,
+   "simulation": 0.14,
+   "constraints": 0.0,
+   "formal": 0.01,
+   "testbench": 0.05,
+   "specification": 0.02,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.5,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.18,
+   "timing_protocol": 0.04,
+   "syntax_compile": 0.06,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.22
+  },
+  "evidence_sufficient": {
+   "true": 0.58,
+   "false": 0.42
+  }
+ },
+ "veribugbench:2cbad0c104eba898": {
+  "next_action": {
+   "rtl": 0.74,
+   "waveform": 0.07,
+   "simulation": 0.12,
+   "constraints": 0.0,
+   "formal": 0.01,
+   "testbench": 0.04,
+   "specification": 0.02,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.55,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.13,
+   "timing_protocol": 0.03,
+   "syntax_compile": 0.05,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.24
+  },
+  "evidence_sufficient": {
+   "true": 0.62,
+   "false": 0.38
+  }
+ },
+ "veribugbench:dd2bd0850b5c5d34": {
+  "next_action": {
+   "rtl": 0.85,
+   "waveform": 0.05,
+   "simulation": 0.06,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.22,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.6,
+   "timing_protocol": 0.03,
+   "syntax_compile": 0.07,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.08
+  },
+  "evidence_sufficient": {
+   "true": 0.85,
+   "false": 0.15
+  }
+ },
+ "veribugbench:7efb60ef63a36d0e": {
+  "next_action": {
+   "rtl": 0.85,
+   "waveform": 0.05,
+   "simulation": 0.06,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.22,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.6,
+   "timing_protocol": 0.03,
+   "syntax_compile": 0.07,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.08
+  },
+  "evidence_sufficient": {
+   "true": 0.85,
+   "false": 0.15
+  }
+ },
+ "veribugbench:9a3fd8c757ad293f": {
+  "next_action": {
+   "rtl": 0.85,
+   "waveform": 0.05,
+   "simulation": 0.06,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.25,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.57,
+   "timing_protocol": 0.03,
+   "syntax_compile": 0.07,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.08
+  },
+  "evidence_sufficient": {
+   "true": 0.85,
+   "false": 0.15
+  }
+ },
+ "veribugbench:6385af3ffcb5c2eb": {
+  "next_action": {
+   "rtl": 0.85,
+   "waveform": 0.05,
+   "simulation": 0.06,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.24,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.58,
+   "timing_protocol": 0.03,
+   "syntax_compile": 0.07,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.08
+  },
+  "evidence_sufficient": {
+   "true": 0.86,
+   "false": 0.14
+  }
+ },
+ "veribugbench:921e02ea838e853a": {
+  "next_action": {
+   "rtl": 0.85,
+   "waveform": 0.05,
+   "simulation": 0.06,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.22,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.6,
+   "timing_protocol": 0.03,
+   "syntax_compile": 0.07,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.08
+  },
+  "evidence_sufficient": {
+   "true": 0.85,
+   "false": 0.15
+  }
+ },
+ "veribugbench:0be9c4e805f6a631": {
+  "next_action": {
+   "rtl": 0.87,
+   "waveform": 0.05,
+   "simulation": 0.04,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.86,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.08,
+   "timing_protocol": 0.01,
+   "syntax_compile": 0.02,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.03
+  },
+  "evidence_sufficient": {
+   "true": 0.93,
+   "false": 0.07
+  }
+ },
+ "veribugbench:4ff377aa16077b53": {
+  "next_action": {
+   "rtl": 0.87,
+   "waveform": 0.05,
+   "simulation": 0.04,
+   "constraints": 0.0,
+   "formal": 0.0,
+   "testbench": 0.03,
+   "specification": 0.01,
+   "ask_human": 0.0,
+   "abstain": 0.0
+  },
+  "root_cause_type": {
+   "combinational_logic": 0.83,
+   "sequential_assignment": 0.0,
+   "reset_initialization": 0.0,
+   "state_machine": 0.0,
+   "type_width": 0.1,
+   "timing_protocol": 0.01,
+   "syntax_compile": 0.02,
+   "formal_property": 0.0,
+   "security": 0.0,
+   "unknown": 0.04
+  },
+  "evidence_sufficient": {
+   "true": 0.92,
+   "false": 0.08
+  }
+ }
+}

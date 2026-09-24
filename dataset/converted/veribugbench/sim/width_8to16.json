@@ -1,0 +1,679 @@
+{
+ "project_id": "width_8to16",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "79122d2939fafb4d",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "width_8to16_AssignN2B_77_25",
+   "operator_id": "AssignN2B",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fa7d9efb8905b781",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_EdgeDelete_113_37",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "eac50615d77788c0",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_EdgeDelete_36_14",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d0838670faa71e24",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_EdgeDelete_84_28",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9948b2a9bcae29fd",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_EdgeFlip_114_37",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6dbc0a1ce32c2f82",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_EdgeFlip_116_37",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "aad60517a9c80300",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_EdgeFlip_62_21",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "088859849a8c0bad",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_EdgeFlip_64_21",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f7cfbef45ff50db5",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_EdgeFlip_85_28",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "78f3a996a45803e1",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_EdgeInsert_113_37",
+   "operator_id": "EdgeInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3773dd86c81f6eda",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprDelete_120_38",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ec487093c0bc3df9",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprDelete_128_40",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3e8284ce17b592b9",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprDelete_43_15",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d0838670faa71e24",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprDelete_53_17",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6d83db44270b37e8",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprDelete_68_22",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c2591513a78cb894",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprDelete_81_25",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c2591513a78cb894",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprDelete_91_29",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9948b2a9bcae29fd",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprDelete_99_31",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1be38b86db3541ac",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprInsert_120_38",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e63cf725cbbd9a0e",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprInsert_128_40",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "18ea9ac5af44cf4f",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprInsert_68_22",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c2591513a78cb894",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprInsert_81_25",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e4f4b220514c720b",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprInsert_99_31",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "57b82adacb67bed9",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubDelete_102_32",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9948b2a9bcae29fd",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubDelete_122_39",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e63cf725cbbd9a0e",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubDelete_131_41",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "eac50615d77788c0",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubDelete_55_18",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d0838670faa71e24",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubDelete_70_23",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c2591513a78cb894",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubDelete_77_25",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c2591513a78cb894",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubDelete_93_30",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4213d4440baf9682",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubInsert_118_37",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "52a6e08d21e43427",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubInsert_66_21",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "221927e17639045f",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubInsert_89_28",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "db5650bddf21b34d",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubInsert_IF_119_38",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e0323f29c8d51270",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubInsert_IF_67_22",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c2591513a78cb894",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubInsert_IF_90_29",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "221927e17639045f",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubMove_119_38",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "eac50615d77788c0",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubMove_127_40",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "18ea9ac5af44cf4f",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubMove_42_15",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d0838670faa71e24",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubMove_67_22",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c2591513a78cb894",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubMove_75_24",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "907d4a77f22a20b6",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubMove_90_29",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9948b2a9bcae29fd",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubMove_98_31",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "82530a2a4d41fb2f",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubUpdate_102_32",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9948b2a9bcae29fd",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubUpdate_107_34",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c061de7a1e9993b8",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubUpdate_131_41",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "eac50615d77788c0",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubUpdate_55_18",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d0838670faa71e24",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubUpdate_70_23",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "60a9f71e5ec19cd9",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_NSubUpdate_77_25",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c2591513a78cb894",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_PointerInsert_124_39",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6454381fdd62a4c8",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprUpdate_51_17",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6d83db44270b37e8",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprUpdate_53_17",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6d83db44270b37e8",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprUpdate_91_29",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9948b2a9bcae29fd",
+   "err": null
+  },
+  {
+   "instance": "width_8to16_ExprUpdate_99_31",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a892a460e8891805",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "c2591513a78cb894",
+   "size": 8,
+   "members": [
+    "width_8to16_ExprDelete_68_22",
+    "width_8to16_ExprDelete_81_25",
+    "width_8to16_ExprInsert_68_22",
+    "width_8to16_NSubDelete_70_23",
+    "width_8to16_NSubDelete_77_25",
+    "width_8to16_NSubInsert_IF_67_22",
+    "width_8to16_NSubMove_67_22",
+    "width_8to16_NSubUpdate_77_25"
+   ]
+  },
+  {
+   "hash": "9948b2a9bcae29fd",
+   "size": 6,
+   "members": [
+    "width_8to16_EdgeDelete_84_28",
+    "width_8to16_ExprDelete_91_29",
+    "width_8to16_NSubDelete_102_32",
+    "width_8to16_NSubMove_90_29",
+    "width_8to16_NSubUpdate_102_32",
+    "width_8to16_ExprUpdate_91_29"
+   ]
+  },
+  {
+   "hash": "d0838670faa71e24",
+   "size": 5,
+   "members": [
+    "width_8to16_EdgeDelete_36_14",
+    "width_8to16_ExprDelete_43_15",
+    "width_8to16_NSubDelete_55_18",
+    "width_8to16_NSubMove_42_15",
+    "width_8to16_NSubUpdate_55_18"
+   ]
+  },
+  {
+   "hash": "eac50615d77788c0",
+   "size": 4,
+   "members": [
+    "width_8to16_EdgeDelete_113_37",
+    "width_8to16_NSubDelete_131_41",
+    "width_8to16_NSubMove_119_38",
+    "width_8to16_NSubUpdate_131_41"
+   ]
+  },
+  {
+   "hash": "6d83db44270b37e8",
+   "size": 3,
+   "members": [
+    "width_8to16_ExprDelete_53_17",
+    "width_8to16_ExprUpdate_51_17",
+    "width_8to16_ExprUpdate_53_17"
+   ]
+  },
+  {
+   "hash": "e63cf725cbbd9a0e",
+   "size": 2,
+   "members": [
+    "width_8to16_ExprInsert_120_38",
+    "width_8to16_NSubDelete_122_39"
+   ]
+  },
+  {
+   "hash": "18ea9ac5af44cf4f",
+   "size": 2,
+   "members": [
+    "width_8to16_ExprInsert_128_40",
+    "width_8to16_NSubMove_127_40"
+   ]
+  },
+  {
+   "hash": "221927e17639045f",
+   "size": 2,
+   "members": [
+    "width_8to16_NSubInsert_66_21",
+    "width_8to16_NSubInsert_IF_90_29"
+   ]
+  },
+  {
+   "hash": "fa7d9efb8905b781",
+   "size": 1,
+   "members": [
+    "width_8to16_AssignN2B_77_25"
+   ]
+  },
+  {
+   "hash": "6dbc0a1ce32c2f82",
+   "size": 1,
+   "members": [
+    "width_8to16_EdgeFlip_114_37"
+   ]
+  },
+  {
+   "hash": "aad60517a9c80300",
+   "size": 1,
+   "members": [
+    "width_8to16_EdgeFlip_116_37"
+   ]
+  },
+  {
+   "hash": "088859849a8c0bad",
+   "size": 1,
+   "members": [
+    "width_8to16_EdgeFlip_62_21"
+   ]
+  },
+  {
+   "hash": "f7cfbef45ff50db5",
+   "size": 1,
+   "members": [
+    "width_8to16_EdgeFlip_64_21"
+   ]
+  },
+  {
+   "hash": "78f3a996a45803e1",
+   "size": 1,
+   "members": [
+    "width_8to16_EdgeFlip_85_28"
+   ]
+  },
+  {
+   "hash": "3773dd86c81f6eda",
+   "size": 1,
+   "members": [
+    "width_8to16_EdgeInsert_113_37"
+   ]
+  },
+  {
+   "hash": "ec487093c0bc3df9",
+   "size": 1,
+   "members": [
+    "width_8to16_ExprDelete_120_38"
+   ]
+  },
+  {
+   "hash": "3e8284ce17b592b9",
+   "size": 1,
+   "members": [
+    "width_8to16_ExprDelete_128_40"
+   ]
+  },
+  {
+   "hash": "1be38b86db3541ac",
+   "size": 1,
+   "members": [
+    "width_8to16_ExprDelete_99_31"
+   ]
+  },
+  {
+   "hash": "e4f4b220514c720b",
+   "size": 1,
+   "members": [
+    "width_8to16_ExprInsert_81_25"
+   ]
+  },
+  {
+   "hash": "57b82adacb67bed9",
+   "size": 1,
+   "members": [
+    "width_8to16_ExprInsert_99_31"
+   ]
+  },
+  {
+   "hash": "4213d4440baf9682",
+   "size": 1,
+   "members": [
+    "width_8to16_NSubDelete_93_30"
+   ]
+  },
+  {
+   "hash": "52a6e08d21e43427",
+   "size": 1,
+   "members": [
+    "width_8to16_NSubInsert_118_37"
+   ]
+  },
+  {
+   "hash": "db5650bddf21b34d",
+   "size": 1,
+   "members": [
+    "width_8to16_NSubInsert_89_28"
+   ]
+  },
+  {
+   "hash": "e0323f29c8d51270",
+   "size": 1,
+   "members": [
+    "width_8to16_NSubInsert_IF_119_38"
+   ]
+  },
+  {
+   "hash": "907d4a77f22a20b6",
+   "size": 1,
+   "members": [
+    "width_8to16_NSubMove_75_24"
+   ]
+  },
+  {
+   "hash": "82530a2a4d41fb2f",
+   "size": 1,
+   "members": [
+    "width_8to16_NSubMove_98_31"
+   ]
+  },
+  {
+   "hash": "c061de7a1e9993b8",
+   "size": 1,
+   "members": [
+    "width_8to16_NSubUpdate_107_34"
+   ]
+  },
+  {
+   "hash": "60a9f71e5ec19cd9",
+   "size": 1,
+   "members": [
+    "width_8to16_NSubUpdate_70_23"
+   ]
+  },
+  {
+   "hash": "6454381fdd62a4c8",
+   "size": 1,
+   "members": [
+    "width_8to16_PointerInsert_124_39"
+   ]
+  },
+  {
+   "hash": "a892a460e8891805",
+   "size": 1,
+   "members": [
+    "width_8to16_ExprUpdate_99_31"
+   ]
+  }
+ ]
+}

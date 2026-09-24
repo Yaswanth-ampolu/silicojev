@@ -1,0 +1,206 @@
+{
+ "batch_index": 6,
+ "source_group": "veribugbench:CirFix/mux_4_1",
+ "project": "mux_4_1",
+ "upstream": "CirFix",
+ "testbench": "module tb_4to1_mux;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n   reg [3:0] a;\n   reg [3:0] b;\n   reg [3:0] c;\n   reg [3:0] d;\n   wire [3:0] out;\n   reg [1:0] sel;\n\n   reg clk;\n   reg instrumented_clk;\n\n   integer i;\n   \n   always #5 clk = !clk;\n   always #20 instrumented_clk = !instrumented_clk;\n\n   mux_4to1_case  mux0 (   .a (a),\n                           .b (b),\n                           .c (c),\n                           .d (d),\n                           .sel (sel),\n                           .out (out));\n\n\n   integer f;\n\n   initial begin\n       f = $fopen(\"output_mux_4_1_tb.txt\");\n       //$fwrite(f, \"time,out[3],out[2],out[1],out[0]\\n\");\n\t   $fwrite(f, \"time,out[0]\\n\");\n       forever begin\n           //@(posedge clk);\n           #1\n           //$fwrite(f, \"%g,%b,%b,%b,%b\\n\", $time,out[3],out[2],out[1],out[0]);\n\t\t   $fwrite(f, \"%g,%b\\n\", $time,out[0]);\n       end\n   end\n   initial begin\n      $monitor (\"[%0t] sel=0x%0h a=0x%0h b=0x%0h c=0x%0h d=0x%0h out=0x%0h\", $time, sel, a, b, c, d, out);\n\n   \tclk = 0;\n      instrumented_clk = 0;\n\n      sel <= 2'b00;\n      a <= 4'b0001;\n      b <= 4'b0010;\n      c <= 4'b0100;\n      d <= 4'b1000;\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n\n      #100;\n      sel <= 2'b01;\n      #100;\n      sel <= 2'b10;\n      #100;\n      sel <= 2'b11;\n      \n      #100;\n\n      sel <= 2'b00;\n      d <= 4'b0001;\n      c <= 4'b0010;\n      b <= 4'b0100;\n      a <= 4'b1000;\n\n      #100;\n      sel <= 2'b01;\n      #100;\n      sel <= 2'b10;\n      #100;\n      sel <= 2'b11;\n\n\n      #800 $finish;\n      #850 $fclose(f);\n   end\n  initial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n#2000000\n$finish;\nend\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    // Wait for the synchronization signal to start execution\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    $display(\"LLM: Starting deterministic test patterns for MUX 4:1...\");\n\n    // Initialize Inputs to known state\n    a = 4'b0000;\n    b = 4'b0000;\n    c = 4'b0000;\n    d = 4'b0000;\n    sel = 2'b00;\n    #10;\n\n    // ------------------------------------------------------------\n    // Test Group 1: Sensitivity List & Input Propagation\n    // ------------------------------------------------------------\n    // Objective: Verify that changes in a, b, c, d propagate immediately\n    // when selected. This targets sensitivity list deletions (e.g., removing 'a' from always @).\n    \n    // Channel A: Toggle bits while selected\n    sel = 2'b00;\n    a = 4'b1010; #10;\n    a = 4'b0101; #10;\n    a = 4'b0000; #10;\n\n    // Channel B: Toggle bits while selected\n    sel = 2'b01;\n    b = 4'b1100; #10;\n    b = 4'b0011; #10;\n    b = 4'b0000; #10;\n\n    // Channel C: Toggle bits while selected\n    sel = 2'b10;\n    c = 4'b1110; #10;\n    c = 4'b0001; #10;\n    c = 4'b0000; #10;\n\n    // Channel D: Toggle bits while selected\n    sel = 2'b11;\n    d = 4'b0111; #10;\n    d = 4'b1000; #10;\n    d = 4'b0000; #10;\n\n    // ------------------------------------------------------------\n    // Test Group 2: Multiplexer Selection Logic (Unique Values)\n    // ------------------------------------------------------------\n    // Objective: Ensure 'sel' maps to the correct input and no aliasing occurs.\n    // Targets: Operator mutations (sel+1), Case item mutations (swapping branches).\n    \n    // Assign unique powers of 2 to identify each channel clearly\n    a = 4'h1; // 0001\n    b = 4'h2; // 0010\n    c = 4'h4; // 0100\n    d = 4'h8; // 1000\n\n    sel = 2'b00; #10; // Expect out = 1\n    sel = 2'b01; #10; // Expect out = 2\n    sel = 2'b10; #10; // Expect out = 4\n    sel = 2'b11; #10; // Expect out = 8\n\n    // ------------------------------------------------------------\n    // Test Group 3: Bit-Level Integrity (Walking 1s)\n    // ------------------------------------------------------------\n    // Objective: Detect stuck-at bits or wiring errors (e.g., out[0] stuck at 0).\n    // Targets: Assignment mutations, bit-select errors.\n    \n    // Using Channel A for detailed bit walk\n    sel = 2'b00;\n    a = 4'b0001; #10;\n    a = 4'b0010; #10;\n    a = 4'b0100; #10;\n    a = 4'b1000; #10;\n    a = 4'b1111; #10; // All 1s\n    a = 4'b0000; #10; // All 0s\n\n    // ------------------------------------------------------------\n    // Test Group 4: Isolation / Crosstalk\n    // ------------------------------------------------------------\n    // Objective: Ensure unselected inputs do not affect the output.\n    // Targets: Logic errors mixing inputs (e.g. out = a | b).\n    \n    // Select A, toggle others violently\n    sel = 2'b00;\n    a = 4'hA;\n    b = 4'h0; c = 4'h0; d = 4'h0; #10;\n    b = 4'hF; c = 4'hF; d = 4'hF; #10; // out should remain A (1010)\n    b = 4'h0; c = 4'h0; d = 4'h0; #10;\n\n    // Select D, toggle others violently\n    sel = 2'b11;\n    d = 4'h5;\n    a = 4'h0; b = 4'h0; c = 4'h0; #10;\n    a = 4'hF; b = 4'hF; c = 4'hF; #10; // out should remain 5 (0101)\n    a = 4'h0; b = 4'h0; c = 4'h0; #10;\n\n    // ------------------------------------------------------------\n    // Test Group 5: Rapid Selection Switching & Latch Detection\n    // ------------------------------------------------------------\n    // Objective: Test transition edges of 'sel' and check for inferred latches.\n    // If a case branch is deleted, the output might hold the previous value.\n    \n    a = 4'hA; b = 4'hB; c = 4'hC; d = 4'hD;\n    \n    sel = 2'b00; #10; // Load A\n    sel = 2'b11; #10; // Jump to D (00 -> 11)\n    sel = 2'b01; #10; // Jump to B (11 -> 01)\n    sel = 2'b10; #10; // Jump to C (01 -> 10)\n    sel = 2'b00; #10; // Back to A (10 -> 00)\n\n    // 4. Cleanup / Handover\n    $display(\"LLM: Tests Complete. Releasing control to original TB.\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (f != 0) $fclose(f);\n    $finish;\nend\n\nendmodule\n",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:8e3d7de1e40c026c",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:e280cef067a7d6b6",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(posedge a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:1329686970e483ea",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or posedge b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:567790a0bea186a0",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or posedge c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:7f56d5fce54d791f",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or posedge d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:a7805be536b56b64",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or posedge sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:7381e0eb46890299",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: begin\n      end\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:6d9b62fd89c77e91",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: begin\n      end\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:e7dc2040d47b283d",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: begin\n      end\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:5b783e17f34548cf",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: begin\n      end\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:e10b25919d4ab4b4",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n    out <= b;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:5961b1f8c87ba3ab",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: begin\n        out <= a;\n        out <= c;\n      end\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:a491558cfd51ef26",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: begin\n        out <= c;\n        out <= d;\n      end\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:dbe2958decdbc4f4",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: begin\n        out <= d;\n        out <= a;\n      end\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:343308f3c8d3d254",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= d;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:aa1ea0c6410ed07a",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= c;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:a23920ca6437afa8",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a[31] or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:ecfaf1b7275437bc",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b[22] or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:14575159dc94e6f4",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c[15] or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:9a0de7c27be2aefa",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d[7] or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:486f9cf47be36c25",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel[11]) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:f1d5bfe4a783d0f5",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel[7])\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:ef83ada5c24e99dc",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a[28];\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:111dacae0a937dfd",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out[27] <= c;\n      2'b11: out <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:26bc992bcea0557c",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out[7] <= d;\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:eb6cd51b2eca4352",
+   "project": "mux_4_1",
+   "buggy_rtl": "\n\nmodule mux_4to1_case\n(\n  input [3:0] a,\n  input [3:0] b,\n  input [3:0] c,\n  input [3:0] d,\n  input [1:0] sel,\n  output reg [3:0] out\n);\n\n\n  always @(a or b or c or d or sel) begin\n    case(sel)\n      2'b00: out <= a;\n      2'b01: out <= b;\n      2'b10: out <= c;\n      2'b11: out <= d[16];\n    endcase\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  }
+ ]
+}

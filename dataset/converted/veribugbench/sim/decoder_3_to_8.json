@@ -1,0 +1,307 @@
+{
+ "project_id": "decoder_3_to_8",
+ "source_group": "CirFix",
+ "tb": "decoder_3_to_8_tb_t1_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "e4d0279c499fb2c8",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "decoder_3_to_8_ExprDelete_108_22",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6658a7389eb16904",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprDelete_45_15",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7a46f38388e191cd",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprDelete_54_16",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6789863d43fd53f6",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprDelete_72_18",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a09c139b1fd29ed1",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprDelete_90_20",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b4a1ace1529698c1",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprDelete_99_21",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cc0b2a48f6275916",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprInsert_107_22",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6b808287cf5c1a32",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprInsert_44_15",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9ccb3931d8e7d034",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprInsert_54_16",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6789863d43fd53f6",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprInsert_62_17",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cdab29b6c62dbf10",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprInsert_71_18",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dcb8823d093a7d81",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprInsert_72_18",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7c0588657e47c561",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprInsert_98_21",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9cb213611c986f0a",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprUpdate_108_22",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "985377bba4749570",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprUpdate_45_15",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b498144991657843",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprUpdate_63_17",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7b89a2bc962413d0",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprUpdate_99_21",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "706d5f6acb6a9148",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprUpdate_54_16",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c66a6735d2a39405",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprUpdate_81_19",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6a394ed53216f48f",
+   "err": null
+  },
+  {
+   "instance": "decoder_3_to_8_ExprUpdate_90_20",
+   "operator_id": "ExprUpdate",
+   "verdict": "COMPILE_FAIL",
+   "rc": -1,
+   "behaviour_hash": "c3a9b41913023e5a",
+   "err": "COMPILE: decoder_3_to_8_ExprUpdate_90_20.v:27: syntax error"
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "6789863d43fd53f6",
+   "size": 2,
+   "members": [
+    "decoder_3_to_8_ExprDelete_54_16",
+    "decoder_3_to_8_ExprInsert_54_16"
+   ]
+  },
+  {
+   "hash": "6658a7389eb16904",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprDelete_108_22"
+   ]
+  },
+  {
+   "hash": "7a46f38388e191cd",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprDelete_45_15"
+   ]
+  },
+  {
+   "hash": "a09c139b1fd29ed1",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprDelete_72_18"
+   ]
+  },
+  {
+   "hash": "b4a1ace1529698c1",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprDelete_90_20"
+   ]
+  },
+  {
+   "hash": "cc0b2a48f6275916",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprDelete_99_21"
+   ]
+  },
+  {
+   "hash": "6b808287cf5c1a32",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprInsert_107_22"
+   ]
+  },
+  {
+   "hash": "9ccb3931d8e7d034",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprInsert_44_15"
+   ]
+  },
+  {
+   "hash": "cdab29b6c62dbf10",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprInsert_62_17"
+   ]
+  },
+  {
+   "hash": "dcb8823d093a7d81",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprInsert_71_18"
+   ]
+  },
+  {
+   "hash": "7c0588657e47c561",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprInsert_72_18"
+   ]
+  },
+  {
+   "hash": "9cb213611c986f0a",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprInsert_98_21"
+   ]
+  },
+  {
+   "hash": "985377bba4749570",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprUpdate_108_22"
+   ]
+  },
+  {
+   "hash": "b498144991657843",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprUpdate_45_15"
+   ]
+  },
+  {
+   "hash": "7b89a2bc962413d0",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprUpdate_63_17"
+   ]
+  },
+  {
+   "hash": "706d5f6acb6a9148",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprUpdate_99_21"
+   ]
+  },
+  {
+   "hash": "c66a6735d2a39405",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprUpdate_54_16"
+   ]
+  },
+  {
+   "hash": "6a394ed53216f48f",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprUpdate_81_19"
+   ]
+  },
+  {
+   "hash": "c3a9b41913023e5a",
+   "size": 1,
+   "members": [
+    "decoder_3_to_8_ExprUpdate_90_20"
+   ]
+  }
+ ]
+}

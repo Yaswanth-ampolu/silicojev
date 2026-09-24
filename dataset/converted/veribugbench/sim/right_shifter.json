@@ -1,0 +1,172 @@
+{
+ "project_id": "right_shifter",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "6eba017fb4f88881",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "right_shifter_AssignN2B_40_12",
+   "operator_id": "AssignN2B",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5373edc7e22ea05c",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_EdgeFlip_30_9",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "27e55503b28d49b5",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_ExprDelete_37_11",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "531bea4d9fab65d3",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_NSubDelete_33_11",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "30eb001ef1a20e7a",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_NSubDelete_40_12",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5373edc7e22ea05c",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_NSubInsert_32_10",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5373edc7e22ea05c",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_NSubUpdate_40_12",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5373edc7e22ea05c",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_PointerDelete_42_12",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "70c799542aadb806",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_PointerInsert_25_7",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "db7aa813bb9468d5",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_PointerInsert_35_11",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "30eb001ef1a20e7a",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_PointerInsert_38_11",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "30eb001ef1a20e7a",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_PointerUpdate_44_12",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5373edc7e22ea05c",
+   "err": null
+  },
+  {
+   "instance": "right_shifter_ExprUpdate_37_11",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2d02c73b8d065dc0",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "5373edc7e22ea05c",
+   "size": 5,
+   "members": [
+    "right_shifter_AssignN2B_40_12",
+    "right_shifter_NSubDelete_40_12",
+    "right_shifter_NSubInsert_32_10",
+    "right_shifter_NSubUpdate_40_12",
+    "right_shifter_PointerUpdate_44_12"
+   ]
+  },
+  {
+   "hash": "30eb001ef1a20e7a",
+   "size": 3,
+   "members": [
+    "right_shifter_NSubDelete_33_11",
+    "right_shifter_PointerInsert_35_11",
+    "right_shifter_PointerInsert_38_11"
+   ]
+  },
+  {
+   "hash": "27e55503b28d49b5",
+   "size": 1,
+   "members": [
+    "right_shifter_EdgeFlip_30_9"
+   ]
+  },
+  {
+   "hash": "531bea4d9fab65d3",
+   "size": 1,
+   "members": [
+    "right_shifter_ExprDelete_37_11"
+   ]
+  },
+  {
+   "hash": "70c799542aadb806",
+   "size": 1,
+   "members": [
+    "right_shifter_PointerDelete_42_12"
+   ]
+  },
+  {
+   "hash": "db7aa813bb9468d5",
+   "size": 1,
+   "members": [
+    "right_shifter_PointerInsert_25_7"
+   ]
+  },
+  {
+   "hash": "2d02c73b8d065dc0",
+   "size": 1,
+   "members": [
+    "right_shifter_ExprUpdate_37_11"
+   ]
+  }
+ ]
+}
