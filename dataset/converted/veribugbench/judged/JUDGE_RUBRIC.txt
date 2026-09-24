@@ -1,0 +1,93 @@
+JUDGE RUBRIC — SilicoJev 3q labels for VeriBugBench
+===================================================
+
+You are a hardware-debugging expert annotator. Judge each case using your own
+engineering reasoning. NEVER use a script, regex, keyword match, lookup table,
+or default value to choose a label or a probability. Python may only be used to
+read/write JSON and to check that probabilities sum to 1.0.
+
+WHAT YOU ARE GIVEN
+------------------
+A batch JSON file containing:
+  - `testbench`  : the Verilog testbench shared by every record in the batch
+  - `questions`  : the exact option space and criteria for the three questions
+  - `records`    : a list of cases, each with `id`, `project`, `buggy_rtl`
+
+Each case is a Verilog design containing exactly ONE injected fault. The
+testbench does not match its golden reference on this revision.
+
+WHAT IS DELIBERATELY WITHHELD FROM YOU
+--------------------------------------
+You are NOT shown: the reference (correct) RTL, the kind of fault injected, the
+fault location, or any simulation output. Do not try to locate or infer these
+files. Judge only from the evidence in the batch. Your judgement is later
+scored against the withheld ground truth, so guessing "what the benchmark
+probably injected" produces a worse result than reading the RTL honestly.
+
+THE THREE QUESTIONS
+-------------------
+1. `next_action` — one of 9: rtl, waveform, simulation, constraints, formal,
+   testbench, specification, ask_human, abstain.
+   Which diagnostic direction should be investigated next, given ONLY the
+   evidence shown?
+2. `root_cause_type` — one of 10: combinational_logic, sequential_assignment,
+   reset_initialization, state_machine, type_width, timing_protocol,
+   syntax_compile, formal_property, security, unknown.
+3. `evidence_sufficient` — true / false.
+   Is there enough evidence IN WHAT YOU WERE SHOWN to choose a likely root
+   cause? This means "the visible fault plus testbench coverage is enough to
+   name a likely root cause", NOT "tool-validated".
+
+OUTPUT REQUIREMENTS
+-------------------
+- Emit a probability DISTRIBUTION over ALL options for every question, summing
+  to exactly 1.0. Express genuine uncertainty in the numbers.
+- Do not emit one-hot answers unless you are genuinely certain.
+- Work through each record individually. Do not assume records share a fault
+  type — they do not.
+
+MANDATORY DILIGENCE CHECKS (apply to EVERY record)
+--------------------------------------------------
+These are general review habits, not hints about any particular case.
+
+A. REGISTER COVERAGE. Identify every register/reg that a given code path
+   reads or writes. After the change, verify each one is STILL handled.
+   A line that looks like a harmless duplicate assignment may have REPLACED an
+   assignment to a DIFFERENT target — in which case that other register is now
+   never written on that path. That is a real behavioural fault, even though
+   the surviving statement looks redundant. Check the assignment target, not
+   just the value.
+
+B. ASSIGNMENT KIND. For clocked blocks, distinguish blocking (`=`) from
+   non-blocking (`<=`). Changing the kind changes scheduling and is a real
+   fault, not a style issue.
+
+C. CONDITION SEMANTICS. For altered conditions, evaluate what the condition
+   now selects. A condition that is always true, always false, or that
+   references the wrong signal, changes which branch executes.
+
+D. WIDTH AND INDEX. For any changed bit-select, part-select, or index, check
+   whether the result is out of range (a write may go nowhere; a read may
+   yield x), and whether the width or signedness changed the value.
+
+E. EVENT CONTROL. For sensitivity-list changes, ask whether the block still
+   triggers when it should.
+
+F. STATE THE ANSWER. If after checks A–E the evidence plainly identifies a
+   likely root cause, do NOT answer `unknown` and do NOT set
+   `evidence_sufficient` to false. Abstention is for cases where the evidence
+   genuinely does not discriminate — it is not a way to avoid committing.
+   Equally, do not force a confident answer where the evidence is thin.
+
+OUTPUT
+------
+Write a JSON object mapping record id -> {
+  "next_action":         {option: probability, ...},
+  "root_cause_type":     {option: probability, ...},
+  "evidence_sufficient": {"true": p, "false": p}
+}
+to the output path named in your task. Create parent directories if needed.
+
+Then report: records judged, the count where evidence_sufficient true > 0.5,
+and any case you believe may be a semantically neutral mutation (stating the
+evidence for that belief).

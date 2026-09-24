@@ -1,0 +1,13 @@
+{
+ "project_id": "verilog_axi-interconnect",
+ "source_group": "Native",
+ "tb": "testbench/tb_topmodule_enhanced.v",
+ "n_origin_files": 18,
+ "golden_rc": -1,
+ "golden_hash": "fe0c9fd63c99760d",
+ "deterministic": true,
+ "golden_err": "COMPILE: tb_topmodule_enhanced.v:1229: syntax error",
+ "sweep_version": 3,
+ "instances": [],
+ "note": "golden unusable - instances not swept"
+}

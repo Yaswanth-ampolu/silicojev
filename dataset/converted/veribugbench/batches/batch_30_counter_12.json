@@ -1,0 +1,338 @@
+{
+ "batch_index": 30,
+ "source_group": "veribugbench:RTLLM/counter_12",
+ "project": "counter_12",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns/1ps\nmodule counter_12_tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n  reg clk, rst_n, valid_count;\n  wire [3:0] out;\n\n  counter_12 dut (\n    .rst_n(rst_n),\n    .clk(clk),\n    .valid_count(valid_count),\n    .out(out)\n  );\n\n  always #5 clk = ~clk;\n  integer i = 0;\n  integer error = 0;\n\n  task reset;\n    begin\n      rst_n = 0;\n      valid_count = 0;\n      #20;\n      rst_n = 1;\n      #10; // Stabilize after reset\n    end\n  endtask\n\n  //--------------------------------------------------\n  // \u65b0\u589e 10+ \u6d4b\u8bd5\u7528\u4f8b\n  //--------------------------------------------------\n\n  // \u6d4b\u8bd5\u7528\u4f8b 4: \u8ba1\u6570\u5668\u6ee1\u540e\u5f52\u96f6\u6d4b\u8bd5\n  task test_round4;\n    begin\n      $display(\"===== Round 4: Counter Wrap Test =====\");\n      valid_count = 1;\n      #200; // Let counter run 10 cycles (0-11)\n      error = (out == 0) ? error : error + 1; // \u68c0\u67e5\u662f\u5426\u5f52\u96f6\n    end\n  endtask\n\n  // \u6d4b\u8bd5\u7528\u4f8b 5: \u968f\u673a\u6682\u505c/\u6062\u590d\u6d4b\u8bd5\n  task test_round5;\n    begin\n      $display(\"===== Round 5: Random Toggle Test =====\");\n      repeat(3) begin\n        valid_count = $random;\n        #($urandom_range(20,50));\n      end\n      error = (out != 0) ? error : error; // \u786e\u4fdd\u590d\u4f4d\u540e\u521d\u59cb\u72b6\u6001\n    end\n  endtask\n\n  // \u6d4b\u8bd5\u7528\u4f8b 6: \u8fb9\u754c\u503c\u6d4b\u8bd5\uff0811 -> 0\uff09\n  task test_round6;\n    begin\n      $display(\"===== Round 6: 11->0 Transition Test =====\");\n      valid_count = 1;\n      #120; // \u521a\u597d\u5230 11\n      error = (out == 4'd11) ? error : error + 1;\n      #10; // \u5e94\u8be5\u5f52\u96f6\n      error = (out == 0) ? error : error + 1;\n    end\n  endtask\n\n  // \u6d4b\u8bd5\u7528\u4f8b 7: \u8fde\u7eed\u590d\u4f4d\u6d4b\u8bd5\n  task test_round7;\n    begin\n      $display(\"===== Round 7: Continuous Reset Test =====\");\n      repeat(3) begin\n        reset();\n        #10;\n      end\n      error = (out != 0) ? error : error + 1;\n    end\n  endtask\n\n  // \u6d4b\u8bd5\u7528\u4f8b 8: \u8d85\u957f\u8ba1\u6570\u6d4b\u8bd5\n  task test_round8;\n    begin\n      $display(\"===== Round 8: Long Run Test =====\");\n      valid_count = 1;\n      repeat(50) #10; // 50\u4e2a\u5468\u671f\uff08\u5e94\u5faa\u73af4\u6b21+\u4f59\u6570\uff09\n      error = (out == 2) ? error : error + 1; // 50 mod 12 = 2\n    end\n  endtask\n\n  // \u6d4b\u8bd5\u7528\u4f8b 9: \u65e0\u6548\u8ba1\u6570\u4fdd\u6301\u6d4b\u8bd5\n  task test_round9;\n    begin\n      $display(\"===== Round 9: Invalid Hold Test =====\");\n      valid_count = 1;\n      #30;\n      valid_count = 0;\n      repeat(5) begin\n        error = (out == 3) ? error : error + 1; // \u68c0\u67e5\u662f\u5426\u4fdd\u6301\n        #10;\n      end\n    end\n  endtask\n\n  // \u6d4b\u8bd5\u7528\u4f8b 10: \u5f02\u6b65\u590d\u4f4d\u6d4b\u8bd5\n  task test_round10;\n    begin\n      $display(\"===== Round 10: Async Reset Test =====\");\n      valid_count = 1;\n      #15; // \u975e\u65f6\u949f\u8fb9\u6cbf\u590d\u4f4d\n      rst_n = 0;\n      #5;\n      error = (out == 0) ? error : error + 1;\n      rst_n = 1;\n    end\n  endtask\n\n  // \u6d4b\u8bd5\u7528\u4f8b 11: \u4e0a\u7535\u590d\u4f4d\u6d4b\u8bd5\n  task test_round11;\n    begin\n      $display(\"===== Round 11: Power-On Reset Test =====\");\n      rst_n = 0;\n      valid_count = 1;\n      #100;\n      error = (out != 0) ? error : error + 1;\n    end\n  endtask\n\n  // \u6d4b\u8bd5\u7528\u4f8b 12: \u6781\u7aef\u65f6\u5e8f\u6d4b\u8bd5\n  task test_round12;\n    begin\n      $display(\"===== Round 12: Timing Edge Test =====\");\n      // \u5728\u65f6\u949f\u8fb9\u6cbf\u9644\u8fd1\u5207\u6362 valid_count\n      #4 valid_count = 1;\n      #1 valid_count = 0;\n      #5 valid_count = 1;\n      #9 valid_count = 0;\n      error = (out == 0) ? error : error + 1;\n    end\n  endtask\n\n  //--------------------------------------------------\n  // \u521d\u59cb\u5757\u6574\u5408\u6240\u6709\u6d4b\u8bd5\n  //--------------------------------------------------\n  initial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n    clk = 0;\n    rst_n = 0;\n    valid_count = 0;\n\n    // \u539f\u6709\u6d4b\u8bd5\n    //reset(); test_round1();\n   // reset(); test_round2();\n    //reset(); test_round3();\n\n    // \u65b0\u589e\u6d4b\u8bd5\uff08\u517112\u7ec4\uff09\n    reset(); test_round4();\n    reset(); test_round5();\n    reset(); test_round6();\n    reset(); test_round7();\n    reset(); test_round8();\n    reset(); test_round9();\n    reset(); test_round10();\n    reset(); test_round11();\n    reset(); test_round12();\n\n    // Final Check\n    if (error == 0) begin\n      $display(\"=========== TEST PASSED ===========\");\n    end else begin\n      $display(\"=========== TEST FAILED (%d errors) ===========\", error);\n    end\n    $finish;\n  end\n\n  // \u6587\u4ef6\u8f93\u51fa\uff08\u4fdd\u6301\u4e0d\u53d8\uff09\n // integer f;\n // initial begin\n //   f = $fopen(\"output.txt\");\n //   $fwrite(f, \"time, out\\n\");\n //   forever begin\n  //    #1;\n //     $fwrite(f, \"%0d, %h\\n\", $time, out);\n //   end\n//  end\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"out,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", out);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests (synchronization)\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    $display(\"LLM: Starting Mutation Verification Stimuli...\");\n\n    // ------------------------------------------------------------\n    // Initialization\n    // ------------------------------------------------------------\n    // Align with negative edge of clock (clk starts 0, toggles at 5, 15...)\n    // T=0\n    rst_n = 0;\n    valid_count = 0;\n    \n    // Hold reset for a few cycles\n    #20; \n\n    // ------------------------------------------------------------\n    // Test Case 1: Basic Reset Recovery & Full Count Sequence\n    // ------------------------------------------------------------\n    // Release reset\n    rst_n = 1;\n    #10;\n    \n    // Enable counting\n    // Counter should go 0 -> 1 -> ... -> 11 -> 0\n    // Pipeline latency is 2 cycles + 1 cycle for count update = 3 cycles visibility\n    // We run enough cycles to cover full range and wrap-around\n    $display(\"LLM: Test 1 - Full Count 0->11->0\");\n    valid_count = 1;\n    #200; // 20 clock cycles (200ns)\n\n    // ------------------------------------------------------------\n    // Test Case 2: Control Flow - Pause/Resume (Valid Signal)\n    // ------------------------------------------------------------\n    // Deassert valid_count to check if counter holds value\n    // This targets 'if (valid_count)' mutations\n    $display(\"LLM: Test 2 - Pause/Resume\");\n    valid_count = 0;\n    #40; // Hold for 4 cycles\n    \n    // Resume counting\n    valid_count = 1;\n    #40; // Run for 4 cycles\n\n    // ------------------------------------------------------------\n    // Test Case 3: Asynchronous Reset Sensitivity\n    // ------------------------------------------------------------\n    // Assert reset strictly between clock edges to verify async behavior.\n    // Clock is Low at T=X0, High at T=X5.\n    // We are currently at a multiple of 10 (Low phase).\n    // Pulse reset low for 2ns (shorter than clock phase)\n    // If reset is synchronous (mutation), this pulse might be ignored or behave differently.\n    $display(\"LLM: Test 3 - Async Reset Glitch\");\n    rst_n = 0;\n    #2;\n    rst_n = 1;\n    #8; // Re-align to 10ns grid\n    \n    // Verify recovery\n    #30;\n\n    // ------------------------------------------------------------\n    // Test Case 4: Boundary Wrap-Around Stress\n    // ------------------------------------------------------------\n    // Reset and run exactly to the boundary (11)\n    $display(\"LLM: Test 4 - Boundary Wrap Specifics\");\n    rst_n = 0; \n    #10; \n    rst_n = 1;\n    \n    // 0 -> 11 takes 11 posedges. 11 * 10ns = 110ns.\n    valid_count = 1;\n    #110; \n    \n    // At this point, internal cnt should be 11.\n    // Pause here to verify state 11 is held.\n    valid_count = 0;\n    #20;\n    \n    // Resume to force wrap 11 -> 0\n    valid_count = 1;\n    #20;\n\n    // ------------------------------------------------------------\n    // Test Case 5: Rapid Toggle (Stress Test)\n    // ------------------------------------------------------------\n    // Toggle valid_count every cycle to expose potential edge/level sensitivity mutations\n    $display(\"LLM: Test 5 - Rapid Toggle\");\n    for (i = 0; i < 6; i = i + 1) begin\n        valid_count = ~valid_count;\n        #10;\n    end\n    valid_count = 0;\n    #20;\n\n    // ------------------------------------------------------------\n    // Test Case 6: Pipeline Flush\n    // ------------------------------------------------------------\n    // Fill pipeline with non-zero values then reset\n    valid_count = 1;\n    #50;\n    rst_n = 0;\n    #10;\n    rst_n = 1;\n    #20;\n\n    // 4. Handover to Original Testbench\n    $display(\"LLM: Stimuli Finished. Handing over.\");\n    llm_go_signal = 0;\n    \n    // Note: Do NOT close file handles or finish simulation here.\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:4f624b067aa96d20",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 = delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fc8a765c38acf228",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:63ede9698b00b85f",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:530c3ad80b680349",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a3d5485d8d33a94e",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or posedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:53b0e5b7553e9248",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n or posedge delay2) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6e8a6fa1980b787b",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n or posedge delay2) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bf812b16662da681",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a2d0d502a4d12968",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0a02a97d5585f762",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9a73497defdd69ab",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f9dcedce6bae0e51",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n < cnt + 1) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c678687c4b0ab189",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if((cnt == 4'd11) ^ cnt + 1) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:501feafb36260aa9",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1 <= !rst_n;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:525efd1b89ec7cbe",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      begin\n      end\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d2b5fd5b6c360e00",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      begin\n      end\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ec6db5d670ff1ec8",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) begin\n      end else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:362fcad27e8d71bd",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else begin\n      end\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0ce0000ff6eaaf1e",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      begin\n      end\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f26f446f45d2802e",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      begin\n      end\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4ca9289fef44a9fc",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      begin\n      end\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fb88e18e62b1a5c1",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      begin\n      end\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:014e0261ff8e7e52",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n    delay1 <= 4'b0000;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:321802614244b818",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n    cnt <= cnt + 1;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e54a2539f0522943",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n      cnt <= 4'b0000;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3f728255af9d81bd",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n      out <= 4'b0000;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5ad75ab8f8809d54",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else begin\n      if(valid_count) begin\n        if(cnt == 4'd11) cnt <= 4'b0000; \n        else cnt <= cnt + 1;\n      end \n      cnt <= 4'b0000;\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c5186b938cb6219a",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n    end else begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3e7bc39e9c004b60",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) begin\n      end else begin\n        cnt <= cnt + 1;\n        cnt <= 4'b0000;\n      end\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5bb71a52877b0465",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n      delay2 <= delay1;\n    end else begin\n      delay1 <= cnt;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:dd8caa87ddd945b1",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      cnt <= 4'b0000;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e2202e8f59e93f9e",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      delay2 <= 4'b0000;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:01dfae5f2b8c9c59",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:415f67500a13ef8c",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else out <= delay2;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:aeb872f723861185",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay2 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b4825a0c4654260a",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      cnt <= 4'b0000;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f1e9f4c7547ca56f",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt[29];\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:90a21d530a3620e1",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1[18];\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:788c876e0326cacf",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2[28];\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6647973a29468adf",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt[17] <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6fa37fc2cbcbe969",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt[6] <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d55e795ad68af8e5",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt[21] <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b9204d97f732ac64",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1[20] <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bddb749d7c330942",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1[8] <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:27902c8a33f4c0b8",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(^rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f89fa7175f5f0b0d",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt <= 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f1140e6c1d9d521b",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt == 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3a31c3c0c29a1a4e",
+   "project": "counter_12",
+   "buggy_rtl": "\n\nmodule counter_12\n(\n  input rst_n,\n  input clk,\n  input valid_count,\n  output reg [3:0] out\n);\n\n  reg [3:0] cnt;\n  reg [3:0] delay1;reg [3:0] delay2;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      cnt <= 4'b0000;\n    end else if(valid_count) begin\n      if(cnt == 4'd11) cnt <= 4'b0000; \n      else cnt <= cnt + 1;\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(|rst_n) begin\n      delay1 <= 4'b0000;\n      delay2 <= 4'b0000;\n      out <= 4'b0000;\n    end else begin\n      delay1 <= cnt;\n      delay2 <= delay1;\n      out <= delay2;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

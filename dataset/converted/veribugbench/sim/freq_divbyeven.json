@@ -1,0 +1,412 @@
+{
+ "project_id": "freq_divbyeven",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "8d818ee8b2ad018c",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "freq_divbyeven_EdgeDelete_26_14",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bd4e9eb31bea6bcc",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_EdgeFlip_27_14",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "076ffabd008affe4",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_EdgeFlip_29_14",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1b5ca8b27e559539",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprDelete_32_15",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8f124bbb790411c1",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprDelete_46_19",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprDelete_48_19",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4882042c99547f78",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprDelete_49_19",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4882042c99547f78",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprDelete_58_20",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprDelete_76_25",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprInsert_32_15",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprInsert_46_19",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "66113e133315375f",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprInsert_48_19",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e0719be141f1ce77",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprInsert_58_20",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprInsert_76_25",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubDelete_35_16",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c3d2ba2e5b8bea2e",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubDelete_54_20",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubDelete_67_24",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4fff7b5850c654f9",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubDelete_72_25",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubInsert_IF_45_19",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubMove_31_15",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "61120191e4fc4b78",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubMove_45_19",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubUpdate_40_17",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "60996f1dba58df97",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubUpdate_54_20",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubUpdate_61_21",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubUpdate_67_24",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e3109a2188f4dae9",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_NSubUpdate_72_25",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_PointerInsert_37_16",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c3d2ba2e5b8bea2e",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_PointerInsert_50_19",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_PointerInsert_56_20",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_PointerInsert_69_24",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4fff7b5850c654f9",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprUpdate_46_19",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "66113e133315375f",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprUpdate_48_19",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e0719be141f1ce77",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprUpdate_49_19",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f74f94dd813c3c3d",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprUpdate_58_20",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4882042c99547f78",
+   "err": null
+  },
+  {
+   "instance": "freq_divbyeven_ExprUpdate_76_25",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d756c7c50864f85",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "7d756c7c50864f85",
+   "size": 16,
+   "members": [
+    "freq_divbyeven_ExprDelete_46_19",
+    "freq_divbyeven_ExprDelete_58_20",
+    "freq_divbyeven_ExprDelete_76_25",
+    "freq_divbyeven_ExprInsert_32_15",
+    "freq_divbyeven_ExprInsert_58_20",
+    "freq_divbyeven_ExprInsert_76_25",
+    "freq_divbyeven_NSubDelete_54_20",
+    "freq_divbyeven_NSubDelete_72_25",
+    "freq_divbyeven_NSubInsert_IF_45_19",
+    "freq_divbyeven_NSubMove_45_19",
+    "freq_divbyeven_NSubUpdate_54_20",
+    "freq_divbyeven_NSubUpdate_61_21",
+    "freq_divbyeven_NSubUpdate_72_25",
+    "freq_divbyeven_PointerInsert_50_19",
+    "freq_divbyeven_PointerInsert_56_20",
+    "freq_divbyeven_ExprUpdate_76_25"
+   ]
+  },
+  {
+   "hash": "4882042c99547f78",
+   "size": 3,
+   "members": [
+    "freq_divbyeven_ExprDelete_48_19",
+    "freq_divbyeven_ExprDelete_49_19",
+    "freq_divbyeven_ExprUpdate_58_20"
+   ]
+  },
+  {
+   "hash": "66113e133315375f",
+   "size": 2,
+   "members": [
+    "freq_divbyeven_ExprInsert_46_19",
+    "freq_divbyeven_ExprUpdate_46_19"
+   ]
+  },
+  {
+   "hash": "e0719be141f1ce77",
+   "size": 2,
+   "members": [
+    "freq_divbyeven_ExprInsert_48_19",
+    "freq_divbyeven_ExprUpdate_48_19"
+   ]
+  },
+  {
+   "hash": "c3d2ba2e5b8bea2e",
+   "size": 2,
+   "members": [
+    "freq_divbyeven_NSubDelete_35_16",
+    "freq_divbyeven_PointerInsert_37_16"
+   ]
+  },
+  {
+   "hash": "4fff7b5850c654f9",
+   "size": 2,
+   "members": [
+    "freq_divbyeven_NSubDelete_67_24",
+    "freq_divbyeven_PointerInsert_69_24"
+   ]
+  },
+  {
+   "hash": "bd4e9eb31bea6bcc",
+   "size": 1,
+   "members": [
+    "freq_divbyeven_EdgeDelete_26_14"
+   ]
+  },
+  {
+   "hash": "076ffabd008affe4",
+   "size": 1,
+   "members": [
+    "freq_divbyeven_EdgeFlip_27_14"
+   ]
+  },
+  {
+   "hash": "1b5ca8b27e559539",
+   "size": 1,
+   "members": [
+    "freq_divbyeven_EdgeFlip_29_14"
+   ]
+  },
+  {
+   "hash": "8f124bbb790411c1",
+   "size": 1,
+   "members": [
+    "freq_divbyeven_ExprDelete_32_15"
+   ]
+  },
+  {
+   "hash": "61120191e4fc4b78",
+   "size": 1,
+   "members": [
+    "freq_divbyeven_NSubMove_31_15"
+   ]
+  },
+  {
+   "hash": "60996f1dba58df97",
+   "size": 1,
+   "members": [
+    "freq_divbyeven_NSubUpdate_40_17"
+   ]
+  },
+  {
+   "hash": "e3109a2188f4dae9",
+   "size": 1,
+   "members": [
+    "freq_divbyeven_NSubUpdate_67_24"
+   ]
+  },
+  {
+   "hash": "f74f94dd813c3c3d",
+   "size": 1,
+   "members": [
+    "freq_divbyeven_ExprUpdate_49_19"
+   ]
+  }
+ ]
+}

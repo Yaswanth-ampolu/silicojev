@@ -1,0 +1,266 @@
+{
+ "batch_index": 5,
+ "source_group": "veribugbench:CirFix/lshift_reg",
+ "project": "lshift_reg",
+ "upstream": "CirFix",
+ "testbench": "module tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n  reg clk;\n  reg instrumented_clk;\n  reg rstn;\n  reg [7:0] load_val;\n  reg load_en;\n  wire [7:0] op;\n \n  // Setup DUT clock\n  always #10 clk = ~clk;\n  always #40 instrumented_clk = ~instrumented_clk;\n \n  // Instantiate the design\n  lshift_reg u0 ( .clk(clk),\n                 .rstn (rstn),\n                 .load_val (load_val),\n                 .load_en (load_en),\n                 .op (op));\n\n  integer f;\n  initial begin\n    f = $fopen(\"output.txt\");\n    //$fwrite(f,\"time,op[7],op[6],op[5],op[4],op[3],op[2],op[1],op[0]\\n\");\n\t$fwrite(f,\"time,op[0]\\n\");\n    //$monitor(\"%g, \\t%b, \\t%b, \\t%b, \\t%d, \\t\\t%b\", $time, clk, rstn, load_val, load_en, op);\n    forever begin\n      //@(posedge clk);\n      //#10\n      \n     #1\n      //$fwrite(f,\"%0d,%b,%b,%b,%b,%b,%b,%b,%b\\n\",$time,op[7],op[6],op[5],op[4],op[3],op[2],op[1],op[0]);\n\t  $fwrite(f,\"%0d,%b\\n\",$time,op[0]);\n    end\n  end\n \n  initial begin\n    // 1. Initialize testbench variables\n    clk <= 0;\n    instrumented_clk <= 0;\n    rstn <= 0;\n    load_val <= 8'h01;\n    load_en <= 0;\n \n    // 2. Apply reset to the design\n    repeat (2)\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n @ (posedge clk);\n    rstn <= 1;\n    repeat (5) @ (posedge clk);\n \n    // 3. Set load_en for 1 clk so that load_val is loaded\n    load_en <= 1;\n    repeat(1) @ (posedge clk);\n    load_en <= 0;\n \n    // 4. Let design run for 20 clocks and then finish\n    repeat (20) @ (posedge clk);\n    $finish;\n  end\n    initial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n#2000000\n$finish;\nend\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    \n    // Initialize Inputs (Synchronize to negedge to avoid race with posedge DUT)\n    rstn = 0;\n    load_val = 8'h00;\n    load_en = 0;\n    \n    // Wait for system to stabilize\n    repeat(5) @(negedge clk);\n\n    // ---------------------------------------------------------\n    // Test Case 1: Synchronous Reset Priority\n    // ---------------------------------------------------------\n    // Assert reset (active low) while load_en is high. \n    // If priority logic is mutated, output might become load_val instead of 0.\n    rstn = 0;\n    load_en = 1;\n    load_val = 8'hFF;\n    @(negedge clk);\n    \n    // Release Reset\n    rstn = 1;\n    @(negedge clk);\n\n    // ---------------------------------------------------------\n    // Test Case 2: Load Functionality\n    // ---------------------------------------------------------\n    // Load 0xAA (Alternating 10101010)\n    load_en = 1;\n    load_val = 8'hAA;\n    @(negedge clk);\n    \n    // Load 0x55 (Alternating 01010101)\n    load_val = 8'h55;\n    @(negedge clk);\n\n    // ---------------------------------------------------------\n    // Test Case 3: Left Rotate Logic (Walking 1)\n    // ---------------------------------------------------------\n    // Targets Bit-Level mutations (e.g., op[0] <= op[7] deletion)\n    // Load 0x01\n    load_val = 8'h01;\n    @(negedge clk); \n    \n    // Disable load, enable shift\n    load_en = 0;\n    \n    // Shift 9 times. \n    // Expected Sequence: 01 -> 02 -> 04 -> 08 -> 10 -> 20 -> 40 -> 80 -> 01 -> 02\n    // If it's a logical shift (mutation), it will become 00 after 8 shifts.\n    repeat(9) @(negedge clk);\n\n    // ---------------------------------------------------------\n    // Test Case 4: Left Rotate Logic (Walking 0)\n    // ---------------------------------------------------------\n    // Targets inverse bit logic\n    // Load 0xFE (11111110)\n    load_en = 1;\n    load_val = 8'hFE;\n    @(negedge clk);\n    \n    load_en = 0;\n    // Shift 9 times\n    // Expected: FE -> FD -> FB -> F7 -> EF -> DF -> BF -> 7F -> FE -> FD\n    repeat(9) @(negedge clk);\n\n    // ---------------------------------------------------------\n    // Test Case 5: Complex Pattern & Control Flow\n    // ---------------------------------------------------------\n    // Load 0xA5 (10100101)\n    load_en = 1;\n    load_val = 8'hA5;\n    @(negedge clk);\n    \n    load_en = 0;\n    // Shift 1: 01001011 (0x4B)\n    @(negedge clk);\n    // Shift 2: 10010110 (0x96)\n    @(negedge clk);\n\n    // ---------------------------------------------------------\n    // Test Case 6: Boundary Values\n    // ---------------------------------------------------------\n    // All 0s\n    load_en = 1;\n    load_val = 8'h00;\n    @(negedge clk);\n    load_en = 0;\n    @(negedge clk); // Should remain 00\n\n    // All 1s\n    load_en = 1;\n    load_val = 8'hFF;\n    @(negedge clk);\n    load_en = 0;\n    @(negedge clk); // Should remain FF\n\n    // 4. Cleanup/Handover\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (f != 0) $fclose(f);\n    $finish;\nend\n\nendmodule\n",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:eedd70d2ce5d2ab9",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] = op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:bbc7d858c3a46cee",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(negedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:52f4c36db033dd7d",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk or posedge load_en) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:6eced33f5583554f",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:fe2a21e44840c875",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:ac2c1172e0eb25c6",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; (i<8)%(i+1); i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:36f174442a802bd1",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[(i + 1) % !rstn] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:7bcb77e673b1c80e",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      begin\n      end\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:686063aa30f39112",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        begin\n        end\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:706a276837cff0c4",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          begin\n          end\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:8d20dd750a9f18ea",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        begin\n        end\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:0f1d612566195d93",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n    op <= load_val;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:042596d7c449845c",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n      op[0] <= op[7];\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:abfb74810748b11f",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n        op <= load_val;\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:e9f97f017d4d86f9",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n      op[0] <= op[7];\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:97ceb80ae6c1b9d6",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n        op[0] <= op[7];\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:d08c6422fbd6c4a6",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end else begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:b07ce8b3911d4177",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n        op <= load_val;\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:813990ae4b430eca",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= load_val;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:b24a642eb370eb8d",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= 0;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:597121b8f326724e",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op <= 0;\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:144290f9a8746123",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op[27:27] <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:d026f3d0d1bc7a85",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:ec4a4f9e3b4b05ed",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op;\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:99c8fd60382a3078",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:f5e7367c4df79142",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op;\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:7fae974b5f518ee2",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op[30] <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:caf12e5a2b7cadbb",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val[16];\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:1b72c191791278d0",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i[30]=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:964447c6a2f27f0b",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i[19]=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:4a980a524929945e",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i[29] + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:ba66ac8eeed2802a",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 31] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:e17937d9fcf5f3db",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[1] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:6781a0f8fe13fc67",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[1];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:945a683cced5c28c",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i===8; i=i+1) begin\n          op[i + 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:a79de1292c2123c9",
+   "project": "lshift_reg",
+   "buggy_rtl": "\n\nmodule lshift_reg\n(\n  input clk,\n  input rstn,\n  input [7:0] load_val,\n  input load_en,\n  output reg [7:0] op\n);\n\n  integer i;\n\n  always @(posedge clk) begin\n    if(!rstn) begin\n      op <= 0;\n    end else begin\n      if(load_en) begin\n        op <= load_val;\n      end else begin\n        for(i=0; i<8; i=i+1) begin\n          op[i >> 1] <= op[i];\n        end\n        op[0] <= op[7];\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  }
+ ]
+}

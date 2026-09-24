@@ -1,0 +1,478 @@
+{
+ "project_id": "LIFObuffer",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "1164455696c10c03",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "LIFObuffer_AssignB2N_122_29",
+   "operator_id": "AssignB2N",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ea9c11e7bdb3a503",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_AssignB2N_143_33",
+   "operator_id": "AssignB2N",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "96ae3fe1d27d20a1",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_AssignB2N_195_40",
+   "operator_id": "AssignB2N",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "49f804ecc760f35b",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_EdgeFlip_54_16",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "baa7cdb609cd7605",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprDelete_147_33",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5625f9a201647bf4",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprDelete_173_37",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ff640015587bf96c",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprDelete_174_37",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2abf8225f4007a43",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprDelete_177_37",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3892eb16bfbd63de",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprDelete_199_40",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "918080c0837b9ef9",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprDelete_64_20",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b54bbcb35ca9fb1e",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprInsert_147_33",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d583225401f0555",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprInsert_177_37",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2abf8225f4007a43",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprInsert_199_40",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3675f24b937699a5",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprInsert_64_20",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b50b11e6dbd225b7",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_NSubMove_134_32",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3b7a2697ef7f8e5e",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_NSubMove_63_20",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b54bbcb35ca9fb1e",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerDelete_126_29",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "44421bb090bc6eca",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerDelete_162_35",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "da95a222dcd3e93a",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerDelete_214_42",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "918a01a3a4002bff",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerDelete_77_22",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "68c7e563a0c6cfc7",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerInsert_119_28",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2b1c4b513b11c1b0",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerInsert_131_30",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3f2cfa590baee4a9",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerInsert_148_33",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b6c1733765833f06",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerInsert_82_23",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "277024b927f00ad3",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerUpdate_128_29",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "110644f3f6390000",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerUpdate_164_35",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bf279550349895e7",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerUpdate_216_42",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a5180616cc4ffbe0",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_PointerUpdate_79_22",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5cd48eb4ae87083c",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprUpdate_136_32",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dea8bbe224103a94",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprUpdate_139_32",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "aedea137880183e9",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprUpdate_147_33",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5625f9a201647bf4",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprUpdate_173_37",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3892eb16bfbd63de",
+   "err": null
+  },
+  {
+   "instance": "LIFObuffer_ExprUpdate_199_40",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3675f24b937699a5",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "5625f9a201647bf4",
+   "size": 2,
+   "members": [
+    "LIFObuffer_ExprDelete_147_33",
+    "LIFObuffer_ExprUpdate_147_33"
+   ]
+  },
+  {
+   "hash": "2abf8225f4007a43",
+   "size": 2,
+   "members": [
+    "LIFObuffer_ExprDelete_174_37",
+    "LIFObuffer_ExprInsert_177_37"
+   ]
+  },
+  {
+   "hash": "3892eb16bfbd63de",
+   "size": 2,
+   "members": [
+    "LIFObuffer_ExprDelete_177_37",
+    "LIFObuffer_ExprUpdate_173_37"
+   ]
+  },
+  {
+   "hash": "b54bbcb35ca9fb1e",
+   "size": 2,
+   "members": [
+    "LIFObuffer_ExprDelete_64_20",
+    "LIFObuffer_NSubMove_63_20"
+   ]
+  },
+  {
+   "hash": "3675f24b937699a5",
+   "size": 2,
+   "members": [
+    "LIFObuffer_ExprInsert_199_40",
+    "LIFObuffer_ExprUpdate_199_40"
+   ]
+  },
+  {
+   "hash": "ea9c11e7bdb3a503",
+   "size": 1,
+   "members": [
+    "LIFObuffer_AssignB2N_122_29"
+   ]
+  },
+  {
+   "hash": "96ae3fe1d27d20a1",
+   "size": 1,
+   "members": [
+    "LIFObuffer_AssignB2N_143_33"
+   ]
+  },
+  {
+   "hash": "49f804ecc760f35b",
+   "size": 1,
+   "members": [
+    "LIFObuffer_AssignB2N_195_40"
+   ]
+  },
+  {
+   "hash": "baa7cdb609cd7605",
+   "size": 1,
+   "members": [
+    "LIFObuffer_EdgeFlip_54_16"
+   ]
+  },
+  {
+   "hash": "ff640015587bf96c",
+   "size": 1,
+   "members": [
+    "LIFObuffer_ExprDelete_173_37"
+   ]
+  },
+  {
+   "hash": "918080c0837b9ef9",
+   "size": 1,
+   "members": [
+    "LIFObuffer_ExprDelete_199_40"
+   ]
+  },
+  {
+   "hash": "7d583225401f0555",
+   "size": 1,
+   "members": [
+    "LIFObuffer_ExprInsert_147_33"
+   ]
+  },
+  {
+   "hash": "b50b11e6dbd225b7",
+   "size": 1,
+   "members": [
+    "LIFObuffer_ExprInsert_64_20"
+   ]
+  },
+  {
+   "hash": "3b7a2697ef7f8e5e",
+   "size": 1,
+   "members": [
+    "LIFObuffer_NSubMove_134_32"
+   ]
+  },
+  {
+   "hash": "44421bb090bc6eca",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerDelete_126_29"
+   ]
+  },
+  {
+   "hash": "da95a222dcd3e93a",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerDelete_162_35"
+   ]
+  },
+  {
+   "hash": "918a01a3a4002bff",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerDelete_214_42"
+   ]
+  },
+  {
+   "hash": "68c7e563a0c6cfc7",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerDelete_77_22"
+   ]
+  },
+  {
+   "hash": "2b1c4b513b11c1b0",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerInsert_119_28"
+   ]
+  },
+  {
+   "hash": "3f2cfa590baee4a9",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerInsert_131_30"
+   ]
+  },
+  {
+   "hash": "b6c1733765833f06",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerInsert_148_33"
+   ]
+  },
+  {
+   "hash": "277024b927f00ad3",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerInsert_82_23"
+   ]
+  },
+  {
+   "hash": "110644f3f6390000",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerUpdate_128_29"
+   ]
+  },
+  {
+   "hash": "bf279550349895e7",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerUpdate_164_35"
+   ]
+  },
+  {
+   "hash": "a5180616cc4ffbe0",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerUpdate_216_42"
+   ]
+  },
+  {
+   "hash": "5cd48eb4ae87083c",
+   "size": 1,
+   "members": [
+    "LIFObuffer_PointerUpdate_79_22"
+   ]
+  },
+  {
+   "hash": "dea8bbe224103a94",
+   "size": 1,
+   "members": [
+    "LIFObuffer_ExprUpdate_136_32"
+   ]
+  },
+  {
+   "hash": "aedea137880183e9",
+   "size": 1,
+   "members": [
+    "LIFObuffer_ExprUpdate_139_32"
+   ]
+  }
+ ]
+}

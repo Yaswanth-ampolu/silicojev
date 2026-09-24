@@ -1,0 +1,13 @@
+{
+ "project_id": "pipelined_fft_64",
+ "source_group": "Native",
+ "tb": "RTL/USFFT64_2B_TB_enhanced.v",
+ "n_origin_files": 10,
+ "golden_rc": -1,
+ "golden_hash": "509cf41bcc2e02e2",
+ "deterministic": true,
+ "golden_err": "COMPILE: USFFT64_2B_TB_enhanced.v:57: Include file fft64_config.inc not found | No top level modules, and no -s option.",
+ "sweep_version": 3,
+ "instances": [],
+ "note": "golden unusable - instances not swept"
+}

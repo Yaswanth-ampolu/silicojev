@@ -1,0 +1,562 @@
+{
+ "project_id": "signal_generator",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "7c90b3ad0c65bd19",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "signal_generator_EdgeDelete_24_9",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f57ed5b5e9955051",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_EdgeFlip_25_9",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "be74431984a6a286",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_EdgeFlip_27_9",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cd5165a80a1564dc",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_EdgeInsert_24_9",
+   "operator_id": "EdgeInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6e0438246955e788",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprDelete_31_10",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "347ed802ffd14e7e",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprDelete_51_18",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b07aa1b601f057a6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprDelete_63_21",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1b6ef2690db0c992",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprDelete_70_26",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0e2569187ead4f3a",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprDelete_82_29",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a2a2c9eb691e02a9",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprInsert_31_10",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c5b37a1654c8f6ea",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprInsert_51_18",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "176dc57a1f60f8d6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprInsert_63_21",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1b6ef2690db0c992",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprInsert_70_26",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0e2569187ead4f3a",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprInsert_82_29",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bb6afa88617b91df",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubDelete_34_11",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b07aa1b601f057a6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubDelete_39_12",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6942dc9202cd3a50",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubDelete_54_19",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bdb0b1973dfec7c",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubDelete_59_21",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b07aa1b601f057a6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubDelete_73_27",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "811148395c355810",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubDelete_78_29",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bdb0b1973dfec7c",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubInsert_29_9",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6942dc9202cd3a50",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubInsert_44_14",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ed4dc4836c7703b6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubInsert_49_17",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "99c2fe210ad79eb8",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubInsert_68_25",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "51c270f5f6748b7a",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubInsert_Case_47_16",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bdb0b1973dfec7c",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubInsert_Case_66_24",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "811148395c355810",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubInsert_IF_30_10",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c5b37a1654c8f6ea",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubInsert_IF_50_18",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fe36a892dce2e812",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubMove_30_10",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9a5264bfc89af268",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubMove_50_18",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b07aa1b601f057a6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubMove_69_26",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bdb0b1973dfec7c",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubUpdate_34_11",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b07aa1b601f057a6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubUpdate_39_12",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6942dc9202cd3a50",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubUpdate_59_21",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b07aa1b601f057a6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_NSubUpdate_78_29",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bb6afa88617b91df",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_PointerInsert_36_11",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b07aa1b601f057a6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_PointerInsert_41_12",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6942dc9202cd3a50",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_PointerInsert_52_18",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c5b37a1654c8f6ea",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_PointerInsert_56_19",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bdb0b1973dfec7c",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_PointerInsert_71_26",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0e2569187ead4f3a",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_PointerInsert_75_27",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "811148395c355810",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_PointerInsert_80_29",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bdb0b1973dfec7c",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprUpdate_31_10",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "347ed802ffd14e7e",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprUpdate_51_18",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "176dc57a1f60f8d6",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprUpdate_63_21",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "03a5dd54898f2275",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprUpdate_70_26",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0e2569187ead4f3a",
+   "err": null
+  },
+  {
+   "instance": "signal_generator_ExprUpdate_82_29",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a2a2c9eb691e02a9",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "b07aa1b601f057a6",
+   "size": 7,
+   "members": [
+    "signal_generator_ExprDelete_51_18",
+    "signal_generator_NSubDelete_34_11",
+    "signal_generator_NSubDelete_59_21",
+    "signal_generator_NSubMove_50_18",
+    "signal_generator_NSubUpdate_34_11",
+    "signal_generator_NSubUpdate_59_21",
+    "signal_generator_PointerInsert_36_11"
+   ]
+  },
+  {
+   "hash": "6bdb0b1973dfec7c",
+   "size": 6,
+   "members": [
+    "signal_generator_NSubDelete_54_19",
+    "signal_generator_NSubDelete_78_29",
+    "signal_generator_NSubInsert_Case_47_16",
+    "signal_generator_NSubMove_69_26",
+    "signal_generator_PointerInsert_56_19",
+    "signal_generator_PointerInsert_80_29"
+   ]
+  },
+  {
+   "hash": "0e2569187ead4f3a",
+   "size": 4,
+   "members": [
+    "signal_generator_ExprDelete_70_26",
+    "signal_generator_ExprInsert_70_26",
+    "signal_generator_PointerInsert_71_26",
+    "signal_generator_ExprUpdate_70_26"
+   ]
+  },
+  {
+   "hash": "6942dc9202cd3a50",
+   "size": 4,
+   "members": [
+    "signal_generator_NSubDelete_39_12",
+    "signal_generator_NSubInsert_29_9",
+    "signal_generator_NSubUpdate_39_12",
+    "signal_generator_PointerInsert_41_12"
+   ]
+  },
+  {
+   "hash": "c5b37a1654c8f6ea",
+   "size": 3,
+   "members": [
+    "signal_generator_ExprInsert_31_10",
+    "signal_generator_NSubInsert_IF_30_10",
+    "signal_generator_PointerInsert_52_18"
+   ]
+  },
+  {
+   "hash": "811148395c355810",
+   "size": 3,
+   "members": [
+    "signal_generator_NSubDelete_73_27",
+    "signal_generator_NSubInsert_Case_66_24",
+    "signal_generator_PointerInsert_75_27"
+   ]
+  },
+  {
+   "hash": "347ed802ffd14e7e",
+   "size": 2,
+   "members": [
+    "signal_generator_ExprDelete_31_10",
+    "signal_generator_ExprUpdate_31_10"
+   ]
+  },
+  {
+   "hash": "1b6ef2690db0c992",
+   "size": 2,
+   "members": [
+    "signal_generator_ExprDelete_63_21",
+    "signal_generator_ExprInsert_63_21"
+   ]
+  },
+  {
+   "hash": "a2a2c9eb691e02a9",
+   "size": 2,
+   "members": [
+    "signal_generator_ExprDelete_82_29",
+    "signal_generator_ExprUpdate_82_29"
+   ]
+  },
+  {
+   "hash": "176dc57a1f60f8d6",
+   "size": 2,
+   "members": [
+    "signal_generator_ExprInsert_51_18",
+    "signal_generator_ExprUpdate_51_18"
+   ]
+  },
+  {
+   "hash": "bb6afa88617b91df",
+   "size": 2,
+   "members": [
+    "signal_generator_ExprInsert_82_29",
+    "signal_generator_NSubUpdate_78_29"
+   ]
+  },
+  {
+   "hash": "f57ed5b5e9955051",
+   "size": 1,
+   "members": [
+    "signal_generator_EdgeDelete_24_9"
+   ]
+  },
+  {
+   "hash": "be74431984a6a286",
+   "size": 1,
+   "members": [
+    "signal_generator_EdgeFlip_25_9"
+   ]
+  },
+  {
+   "hash": "cd5165a80a1564dc",
+   "size": 1,
+   "members": [
+    "signal_generator_EdgeFlip_27_9"
+   ]
+  },
+  {
+   "hash": "6e0438246955e788",
+   "size": 1,
+   "members": [
+    "signal_generator_EdgeInsert_24_9"
+   ]
+  },
+  {
+   "hash": "ed4dc4836c7703b6",
+   "size": 1,
+   "members": [
+    "signal_generator_NSubInsert_44_14"
+   ]
+  },
+  {
+   "hash": "99c2fe210ad79eb8",
+   "size": 1,
+   "members": [
+    "signal_generator_NSubInsert_49_17"
+   ]
+  },
+  {
+   "hash": "51c270f5f6748b7a",
+   "size": 1,
+   "members": [
+    "signal_generator_NSubInsert_68_25"
+   ]
+  },
+  {
+   "hash": "fe36a892dce2e812",
+   "size": 1,
+   "members": [
+    "signal_generator_NSubInsert_IF_50_18"
+   ]
+  },
+  {
+   "hash": "9a5264bfc89af268",
+   "size": 1,
+   "members": [
+    "signal_generator_NSubMove_30_10"
+   ]
+  },
+  {
+   "hash": "03a5dd54898f2275",
+   "size": 1,
+   "members": [
+    "signal_generator_ExprUpdate_63_21"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,410 @@
+{
+ "project_id": "div_16bit",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "n_origin_files": 1,
+ "golden_rc": 0,
+ "golden_hash": "34de6e738dd19e5b",
+ "deterministic": true,
+ "golden_err": null,
+ "sweep_version": 4,
+ "instances": [
+  {
+   "instance": "div_16bit_ExprDelete_120_24",
+   "operator_id": "ExprDelete",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c3920a6f67e05c81",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprDelete_124_25",
+   "operator_id": "ExprDelete",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a7c499a6931e7b6",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprDelete_132_26",
+   "operator_id": "ExprDelete",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0022059388a3ae68",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprDelete_133_26",
+   "operator_id": "ExprDelete",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "18e435765a59e4d5",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprInsert_105_23",
+   "operator_id": "ExprInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "90adb4b53de468cf",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprInsert_124_25",
+   "operator_id": "ExprInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2e96b7969d3d0fe1",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprInsert_132_26",
+   "operator_id": "ExprInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0514c18797f0bbd2",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_IOFlip2_24_4",
+   "operator_id": "IOFlip",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f4d38d2d5f745575",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_IOFlip2_33_5",
+   "operator_id": "IOFlip",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2e3a20ed877c8e42",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PartselectDelete_147_35",
+   "operator_id": "PartselectDelete",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "03acc8b5cd48f831",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PartselectUpdate_150_35",
+   "operator_id": "PartselectUpdate",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4d7e9222b24521fc",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PartselectUpdate_158_36",
+   "operator_id": "PartselectUpdate",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f52c4e34acd395b1",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PointerInsert_102_23",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "NOT_KILLED",
+   "rc": 0,
+   "behaviour_hash": "34de6e738dd19e5b",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PointerInsert_110_23",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5bfdf4ee995aa18c",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PointerInsert_118_24",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e35969310e0969cb",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PointerInsert_130_26",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f49fbdf5069933ba",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PointerInsert_145_35",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "COMPILE_FAIL",
+   "rc": -1,
+   "behaviour_hash": "99828d2c3772d66b",
+   "err": "COMPILE: div_16bit_PointerInsert_145_35.v:38: error: Index odd[22] is out of range."
+  },
+  {
+   "instance": "div_16bit_PointerInsert_153_36",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "34f063d15261cebc",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PointerInsert_72_15",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8be436ff611e812d",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PointerInsert_77_16",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7e0b0a3b4de8b037",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PointerInsert_79_16",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0544b507da143174",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_PointerInsert_94_22",
+   "operator_id": "PointerInsert",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7e0b0a3b4de8b037",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprUpdate_105_23",
+   "operator_id": "ExprUpdate",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "90adb4b53de468cf",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprUpdate_120_24",
+   "operator_id": "ExprUpdate",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c3920a6f67e05c81",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprUpdate_124_25",
+   "operator_id": "ExprUpdate",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bdd9bd251bb93a31",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprUpdate_132_26",
+   "operator_id": "ExprUpdate",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0022059388a3ae68",
+   "err": null
+  },
+  {
+   "instance": "div_16bit_ExprUpdate_133_26",
+   "operator_id": "ExprUpdate",
+   "replaced": "div_16bit.v",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9da2c3ef4eecddd4",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "c3920a6f67e05c81",
+   "size": 2,
+   "members": [
+    "div_16bit_ExprDelete_120_24",
+    "div_16bit_ExprUpdate_120_24"
+   ]
+  },
+  {
+   "hash": "0022059388a3ae68",
+   "size": 2,
+   "members": [
+    "div_16bit_ExprDelete_132_26",
+    "div_16bit_ExprUpdate_132_26"
+   ]
+  },
+  {
+   "hash": "90adb4b53de468cf",
+   "size": 2,
+   "members": [
+    "div_16bit_ExprInsert_105_23",
+    "div_16bit_ExprUpdate_105_23"
+   ]
+  },
+  {
+   "hash": "7e0b0a3b4de8b037",
+   "size": 2,
+   "members": [
+    "div_16bit_PointerInsert_77_16",
+    "div_16bit_PointerInsert_94_22"
+   ]
+  },
+  {
+   "hash": "3a7c499a6931e7b6",
+   "size": 1,
+   "members": [
+    "div_16bit_ExprDelete_124_25"
+   ]
+  },
+  {
+   "hash": "18e435765a59e4d5",
+   "size": 1,
+   "members": [
+    "div_16bit_ExprDelete_133_26"
+   ]
+  },
+  {
+   "hash": "2e96b7969d3d0fe1",
+   "size": 1,
+   "members": [
+    "div_16bit_ExprInsert_124_25"
+   ]
+  },
+  {
+   "hash": "0514c18797f0bbd2",
+   "size": 1,
+   "members": [
+    "div_16bit_ExprInsert_132_26"
+   ]
+  },
+  {
+   "hash": "f4d38d2d5f745575",
+   "size": 1,
+   "members": [
+    "div_16bit_IOFlip2_24_4"
+   ]
+  },
+  {
+   "hash": "2e3a20ed877c8e42",
+   "size": 1,
+   "members": [
+    "div_16bit_IOFlip2_33_5"
+   ]
+  },
+  {
+   "hash": "03acc8b5cd48f831",
+   "size": 1,
+   "members": [
+    "div_16bit_PartselectDelete_147_35"
+   ]
+  },
+  {
+   "hash": "4d7e9222b24521fc",
+   "size": 1,
+   "members": [
+    "div_16bit_PartselectUpdate_150_35"
+   ]
+  },
+  {
+   "hash": "f52c4e34acd395b1",
+   "size": 1,
+   "members": [
+    "div_16bit_PartselectUpdate_158_36"
+   ]
+  },
+  {
+   "hash": "5bfdf4ee995aa18c",
+   "size": 1,
+   "members": [
+    "div_16bit_PointerInsert_110_23"
+   ]
+  },
+  {
+   "hash": "e35969310e0969cb",
+   "size": 1,
+   "members": [
+    "div_16bit_PointerInsert_118_24"
+   ]
+  },
+  {
+   "hash": "f49fbdf5069933ba",
+   "size": 1,
+   "members": [
+    "div_16bit_PointerInsert_130_26"
+   ]
+  },
+  {
+   "hash": "34f063d15261cebc",
+   "size": 1,
+   "members": [
+    "div_16bit_PointerInsert_153_36"
+   ]
+  },
+  {
+   "hash": "8be436ff611e812d",
+   "size": 1,
+   "members": [
+    "div_16bit_PointerInsert_72_15"
+   ]
+  },
+  {
+   "hash": "0544b507da143174",
+   "size": 1,
+   "members": [
+    "div_16bit_PointerInsert_79_16"
+   ]
+  },
+  {
+   "hash": "bdd9bd251bb93a31",
+   "size": 1,
+   "members": [
+    "div_16bit_ExprUpdate_124_25"
+   ]
+  },
+  {
+   "hash": "9da2c3ef4eecddd4",
+   "size": 1,
+   "members": [
+    "div_16bit_ExprUpdate_133_26"
+   ]
+  }
+ ],
+ "n_not_killed": 1
+}

@@ -1,0 +1,478 @@
+{
+ "project_id": "barrel_shifter",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "4658e0a8ee03fcae",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "barrel_shifter_ExprInsert_468_44",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f503261fde347895",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_IOFlip2_19_4",
+   "operator_id": "IOFlip",
+   "verdict": "COMPILE_FAIL",
+   "rc": -1,
+   "behaviour_hash": "b5f44563ff73dc44",
+   "err": "COMPILE: barrel_shifter_IOFlip2_19_4.v:181: error: can not select part of scalar: out"
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_103_12",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8a8f7b1830d2d9c0",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_117_13",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b789a4bfe6312102",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_177_19",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d48e74188f3bb68f",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_247_23",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "67ef2b5074c5dfbf",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_279_25",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9407f94ef947b710",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_301_26",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ec0f1ab2d1cf8583",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_367_32",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "35cfb2b13131d37f",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_375_32",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "86fc6083bb17ff57",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_381_33",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4f0a3c68f66214a9",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_417_35",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "343d118fe8f0e134",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_421_35",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "12de7e771fba4633",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_439_36",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3c9912510670339e",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_61_9",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fa4d0f96734bcdc9",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_73_10",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "4b7494a815b6f3c8",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerDelete_83_11",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f721efde88c48e33",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_119_13",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2fb2fae0271fb2c2",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_183_19",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "58491b0f33f4e8d7",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_209_21",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a804ea186cb7a67d",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_223_22",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "da8a812470f73d05",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_267_24",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "46d17f45c131dde2",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_303_26",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "931b2e7060e83dbf",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_329_30",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6fa63c3e4faa1bb8",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_351_31",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b7a7ac691678a574",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_391_33",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b1ce0699e2433361",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_405_34",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cde18ef1e53f6e68",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_437_36",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a266bae4de8c3e0e",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_445_36",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "991c8492b76be153",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_53_9",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8c39a0dffb442647",
+   "err": null
+  },
+  {
+   "instance": "barrel_shifter_PointerUpdate_79_10",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bfbca34e391ff7ab",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "f503261fde347895",
+   "size": 1,
+   "members": [
+    "barrel_shifter_ExprInsert_468_44"
+   ]
+  },
+  {
+   "hash": "b5f44563ff73dc44",
+   "size": 1,
+   "members": [
+    "barrel_shifter_IOFlip2_19_4"
+   ]
+  },
+  {
+   "hash": "8a8f7b1830d2d9c0",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_103_12"
+   ]
+  },
+  {
+   "hash": "b789a4bfe6312102",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_117_13"
+   ]
+  },
+  {
+   "hash": "d48e74188f3bb68f",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_177_19"
+   ]
+  },
+  {
+   "hash": "67ef2b5074c5dfbf",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_247_23"
+   ]
+  },
+  {
+   "hash": "9407f94ef947b710",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_279_25"
+   ]
+  },
+  {
+   "hash": "ec0f1ab2d1cf8583",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_301_26"
+   ]
+  },
+  {
+   "hash": "35cfb2b13131d37f",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_367_32"
+   ]
+  },
+  {
+   "hash": "86fc6083bb17ff57",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_375_32"
+   ]
+  },
+  {
+   "hash": "4f0a3c68f66214a9",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_381_33"
+   ]
+  },
+  {
+   "hash": "343d118fe8f0e134",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_417_35"
+   ]
+  },
+  {
+   "hash": "12de7e771fba4633",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_421_35"
+   ]
+  },
+  {
+   "hash": "3c9912510670339e",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_439_36"
+   ]
+  },
+  {
+   "hash": "fa4d0f96734bcdc9",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_61_9"
+   ]
+  },
+  {
+   "hash": "4b7494a815b6f3c8",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_73_10"
+   ]
+  },
+  {
+   "hash": "f721efde88c48e33",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerDelete_83_11"
+   ]
+  },
+  {
+   "hash": "2fb2fae0271fb2c2",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_119_13"
+   ]
+  },
+  {
+   "hash": "58491b0f33f4e8d7",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_183_19"
+   ]
+  },
+  {
+   "hash": "a804ea186cb7a67d",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_209_21"
+   ]
+  },
+  {
+   "hash": "da8a812470f73d05",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_223_22"
+   ]
+  },
+  {
+   "hash": "46d17f45c131dde2",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_267_24"
+   ]
+  },
+  {
+   "hash": "931b2e7060e83dbf",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_303_26"
+   ]
+  },
+  {
+   "hash": "6fa63c3e4faa1bb8",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_329_30"
+   ]
+  },
+  {
+   "hash": "b7a7ac691678a574",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_351_31"
+   ]
+  },
+  {
+   "hash": "b1ce0699e2433361",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_391_33"
+   ]
+  },
+  {
+   "hash": "cde18ef1e53f6e68",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_405_34"
+   ]
+  },
+  {
+   "hash": "a266bae4de8c3e0e",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_437_36"
+   ]
+  },
+  {
+   "hash": "991c8492b76be153",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_445_36"
+   ]
+  },
+  {
+   "hash": "8c39a0dffb442647",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_53_9"
+   ]
+  },
+  {
+   "hash": "bfbca34e391ff7ab",
+   "size": 1,
+   "members": [
+    "barrel_shifter_PointerUpdate_79_10"
+   ]
+  }
+ ]
+}

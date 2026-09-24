@@ -1,0 +1,182 @@
+{
+ "batch_index": 42,
+ "source_group": "veribugbench:RTLLM/sub_64bit",
+ "project": "sub_64bit",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns / 1ps\n\nmodule testbench;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n  reg [63:0] A;          // Input A (64 bits)\n  reg [63:0] B;          // Input B (64 bits)\n  wire [63:0] result;    // Subtraction result (64 bits)\n  wire overflow;         // Overflow signal\n  integer i;             // Loop variable\n  integer error = 0;     // Error count for failed tests\n\n  // Instantiate the verified_sub_64bit module\n  sub_64bit uut (\n    .A(A),\n    .B(B),\n    .result(result),\n    .overflow(overflow)\n  );\n\n  // Randomize inputs and check output\n  initial begin\n    for (i = 0; i < 100; i = i + 1) begin\n        // Generate random 64-bit inputs\n        A = $random;\n        B = $random;\n\n        // Wait for the operation to complete\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n        #10;\n\n        // Calculate expected result using system task\n        // $monitor(\"A = %d, B = %d, Expected Result = %d, Overflow = %b\", A, B, A - B, overflow);\n\n        // Check the result of the subtraction\n        if (result !== (A - B) || (A - B < 0 && overflow !== 1)) begin\n            error = error + 1;\n            $display(\"Test failed: A = %d, B = %d, Expected Result = %d, Got = %d, Overflow = %b\", A, B, A - B, result, overflow);\n        end\n    end\n\n    // Final test result summary\n    if (error == 0) begin\n      $display(\"=========== Your Design Passed ===========\");\n    end\n    else begin\n      $display(\"=========== Test completed with %d /100 failures ===========\", error);\n    end\n\n    $finish;\n  end\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"result,\");\n      $fwrite(file_mantra, \"overflow,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", result);\n        $fwrite(file_mantra, \"%h, \", overflow);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n        reg [63:0] one_64;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n\n    // 2. THEN WAIT for original tests\n    // Note: Since llm_go_signal is initially 1, this passes immediately,\n    // allowing these tests to run before the original testbench.\n    wait(llm_go_signal == 1);\n\n    $display(\"LLM: Starting Deterministic Mutation Testing Stimuli...\");\n    one_64 = 64'h1;\n\n    // ---------------------------------------------------------\n    // Category 1: Basic Functional & Operator Mutations\n    // Targets: Operator replacements (+, &, |), simple stuck-at\n    // ---------------------------------------------------------\n    // Identity Check\n    A = 64'h0000000000000000; B = 64'h0000000000000000; #10;\n    \n    // Simple Subtraction (Positive Result)\n    A = 64'h0000000000000064; B = 64'h0000000000000032; #10; // 100 - 50 = 50\n    \n    // Simple Subtraction (Negative Result)\n    A = 64'h0000000000000032; B = 64'h0000000000000064; #10; // 50 - 100 = -50\n\n    // ---------------------------------------------------------\n    // Category 2: Bit-Level Independence (Walking 1s)\n    // Targets: Bit-select faults, wiring errors, coupling\n    // ---------------------------------------------------------\n    // Walk 1 on A, B=0\n    for (i = 0; i < 64; i = i + 1) begin\n        A = one_64 << i;\n        B = 64'h0000000000000000;\n        #10;\n    end\n\n    // Walk 1 on B, A=0 (Result = -B)\n    for (i = 0; i < 64; i = i + 1) begin\n        A = 64'h0000000000000000;\n        B = one_64 << i;\n        #10;\n    end\n\n    // ---------------------------------------------------------\n    // Category 3: Pattern Stress Testing\n    // Targets: Crosstalk, carry propagation chains\n    // ---------------------------------------------------------\n    // All 1s\n    A = 64'hFFFFFFFFFFFFFFFF; B = 64'h0000000000000000; #10;\n    A = 64'h0000000000000000; B = 64'hFFFFFFFFFFFFFFFF; #10;\n    A = 64'hFFFFFFFFFFFFFFFF; B = 64'hFFFFFFFFFFFFFFFF; #10;\n\n    // Alternating Patterns (AA.. / 55..)\n    A = 64'hAAAAAAAAAAAAAAAA; B = 64'h5555555555555555; #10;\n    A = 64'h5555555555555555; B = 64'hAAAAAAAAAAAAAAAA; #10;\n\n    // ---------------------------------------------------------\n    // Category 4: Blocking vs Non-Blocking Mutation Detection\n    // Targets: result <= A - B (Non-blocking assignment error)\n    // Strategy: Set Result to POS, then immediately cause Overflow (Result NEG).\n    // If non-blocking, the 'if' condition sees old POS result and misses overflow.\n    // ---------------------------------------------------------\n    \n    // Step 1: Establish Positive Result (A=10, B=0 -> Result=10)\n    A = 64'h000000000000000A; B = 64'h0000000000000000; #10;\n\n    // Step 2: Trigger Overflow (MaxPos - (-1) -> MinNeg)\n    // A[63]=0, B[63]=1. Result should be 8000... (Neg).\n    // If blocking: result is Neg. (0!=1) && (1!=0) -> Overflow=1.\n    // If non-blocking: result is Pos (from Step 1). (0!=1) && (0!=0) -> Overflow=0.\n    A = 64'h7FFFFFFFFFFFFFFF; B = 64'hFFFFFFFFFFFFFFFF; #10;\n\n    // ---------------------------------------------------------\n    // Category 5: Overflow Logic Coverage\n    // Logic: if ((A[63] != B[63]) && (result[63] != A[63]))\n    // ---------------------------------------------------------\n\n    // 5.1: NEG - POS -> NEG (Overflow)\n    // MinNeg - 1 = 7FFF... (Pos). Should be Neg.\n    A = 64'h8000000000000000; B = 64'h0000000000000001; #10;\n\n    // 5.2: POS - NEG -> POS (No Overflow)\n    // 1 - (-1) = 2\n    A = 64'h0000000000000001; B = 64'hFFFFFFFFFFFFFFFF; #10;\n\n    // 5.3: NEG - POS -> NEG (No Overflow)\n    // -1 - 1 = -2\n    A = 64'hFFFFFFFFFFFFFFFF; B = 64'h0000000000000001; #10;\n\n    // 5.4: POS - POS (Never Overflow)\n    A = 64'h7FFFFFFFFFFFFFFF; B = 64'h0000000000000001; #10;\n\n    // 5.5: NEG - NEG (Never Overflow)\n    A = 64'h8000000000000000; B = 64'hFFFFFFFFFFFFFFFF; #10;\n\n    // ---------------------------------------------------------\n    // 3. Handover\n    // ---------------------------------------------------------\n    $display(\"LLM: Tests Finished. Handing over to Original TB...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:1927887b4f5b3e27",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = B;\n    if((A[63] != B[63]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a6c662f181af5fcd",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if(result[63] != A[63]) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b171cd9119737c6c",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if(B[63] && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:54892fc3ee907531",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B[63]) && A[63]) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3a3c6196a1a94a4e",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B >> (result[63] != A[63]);\n    if((A[63] != B[63]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b91fc6e770689b77",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if(((A[63] != B[63]) <= ((A[63] != B[63]) && (result[63] != A[63]))) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:70776d0f6af463a2",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B[63]) && ((result[63] != A[63]) != ((A[63] != B[63]) && (result[63] != A[63])))) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3cc0d6118713c31c",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B[63]) && (result[63] != A[63])) begin\n    end else begin\n      overflow = 0;\n      overflow = 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4f124630a3bc5151",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A != B[63]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e2bcf9e091838823",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ed33d46cc3d53f71",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B[63]) && (result != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:edea2114e4d70079",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B[63]) && (result[63] != A)) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b2ba50712fc8a2af",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result[15] = A - B;\n    if((A[63] != B[63]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8ef539e14017f68a",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A[18] - B;\n    if((A[63] != B[63]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6e2fabfd1b7b0204",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B[10];\n    if((A[63] != B[63]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8ed0092bd20d901b",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[1] != B[63]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:eee1420fc9273b5e",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B[13]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9da81a90c755eeb0",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B[63]) && (result[9] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:82e984f4fdb5bc95",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B[63]) && (result[63] != A[22])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c99ef9f1cb81f038",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A & B;\n    if((A[63] != B[63]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a4cdaa4f07f0d2a8",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] >>> B[63]) && (result[63] != A[63])) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3854d1684e56282e",
+   "project": "sub_64bit",
+   "buggy_rtl": "\n\nmodule sub_64bit\n(\n  input [63:0] A,\n  input [63:0] B,\n  output reg [63:0] result,\n  output reg overflow\n);\n\n\n  always @(*) begin\n    result = A - B;\n    if((A[63] != B[63]) && result[63] ~^ A[63]) begin\n      overflow = 1;\n    end else begin\n      overflow = 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

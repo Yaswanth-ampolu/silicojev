@@ -1,0 +1,337 @@
+{
+ "project_id": "sub_64bit",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "e7b381152dccdf5b",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "sub_64bit_ExprDelete_35_8",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "683c2fe61d6e23b0",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_ExprDelete_39_11",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bd6815ec7289707b",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_ExprDelete_40_11",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "47d36d92965f03d1",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_ExprDelete_47_11",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3774b6a591adb49f",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_ExprInsert_35_8",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fef194fee8bf439e",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_ExprInsert_40_11",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bd6815ec7289707b",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_ExprInsert_47_11",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0c975a6a501f662f",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_NSubMove_38_11",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "9d3054783d7f3b62",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerDelete_41_11",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "31ed1567f39c7256",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerDelete_44_11",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "18fdc460b068ca1a",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerDelete_48_11",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "063e3e45eea6cfbc",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerDelete_51_11",
+   "operator_id": "PointerDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "57a58676cc0c2924",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerInsert_33_8",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b25c11eac54e37f0",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerInsert_36_8",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b518d58b55090260",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerInsert_37_8",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8a3e20e67f6317a9",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerUpdate_43_11",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "281281817779e12c",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerUpdate_46_11",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0319cbea6f84d05e",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerUpdate_50_11",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f5f385cee3aa283a",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_PointerUpdate_53_11",
+   "operator_id": "PointerUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "14af414e0f8a5bca",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_ExprUpdate_35_8",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "20d16c5929cc4eef",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_ExprUpdate_40_11",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cd79b08584e9dba5",
+   "err": null
+  },
+  {
+   "instance": "sub_64bit_ExprUpdate_47_11",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "83bd560eeda89271",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "bd6815ec7289707b",
+   "size": 2,
+   "members": [
+    "sub_64bit_ExprDelete_39_11",
+    "sub_64bit_ExprInsert_40_11"
+   ]
+  },
+  {
+   "hash": "683c2fe61d6e23b0",
+   "size": 1,
+   "members": [
+    "sub_64bit_ExprDelete_35_8"
+   ]
+  },
+  {
+   "hash": "47d36d92965f03d1",
+   "size": 1,
+   "members": [
+    "sub_64bit_ExprDelete_40_11"
+   ]
+  },
+  {
+   "hash": "3774b6a591adb49f",
+   "size": 1,
+   "members": [
+    "sub_64bit_ExprDelete_47_11"
+   ]
+  },
+  {
+   "hash": "fef194fee8bf439e",
+   "size": 1,
+   "members": [
+    "sub_64bit_ExprInsert_35_8"
+   ]
+  },
+  {
+   "hash": "0c975a6a501f662f",
+   "size": 1,
+   "members": [
+    "sub_64bit_ExprInsert_47_11"
+   ]
+  },
+  {
+   "hash": "9d3054783d7f3b62",
+   "size": 1,
+   "members": [
+    "sub_64bit_NSubMove_38_11"
+   ]
+  },
+  {
+   "hash": "31ed1567f39c7256",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerDelete_41_11"
+   ]
+  },
+  {
+   "hash": "18fdc460b068ca1a",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerDelete_44_11"
+   ]
+  },
+  {
+   "hash": "063e3e45eea6cfbc",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerDelete_48_11"
+   ]
+  },
+  {
+   "hash": "57a58676cc0c2924",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerDelete_51_11"
+   ]
+  },
+  {
+   "hash": "b25c11eac54e37f0",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerInsert_33_8"
+   ]
+  },
+  {
+   "hash": "b518d58b55090260",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerInsert_36_8"
+   ]
+  },
+  {
+   "hash": "8a3e20e67f6317a9",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerInsert_37_8"
+   ]
+  },
+  {
+   "hash": "281281817779e12c",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerUpdate_43_11"
+   ]
+  },
+  {
+   "hash": "0319cbea6f84d05e",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerUpdate_46_11"
+   ]
+  },
+  {
+   "hash": "f5f385cee3aa283a",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerUpdate_50_11"
+   ]
+  },
+  {
+   "hash": "14af414e0f8a5bca",
+   "size": 1,
+   "members": [
+    "sub_64bit_PointerUpdate_53_11"
+   ]
+  },
+  {
+   "hash": "20d16c5929cc4eef",
+   "size": 1,
+   "members": [
+    "sub_64bit_ExprUpdate_35_8"
+   ]
+  },
+  {
+   "hash": "cd79b08584e9dba5",
+   "size": 1,
+   "members": [
+    "sub_64bit_ExprUpdate_40_11"
+   ]
+  },
+  {
+   "hash": "83bd560eeda89271",
+   "size": 1,
+   "members": [
+    "sub_64bit_ExprUpdate_47_11"
+   ]
+  }
+ ]
+}

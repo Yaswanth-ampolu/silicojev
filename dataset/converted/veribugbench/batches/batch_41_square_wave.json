@@ -1,0 +1,212 @@
+{
+ "batch_index": 41,
+ "source_group": "veribugbench:RTLLM/square_wave",
+ "project": "square_wave",
+ "upstream": "RTLLM",
+ "testbench": "module square_wave_tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\n    reg clk_tb = 0;        \n    reg [8:0] freq_tb = 8'b0000100; \n    wire wave_out_tb;       \n    integer ones_count = 0;  // Counter for consecutive ones\n    integer error = 0;       // Error flag\n\n    square_wave square_wave_inst (\n        .clk(clk_tb),\n        .freq(freq_tb),\n        .wave_out(wave_out_tb)\n    );\n\n    initial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n        // Monitor output\n        // $monitor(\"Time: %0t | Clock: %b | Frequency: %d | Square Wave Output: %b | Error: %d\", $time, clk_tb, freq_tb, wave_out_tb, error);\n\n        // Simulate for a certain time\n        repeat (200) begin\n            if (wave_out_tb == 1) begin\n                ones_count = ones_count + 1;\n                if (ones_count > 8) begin\n                    $display(\"Error: More than 8 consecutive ones detected at time %0t\", $time);\n                    error = 1;  // Set error flag\n                    $finish;    // Stop the simulation\n                end\n            end else begin\n                ones_count = 0;\n            end\n            #5; // Time delay between clock cycles\n        end\n        if (error == 0) begin\n            $display(\"=========== Your Design Passed ===========\");\n        end\n        $finish;  // Finish the simulation\n    end\n\n    always #5 clk_tb = ~clk_tb;\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"wave_out_tb,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", wave_out_tb);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests (Synchronization)\n    wait(llm_go_signal == 1);\n\n    $display(\"LLM_TEST: Starting deterministic mutation patterns.\");\n\n    // --- Test Case 1: Minimum Frequency (freq=1) ---\n    // DUT Logic: if (count == freq - 1) -> if (count == 0).\n    // Expectation: wave_out toggles every clock cycle.\n    // Targets: Operator mutations (e.g., freq+1), Off-by-one errors.\n    freq_tb = 8'h01;\n    for (i = 0; i < 20; i = i + 1) begin\n        @(posedge clk_tb);\n    end\n\n    // --- Test Case 2: Small Frequency (freq=2) ---\n    // DUT Logic: if (count == 1).\n    // Expectation: wave_out toggles every 2 clock cycles.\n    freq_tb = 8'h02;\n    for (i = 0; i < 20; i = i + 1) begin\n        @(posedge clk_tb);\n    end\n\n    // --- Test Case 3: Boundary Condition - Zero (freq=0) ---\n    // DUT Logic: if (count == 0 - 1) -> if (count == 255) [8-bit underflow].\n    // Expectation: Count runs 0..255. Toggle every 256 cycles.\n    // Targets: Underflow handling, bit-width assumptions.\n    freq_tb = 8'h00;\n    // Wait > 256 cycles to ensure wrap-around and toggle occur\n    for (i = 0; i < 270; i = i + 1) begin\n        @(posedge clk_tb);\n    end\n\n    // --- Test Case 4: Maximum Frequency (freq=255) ---\n    // DUT Logic: if (count == 254).\n    // Expectation: Count runs 0..254. Toggle every 255 cycles.\n    // Targets: Boundary values, Max-1 logic.\n    freq_tb = 8'hFF;\n    for (i = 0; i < 270; i = i + 1) begin\n        @(posedge clk_tb);\n    end\n\n    // --- Test Case 5: Alternating Bits (freq=0xAA) ---\n    // Value: 170.\n    // Targets: Stuck-at faults on bus lines, bit-select mutations.\n    freq_tb = 8'hAA;\n    for (i = 0; i < 180; i = i + 1) begin\n        @(posedge clk_tb);\n    end\n\n    // --- Test Case 6: Alternating Bits Inverse (freq=0x55) ---\n    // Value: 85.\n    freq_tb = 8'h55;\n    for (i = 0; i < 100; i = i + 1) begin\n        @(posedge clk_tb);\n    end\n\n    // --- Restore State for Original TB ---\n    // The original TB expects freq=4 to pass its internal \"ones_count > 8\" check.\n    // We must restore this to prevent false failures in the Golden Model run.\n    freq_tb = 8'd4;\n    for (i = 0; i < 10; i = i + 1) begin\n        @(posedge clk_tb);\n    end\n\n    // 3. Handover\n    $display(\"LLM_TEST: Finished. Handing over control.\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:018b1fe6f3c8dbbd",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(negedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:79e9fe5f6fe7ad4a",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk or negedge wave_out) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1a4c32c818e171a2",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1ee4571f768a558f",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8ce29e4a174e233e",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4a82fd89b6c956f1",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:939d7ceefef7c856",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == (freq - 1 !== count + 1)) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:81499e8781887e7e",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out & freq - 1;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:90d020409487db4a",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= (count + 1) % (freq - 1);\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:411c66a022022e52",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      begin\n      end\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0507d1b265e8d438",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      begin\n      end\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2f5154a1d61f12fb",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:85402c6a5c8dca3d",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n    count <= 0;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b98ed1ca9699edc1",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n      count <= count + 1;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:60d87b9429a3182b",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n      wave_out <= ~wave_out;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3958914e9b2c1592",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n      count <= 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:be4eb03fc89f66dd",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n      count <= count + 1;\n    end else begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f3257497c2acfbeb",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      count <= count + 1;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2abf0410e25ad02a",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count[31] == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0a10d3f110d7f924",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq[31] - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:199eb569debeb358",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count[10] <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:abed64b76dca5ebd",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count[11] <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ce88a0931bc5496a",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count[30] + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2e54baebe03dd86d",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count - (freq - 1)) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:afc241f1c25e0459",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == (freq << 1)) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:896392e94084b6f8",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= -wave_out;\n    end else begin\n      count <= count + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:639854800070714a",
+   "project": "square_wave",
+   "buggy_rtl": "\n\nmodule square_wave\n(\n  input clk,\n  input [7:0] freq,\n  output reg wave_out\n);\n\n  reg [7:0] count;\n\n  initial begin\n    wave_out = 0;\n    count = 0;\n  end\n\n\n  always @(posedge clk) begin\n    if(count == freq - 1) begin\n      count <= 0;\n      wave_out <= ~wave_out;\n    end else begin\n      count <= count != 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

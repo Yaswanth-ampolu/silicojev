@@ -1,0 +1,434 @@
+{
+ "batch_index": 32,
+ "source_group": "veribugbench:RTLLM/freq_div",
+ "project": "freq_div",
+ "upstream": "RTLLM",
+ "testbench": "module test ();\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\nreg  clk,rst;\n\nwire out1;\nwire out2;\nwire out3;\n\nfreq_div dut(.CLK_in(clk),.RST(rst),.CLK_50(out1),.CLK_10(out2),.CLK_1(out3));\n\ninitial begin\n\tclk = 0;\n\tforever #5 clk = ~clk;\nend\n\ninteger error=0;\n\ninitial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n \n\t#10;\n\trst = 1;\n\t#35;\n\trst = 0;\n\t// 45, clk: 1, clk50: 0, rclk10: 0, clk1: 0\n\terror = (out1 != 0 || out2 != 0 || out3 !=0 ) ? error+1 : error;\n\t// 55, clk: 1, clk50: 1, rclk10: 0, clk1: 0\n\t#10;\n\terror = (out1 != 1 || out2 != 0 || out3 !=0 ) ? error+1 : error;\n\t// 95, clk50: 0, rclk10: 1, clk1: 0\n\t#40;\n\terror = (out1 != 1 || out2 != 1 || out3 !=0 ) ? error+1 : error;\n\t// 225, clk: 1, clk50: 0, rclk10: 1, clk1: 0\n\t#130;\n\terror = (out1 != 0 || out2 != 1 || out3 !=0 ) ? error+1 : error;\n\t// 625, clk: 1, clk50: 0, rclk10: 1, clk1: 1\n\t#400;\n\terror = (out1 != 0 || out2 != 1 || out3 !=1 ) ? error+1 : error;\n\t// 1035, clk: 1, clk50: 1, rclk10: 1, clk1: 1\n\t#410;\n\terror = (out1 != 1 || out2 != 1 || out3 !=1 ) ? error+1 : error;\n\tif (error == 0) begin\n            $display(\"===========Your Design Passed===========\");\n        end\n        else begin\n        $display(\"===========Error===========\", error);\n        end\n\t$finish;\nend\n\n// initial begin \n// \trepeat(500) begin\n//\n    // wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n \t\t// #5\n// \t\t$display(\"Time: %t, clk: %b, clk50: %b, rclk10: %b, clk1: %b\", $time, clk, out1, out2, out3);\n// \tend\n// end\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"out1,\");\n      $fwrite(file_mantra, \"out2,\");\n      $fwrite(file_mantra, \"out3,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", out1);\n        $fwrite(file_mantra, \"%h, \", out2);\n        $fwrite(file_mantra, \"%h, \", out3);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    // Ensure we have control before proceeding (though initially 1, this follows structure)\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    // Initialize inputs\n    rst = 1;\n    \n    // Wait for global reset stabilization (Clock period is 10ns from original TB)\n    #20;\n\n    // ---------------------------------------------------------\n    // Test Case 1: Normal Operation & Counter Boundaries\n    // ---------------------------------------------------------\n    // Release Reset on negedge to avoid race conditions\n    @(negedge clk);\n    rst = 0;\n\n    // Run for 120 clock cycles to cover:\n    // - CLK_50 (toggles every 1 cycle)\n    // - CLK_10 (toggles every 5 cycles)\n    // - CLK_1 (toggles every 50 cycles)\n    // This ensures we hit the max values of cnt_10 (4) and cnt_100 (49)\n    // and verify the rollover logic.\n    for (i = 0; i < 120; i = i + 1) begin\n        @(posedge clk);\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 2: Asynchronous Reset Sensitivity\n    // ---------------------------------------------------------\n    // Assert reset at negedge clk. If the design has async reset (posedge RST), \n    // outputs should clear immediately before the next posedge clk.\n    // This targets mutations that might remove 'posedge RST' from sensitivity list.\n    @(negedge clk);\n    rst = 1;\n    #2; // Hold for a fraction of the cycle\n    rst = 0;\n\n    // ---------------------------------------------------------\n    // Test Case 3: Mid-Sequence Reset (Control Flow)\n    // ---------------------------------------------------------\n    // Allow counters to increment partially (e.g., cnt_10 = 3)\n    repeat(3) @(posedge clk);\n\n    // Assert reset to force state to 0 in the middle of a count\n    rst = 1;\n    #10; // Hold for 1 full cycle\n    rst = 0;\n\n    // Verify recovery: cnt_10 should restart from 0.\n    // Next CLK_10 toggle should be 5 cycles away.\n    // If reset failed (mutation), it would toggle sooner (e.g. in 2 cycles).\n    repeat(10) @(posedge clk);\n\n    // ---------------------------------------------------------\n    // Test Case 4: Long duration run for CLK_1 stability\n    // ---------------------------------------------------------\n    // CLK_1 period is 100 cycles. Run for 60 more to see transitions\n    // and ensure cnt_100 resets properly after reaching 49.\n    for (i = 0; i < 60; i = i + 1) begin\n        @(posedge clk);\n    end\n\n    // 4. Handover to Original Testbench\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:da97ef62f302c6ea",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a1c890bf9dbcac18",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:689b19a41e024532",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c04e5da0e6e6497a",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or negedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:53d768c150a312c4",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(negedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:48453f8fa4ca59fe",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or negedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fbe9a07dba57c2a4",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(negedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:88b380f996bdf02a",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or negedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2cf2660269863065",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(negedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3fcf107ade4b4e12",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST or posedge cnt_10) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9c87b55fb3076b31",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST or negedge cnt_10) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b39654782c36d83b",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fc3023a919827915",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cce841e130f4bb9d",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d871e1cce9a3d4bb",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c0edf8d2a86f3660",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:18c596b1ef59cfaf",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1e10593e13f9b80a",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:334a90b4335b8e62",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if((cnt_100 == 49) | cnt_10 + 1) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fd4ae02fbbbcbb6b",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1 & ~CLK_10;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cca428c9eeea39ab",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1 !== ~CLK_1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:84d6289634b18207",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50 > cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b27fe9d68ddc28a7",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if((cnt_10 == 4) & ~CLK_10) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e01fbae91f6dbab3",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1 < (cnt_10 == 4);\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:423cd4ca4e06bd39",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      begin\n      end\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ff0e2896c0ee100e",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      begin\n      end\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:018a1ced5a83a45d",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      begin\n      end\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4b61db30e21809c0",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      begin\n      end\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e6e7d47dd5bcaf2f",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      begin\n      end\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:aae0c8925e13ba8d",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      begin\n      end\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:61b30b118e99e8fb",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      begin\n      end\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e120c85792bdcbe2",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      begin\n      end\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a3f70a656868b613",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      begin\n      end\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b12bd858e470593b",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      begin\n      end\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6bb9660e8f534bfc",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n      CLK_1 <= ~CLK_1;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:759c12e146770619",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n      cnt_100 <= cnt_100 + 1;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fb4efb1f3d52efe3",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n    cnt_100 <= 0;\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a6c513d261a091fd",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n      CLK_10 <= ~CLK_10;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b1ffe364dd95b998",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n    CLK_10 <= 1'b0;\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cca1171a61b9ebcb",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n      CLK_10 <= 1'b0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ade3d8f0627813db",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      cnt_100 <= 0;\n    end else begin\n      if(cnt_100 == 49) begin\n        CLK_1 <= ~CLK_1;\n        cnt_100 <= 0;\n      end else begin\n        cnt_100 <= cnt_100 + 1;\n      end\n      CLK_1 <= 1'b0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:70e9d314515ed840",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n      cnt_100 <= cnt_100 + 1;\n    end else begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d936205b477abac3",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n      CLK_50 <= ~CLK_50;\n    end else begin\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3b0f6acdba5b5ed9",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n      if(cnt_10 == 4) begin\n        CLK_10 <= ~CLK_10;\n        cnt_10 <= 0;\n      end else begin\n        cnt_10 <= cnt_10 + 1;\n      end\n    end else begin\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:11ae89056eaafaa4",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n      cnt_10 <= cnt_10 + 1;\n    end else begin\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8c74187d09143bac",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      cnt_10 <= cnt_10 + 1;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b2d47db4a54cbed3",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      CLK_1 <= ~CLK_1;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b3d14389c55d3038",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      cnt_100 <= 0;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cf6fd1ee5febf633",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= cnt_100 + 1;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:637112126028328c",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_10 <= 0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ca24d630200404e0",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      cnt_10 <= 0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d027168cc04d3272",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0ab759948d1533c6",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      CLK_10 <= 1'b0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b94953f57a13aabb",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      cnt_10 <= 0;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f9c3a806b680400a",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      CLK_10 <= 1'b0;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7e58fa9cd0f90550",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100[6] <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1097bbb8188d8374",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100[17] == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c6e3abcbe5171f5e",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100[28] <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:681f0e7bacbae9de",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10[19] == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3c6e3f447e573b93",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 === 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:119bddef1d764cc7",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= -CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9c7bb08611a4b0b6",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 % 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:379e8cd07be3b7ad",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= |CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 + 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:dbe0e73be48cffbb",
+   "project": "freq_div",
+   "buggy_rtl": "\n\nmodule freq_div\n(\n  CLK_in,\n  CLK_50,\n  CLK_10,\n  CLK_1,\n  RST\n);\n\n  input CLK_in;input RST;\n  output CLK_50;reg CLK_50;output CLK_10;reg CLK_10;output CLK_1;reg CLK_1;\n  reg [3:0] cnt_10;\n  reg [6:0] cnt_100;\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_50 <= 1'b0;\n    end else begin\n      CLK_50 <= ~CLK_50;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_10 <= 1'b0;\n      cnt_10 <= 0;\n    end else if(cnt_10 == 4) begin\n      CLK_10 <= ~CLK_10;\n      cnt_10 <= 0;\n    end else begin\n      cnt_10 <= cnt_10 >= 1;\n    end\n  end\n\n\n  always @(posedge CLK_in or posedge RST) begin\n    if(RST) begin\n      CLK_1 <= 1'b0;\n      cnt_100 <= 0;\n    end else if(cnt_100 == 49) begin\n      CLK_1 <= ~CLK_1;\n      cnt_100 <= 0;\n    end else begin\n      cnt_100 <= cnt_100 + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

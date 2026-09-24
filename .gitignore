@@ -23,3 +23,11 @@ dataset/raw/
 # Replay/distillation scratch and caches are reproducible build artifacts.
 training/fixbench_replay_cache/
 training/fixbench_distill_scratch/
+
+# VeriBugBench: the rendered corpora are large (175-180 MB each) and rebuild
+# from dataset/raw/ + the committed training/ scripts. Only the 5q labels are
+# tracked (via Git LFS); the 3q skeleton, 3q build and measured view are not.
+dataset/converted/veribugbench/skeleton_3q.jsonl
+dataset/converted/veribugbench/veribugbench_3q.jsonl
+dataset/converted/veribugbench/veribugbench_3q_measured.jsonl
+dataset/converted/veribugbench/veribugbench_5q.REJECTED_near_constant.jsonl

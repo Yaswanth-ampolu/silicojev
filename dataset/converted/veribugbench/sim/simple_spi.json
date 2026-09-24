@@ -1,0 +1,13 @@
+{
+ "project_id": "simple_spi",
+ "source_group": "Native",
+ "tb": "rtl/verilog/tst_bench_top_enhanced.v",
+ "n_origin_files": 4,
+ "golden_rc": -1,
+ "golden_hash": "df1b34d8e3a5224b",
+ "deterministic": true,
+ "golden_err": "COMPILE: tst_bench_top_enhanced.v:94: error: Unknown module type: wb_master_model",
+ "sweep_version": 3,
+ "instances": [],
+ "note": "golden unusable - instances not swept"
+}

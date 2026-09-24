@@ -1,0 +1,628 @@
+{
+ "project_id": "instr_reg",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "e3ed58555581e1d9",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "instr_reg_EdgeDelete_49_14",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2f7e772c236e088c",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_EdgeFlip_50_14",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0b986937213d7ccd",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_EdgeFlip_52_14",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "2f7e772c236e088c",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_ExprDelete_56_15",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "50f8c243d4091f47",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_ExprDelete_71_19",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "12f205e928df8eb5",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_ExprDelete_86_22",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "da8a0596cc4109ba",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_ExprInsert_56_15",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c55e24369eb64d22",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_ExprInsert_71_19",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "24c7bd43f0b0dc58",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_ExprInsert_86_22",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "14cc87be35d4741f",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_IOFlip2_20_6",
+   "operator_id": "IOFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8e1d9c167f2f6ea5",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_IOFlip2_25_7",
+   "operator_id": "IOFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "741166314ec78750",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_IOFlip2_30_8",
+   "operator_id": "IOFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3d19c1b6028d1fba",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubDelete_59_16",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "df991dae8948f2d2",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubDelete_64_17",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1c7d51404bdb369d",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubDelete_75_20",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "24c7bd43f0b0dc58",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubDelete_95_24",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "14cc87be35d4741f",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubInsert_100_25",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ce89272f6b99c4d0",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubInsert_54_14",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0b28ca330ee3fdfa",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubInsert_58_15",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1c7d51404bdb369d",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubInsert_69_18",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "24c7bd43f0b0dc58",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubInsert_74_19",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "24c7bd43f0b0dc58",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubInsert_89_22",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d22f8731bb346511",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubInsert_IF_55_15",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "14cc87be35d4741f",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubInsert_IF_70_19",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "14cc87be35d4741f",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubInsert_IF_85_22",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "14cc87be35d4741f",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubMove_55_15",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3ed62b11c4e89309",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubMove_70_19",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a4ea457ec4590159",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubUpdate_106_27",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "741bf76209303ad4",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubUpdate_59_16",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b7f47b6346ee63ce",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubUpdate_75_20",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "24c7bd43f0b0dc58",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubUpdate_90_23",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d22f8731bb346511",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_NSubUpdate_95_24",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "654f4dca3dda2608",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PartselectDelete_115_32",
+   "operator_id": "PartselectDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "532a71b53bd569d3",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PartselectInsert_82_21",
+   "operator_id": "PartselectInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dc9ab95478fde18a",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PartselectUpdate_118_32",
+   "operator_id": "PartselectUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5240ab52e5d54fd8",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PointerInsert_105_26",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "683f9a795578c432",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PointerInsert_110_27",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8a28734b70719995",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PointerInsert_121_33",
+   "operator_id": "PointerInsert",
+   "verdict": "COMPILE_FAIL",
+   "rc": -1,
+   "behaviour_hash": "02d933182f50424d",
+   "err": "COMPILE: instr_reg_PointerInsert_121_33.v:36: error: Index ad1[21] is out of range."
+  },
+  {
+   "instance": "instr_reg_PointerInsert_129_34",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1dd5aaa8623133bf",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PointerInsert_131_34",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "de94083c0032a241",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PointerInsert_61_16",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "df991dae8948f2d2",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PointerInsert_66_17",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1c7d51404bdb369d",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PointerInsert_77_20",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "24c7bd43f0b0dc58",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PointerInsert_84_21",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "78df777f3b0ab645",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_PointerInsert_94_23",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "bafb09db62b08596",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_ExprUpdate_71_19",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "12f205e928df8eb5",
+   "err": null
+  },
+  {
+   "instance": "instr_reg_ExprUpdate_86_22",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7d3646e2268a7ff8",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "24c7bd43f0b0dc58",
+   "size": 6,
+   "members": [
+    "instr_reg_ExprInsert_71_19",
+    "instr_reg_NSubDelete_75_20",
+    "instr_reg_NSubInsert_69_18",
+    "instr_reg_NSubInsert_74_19",
+    "instr_reg_NSubUpdate_75_20",
+    "instr_reg_PointerInsert_77_20"
+   ]
+  },
+  {
+   "hash": "14cc87be35d4741f",
+   "size": 5,
+   "members": [
+    "instr_reg_ExprInsert_86_22",
+    "instr_reg_NSubDelete_95_24",
+    "instr_reg_NSubInsert_IF_55_15",
+    "instr_reg_NSubInsert_IF_70_19",
+    "instr_reg_NSubInsert_IF_85_22"
+   ]
+  },
+  {
+   "hash": "1c7d51404bdb369d",
+   "size": 3,
+   "members": [
+    "instr_reg_NSubDelete_64_17",
+    "instr_reg_NSubInsert_58_15",
+    "instr_reg_PointerInsert_66_17"
+   ]
+  },
+  {
+   "hash": "2f7e772c236e088c",
+   "size": 2,
+   "members": [
+    "instr_reg_EdgeDelete_49_14",
+    "instr_reg_EdgeFlip_52_14"
+   ]
+  },
+  {
+   "hash": "12f205e928df8eb5",
+   "size": 2,
+   "members": [
+    "instr_reg_ExprDelete_71_19",
+    "instr_reg_ExprUpdate_71_19"
+   ]
+  },
+  {
+   "hash": "df991dae8948f2d2",
+   "size": 2,
+   "members": [
+    "instr_reg_NSubDelete_59_16",
+    "instr_reg_PointerInsert_61_16"
+   ]
+  },
+  {
+   "hash": "d22f8731bb346511",
+   "size": 2,
+   "members": [
+    "instr_reg_NSubInsert_89_22",
+    "instr_reg_NSubUpdate_90_23"
+   ]
+  },
+  {
+   "hash": "0b986937213d7ccd",
+   "size": 1,
+   "members": [
+    "instr_reg_EdgeFlip_50_14"
+   ]
+  },
+  {
+   "hash": "50f8c243d4091f47",
+   "size": 1,
+   "members": [
+    "instr_reg_ExprDelete_56_15"
+   ]
+  },
+  {
+   "hash": "da8a0596cc4109ba",
+   "size": 1,
+   "members": [
+    "instr_reg_ExprDelete_86_22"
+   ]
+  },
+  {
+   "hash": "c55e24369eb64d22",
+   "size": 1,
+   "members": [
+    "instr_reg_ExprInsert_56_15"
+   ]
+  },
+  {
+   "hash": "8e1d9c167f2f6ea5",
+   "size": 1,
+   "members": [
+    "instr_reg_IOFlip2_20_6"
+   ]
+  },
+  {
+   "hash": "741166314ec78750",
+   "size": 1,
+   "members": [
+    "instr_reg_IOFlip2_25_7"
+   ]
+  },
+  {
+   "hash": "3d19c1b6028d1fba",
+   "size": 1,
+   "members": [
+    "instr_reg_IOFlip2_30_8"
+   ]
+  },
+  {
+   "hash": "ce89272f6b99c4d0",
+   "size": 1,
+   "members": [
+    "instr_reg_NSubInsert_100_25"
+   ]
+  },
+  {
+   "hash": "0b28ca330ee3fdfa",
+   "size": 1,
+   "members": [
+    "instr_reg_NSubInsert_54_14"
+   ]
+  },
+  {
+   "hash": "3ed62b11c4e89309",
+   "size": 1,
+   "members": [
+    "instr_reg_NSubMove_55_15"
+   ]
+  },
+  {
+   "hash": "a4ea457ec4590159",
+   "size": 1,
+   "members": [
+    "instr_reg_NSubMove_70_19"
+   ]
+  },
+  {
+   "hash": "741bf76209303ad4",
+   "size": 1,
+   "members": [
+    "instr_reg_NSubUpdate_106_27"
+   ]
+  },
+  {
+   "hash": "b7f47b6346ee63ce",
+   "size": 1,
+   "members": [
+    "instr_reg_NSubUpdate_59_16"
+   ]
+  },
+  {
+   "hash": "654f4dca3dda2608",
+   "size": 1,
+   "members": [
+    "instr_reg_NSubUpdate_95_24"
+   ]
+  },
+  {
+   "hash": "532a71b53bd569d3",
+   "size": 1,
+   "members": [
+    "instr_reg_PartselectDelete_115_32"
+   ]
+  },
+  {
+   "hash": "dc9ab95478fde18a",
+   "size": 1,
+   "members": [
+    "instr_reg_PartselectInsert_82_21"
+   ]
+  },
+  {
+   "hash": "5240ab52e5d54fd8",
+   "size": 1,
+   "members": [
+    "instr_reg_PartselectUpdate_118_32"
+   ]
+  },
+  {
+   "hash": "683f9a795578c432",
+   "size": 1,
+   "members": [
+    "instr_reg_PointerInsert_105_26"
+   ]
+  },
+  {
+   "hash": "8a28734b70719995",
+   "size": 1,
+   "members": [
+    "instr_reg_PointerInsert_110_27"
+   ]
+  },
+  {
+   "hash": "02d933182f50424d",
+   "size": 1,
+   "members": [
+    "instr_reg_PointerInsert_121_33"
+   ]
+  },
+  {
+   "hash": "1dd5aaa8623133bf",
+   "size": 1,
+   "members": [
+    "instr_reg_PointerInsert_129_34"
+   ]
+  },
+  {
+   "hash": "de94083c0032a241",
+   "size": 1,
+   "members": [
+    "instr_reg_PointerInsert_131_34"
+   ]
+  },
+  {
+   "hash": "78df777f3b0ab645",
+   "size": 1,
+   "members": [
+    "instr_reg_PointerInsert_84_21"
+   ]
+  },
+  {
+   "hash": "bafb09db62b08596",
+   "size": 1,
+   "members": [
+    "instr_reg_PointerInsert_94_23"
+   ]
+  },
+  {
+   "hash": "7d3646e2268a7ff8",
+   "size": 1,
+   "members": [
+    "instr_reg_ExprUpdate_86_22"
+   ]
+  }
+ ]
+}

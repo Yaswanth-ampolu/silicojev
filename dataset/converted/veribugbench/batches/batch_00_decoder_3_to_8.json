@@ -1,0 +1,170 @@
+{
+ "batch_index": 0,
+ "source_group": "veribugbench:CirFix/decoder_3_to_8",
+ "project": "decoder_3_to_8",
+ "upstream": "CirFix",
+ "testbench": "//`timescale 1ns / 100ps\n/**********************************************************************\n * Date: Aug. 28, 1999\n * File: Test Decoder 3 to 8.v   (440 Examples)\n *\n * Testbench to generate some stimulus and display the results for the\n * 3-to-8 decoder module.\n **********************************************************************/\n//*********************************************************\n  module Test_decoder_3to8;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n//*********************************************************  \n     wire  Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0;\n     reg   A, B, C;\n     reg   en;\n     reg   clk, instrumented_clk;\n      \n     reg [2:0] counter;      // 3\u4f4d\u5bbd\u7684\u8ba1\u6570\u5668\uff0c\u7528\u4e8e\u8ba1\u6570\u65f6\u949f\u5468\u671f mxk added\n      \n     // Instantiate the Decoder (named DUT {device under test})\n     decoder_3to8  DUT(Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0, A, B, C, en);\n  \n     integer f;\n     initial begin\n        clk = 0;\n        instrumented_clk = 0;\n        f = $fopen(\"output.txt\");\n        $fwrite(f, \"time,Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0\\n\");\n        //$timeformat(-9, 1, \" ns\", 6);\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n \n        #1;\n        A  = 1'b0;       // time = 0\n        B  = 1'b0;\n        C  = 1'b0;\n        en = 1'b0;\n        #9;\n        en = 1'b1;      // time = 10\n        #10;\n        A  = 1'b0;\n        B  = 1'b1; \n        C  = 1'b0;      // time = 20\n        #10;\n        A  = 1'b1;\n        B  = 1'b0;      \n        C  = 1'b0;      // time = 30\n        #10;\n        A  = 1'b1;\n        B  = 1'b1;\n        C  = 1'b0;      // time = 40\n        #5;\n        en = 1'b0;      // time = 45\n        #10;\n        $fclose(f);\n\t$finish;\n     end\n\n  always #1 begin\n     $fwrite(f, \"%0d,%b,%b,%b,%b,%b,%b,%b,%b\\n\", $time,Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0);\n//     // \u5728\u65f6\u949f\u4e0a\u5347\u6cbf\u89e6\u53d1\u65f6\u6267\u884c\u4ee5\u4e0b\u4ee3\u7801\n//     if (counter == 5'd4) begin\n//       // \u5f53\u8ba1\u6570\u5668\u8fbe\u52304\u65f6\uff0c\u91cd\u7f6e\u8ba1\u6570\u5668\u5e76\u8f93\u51fa\u4fe1\u53f7\n//       counter <= 0;\n//       $fwrite(f, \"%g,%b,%b,%b,%b,%b,%b,%b,%b\\n\", $time,Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0);\n//     end\n//     else begin\n//       // \u5426\u5219\uff0c\u9012\u589e\u8ba1\u6570\u5668\u5e76\u4fdd\u6301\u8f93\u51fa\u4e3a0\n//       counter <= counter + 1;\n//     end\n  end\n//      always @(A or B or C or en)\n//       always @(posedge clk or negedge clk)\n//      $fwrite(f, \"%g,%b,%b,%b,%b,%b,%b,%b,%b\\n\", $time,Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0);\n\n     always @(A or B or C or en)  \n     $monitor(\"t=%t en=%b ABC=%b%b%b Y=%b%b%b%b%b%b%b%b\",\n$time,en,A,B,C,Y7,Y6,Y5,Y4,Y3,Y2,Y1,Y0);\n\n    always #1 clk = ~clk;\n    always #1 instrumented_clk = ~instrumented_clk;\n    initial begin\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n#2000\n$finish;\nend\n\n  \n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n        reg [2:0] abc_pattern;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n\n    // 2. THEN WAIT for original tests (llm_go_signal is initially 1)\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    // Initialize inputs to a known state\n    en = 1'b0;\n    A  = 1'b0;\n    B  = 1'b0;\n    C  = 1'b0;\n    #10;\n\n    // --- Phase 1: Exhaustive Truth Table (Enable Active) ---\n    // Targets: Operator/Expression mutations in the ternary chain and Bit-Level part-selects.\n    en = 1'b1;\n    for (i = 0; i < 8; i = i + 1) begin\n        abc_pattern = i;\n        A = abc_pattern[2];\n        B = abc_pattern[1];\n        C = abc_pattern[0];\n        #10;\n    end\n\n    // --- Phase 2: Exhaustive Truth Table (Enable Inactive) ---\n    // Targets: Mutations affecting the 'else' branch (default state) and 'en' logic.\n    en = 1'b0;\n    for (i = 0; i < 8; i = i + 1) begin\n        abc_pattern = i;\n        A = abc_pattern[2];\n        B = abc_pattern[1];\n        C = abc_pattern[0];\n        #10;\n    end\n\n    // --- Phase 3: Boundary Bit Transitions (Walking 1s/0s) ---\n    // Targets: Bit-Level/Pointer mutations (e.g., swapping A and C or MSB/LSB errors).\n    en = 1'b1;\n    // Walking 1s\n    A = 1'b1; B = 1'b0; C = 1'b0; #10; // 100\n    A = 1'b0; B = 1'b1; C = 1'b0; #10; // 010\n    A = 1'b0; B = 1'b0; C = 1'b1; #10; // 001\n    // Walking 0s\n    A = 1'b0; B = 1'b1; C = 1'b1; #10; // 011\n    A = 1'b1; B = 1'b0; C = 1'b1; #10; // 101\n    A = 1'b1; B = 1'b1; C = 1'b0; #10; // 110\n    \n    // --- Phase 4: Control Flow & Sensitivity (Rapid Transitions) ---\n    // Targets: If-Else Move ([operator-redacted]) and potential sensitivity list faults.\n    // Toggle Enable at the highest address boundary\n    A = 1'b1; B = 1'b1; C = 1'b1;\n    en = 1'b1; #5;\n    en = 1'b0; #5;\n    en = 1'b1; #5;\n    en = 1'b0; #5;\n\n    // Toggle Address bits back-to-back to catch timing/blocking assignment mutations\n    A = 1'b0; B = 1'b0; C = 1'b0; en = 1'b1; #2;\n    A = 1'b1; B = 1'b1; C = 1'b1; #2;\n    A = 1'b0; B = 1'b0; C = 1'b0; #2;\n\n    // 4. Handover to Original Testbench\n    #10;\n    llm_go_signal = 0; \nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (f != 0) $fclose(f);\n    $finish;\nend\n\nendmodule\n",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:6f5730bb25bf11b8",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              (4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:ab6c7ccdc4758a48",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = (4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:6a07513eacbf35ba",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              (4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:7c5828a6492aab1a",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              (4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:aba9939d4d200bc1",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              (4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:de858ed6a1415009",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              (4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:5759574832a0831d",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : (({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111) !== (({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111);\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:c001f339d58f664f",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = (({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111) && ({ en, A, B, C } == 4'b1110);\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:ad2cab2b3e268c80",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              (({ en, A, B, C } == 4'b1001) ** ({ en, A, B, C } == 4'b1001))? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:6a0718866855911b",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : (({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111) !== (({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111);\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:a3802e64950be55b",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : (({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111) >>> (({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111);\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:26cc1ebf816dd837",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              (({ en, A, B, C } == 4'b1011) >= (({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111))? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:7dbdda50a7dc0183",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : (({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111) % ({ en, A, B, C } == 4'b1001);\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:104462f33b41d33a",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } & 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:5d53920726641a09",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } != 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:31f6dcf1f3a3b1b1",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } & 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:c16c3f8ddf58feb4",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } >= 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:6631bd0325a059fd",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } - 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:4276446439c17f18",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } << 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C } == 4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  },
+  {
+   "id": "veribugbench:de1107ca72c77d95",
+   "project": "decoder_3_to_8",
+   "buggy_rtl": "\n\nmodule decoder_3to8\n(\n  Y7,\n  Y6,\n  Y5,\n  Y4,\n  Y3,\n  Y2,\n  Y1,\n  Y0,\n  A,\n  B,\n  C,\n  en\n);\n\n  output Y7;output Y6;output Y5;output Y4;output Y3;output Y2;output Y1;output Y0;\n  input A;input B;input C;\n  input en;\n  assign { Y7, Y6, Y5, Y4, Y3, Y2, Y1, Y0 } = ({ en, A, B, C } == 4'b1000)? 8'b1111_1110 : \n                                              ({ en, A, B, C } == 4'b1001)? 8'b1111_1101 : \n                                              ({ en, A, B, C } == 4'b1010)? 8'b1111_1011 : \n                                              ({ en, A, B, C } == 4'b1011)? 8'b1111_0111 : \n                                              ({ en, A, B, C } == 4'b1100)? 8'b1110_1111 : \n                                              ({ en, A, B, C }4'b1101)? 8'b1101_1111 : \n                                              ({ en, A, B, C } == 4'b1110)? 8'b1011_1111 : \n                                              ({ en, A, B, C } == 4'b1111)? 8'b0111_1111 : 8'b1111_1111;\n\nendmodule\n\n",
+   "upstream_repo": "CirFix"
+  }
+ ]
+}

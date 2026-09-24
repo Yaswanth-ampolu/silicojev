@@ -1,0 +1,376 @@
+{
+ "project_id": "RAM",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "be97f5eb7ddc820e",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "RAM_AssignN2B_88_26",
+   "operator_id": "AssignN2B",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "91bc81c99a3ab11a",
+   "err": null
+  },
+  {
+   "instance": "RAM_EdgeDelete_52_19",
+   "operator_id": "EdgeDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d662a0dc21955b59",
+   "err": null
+  },
+  {
+   "instance": "RAM_EdgeFlip_53_19",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "91bc81c99a3ab11a",
+   "err": null
+  },
+  {
+   "instance": "RAM_EdgeFlip_97_28",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "40062396d3c9f8c0",
+   "err": null
+  },
+  {
+   "instance": "RAM_EdgeFlip_99_28",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6fbe8e9146060d24",
+   "err": null
+  },
+  {
+   "instance": "RAM_EdgeInsert_96_28",
+   "operator_id": "EdgeInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6fbe8e9146060d24",
+   "err": null
+  },
+  {
+   "instance": "RAM_ExprDelete_103_29",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bafc8cbd7ba473e",
+   "err": null
+  },
+  {
+   "instance": "RAM_ExprDelete_59_20",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d662a0dc21955b59",
+   "err": null
+  },
+  {
+   "instance": "RAM_ExprInsert_59_20",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "198cdc9449644f76",
+   "err": null
+  },
+  {
+   "instance": "RAM_ExprInsert_68_21",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "198cdc9449644f76",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubDelete_112_32",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bafc8cbd7ba473e",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubDelete_119_34",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ed9058fa2790b23b",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubDelete_79_22",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "198cdc9449644f76",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubDelete_88_26",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d662a0dc21955b59",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubInsert_101_28",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "8e2d87dd96ed7286",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubMove_102_29",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5e00810a6957b243",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubMove_110_31",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "5e00810a6957b243",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubMove_58_20",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d662a0dc21955b59",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubMove_86_25",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "f24718122674d68b",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubUpdate_112_32",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bafc8cbd7ba473e",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubUpdate_119_34",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1bd1417789534807",
+   "err": null
+  },
+  {
+   "instance": "RAM_NSubUpdate_79_22",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "198cdc9449644f76",
+   "err": null
+  },
+  {
+   "instance": "RAM_PartselectInsert_94_26",
+   "operator_id": "PartselectInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b01b03852398633a",
+   "err": null
+  },
+  {
+   "instance": "RAM_PointerInsert_114_32",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bafc8cbd7ba473e",
+   "err": null
+  },
+  {
+   "instance": "RAM_PointerInsert_117_32",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "32ad661a4d4bd765",
+   "err": null
+  },
+  {
+   "instance": "RAM_PointerInsert_118_32",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "32ad661a4d4bd765",
+   "err": null
+  },
+  {
+   "instance": "RAM_PointerInsert_121_34",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "41712867559dd26a",
+   "err": null
+  },
+  {
+   "instance": "RAM_PointerInsert_82_22",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "198cdc9449644f76",
+   "err": null
+  },
+  {
+   "instance": "RAM_PointerInsert_94_26",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b01b03852398633a",
+   "err": null
+  },
+  {
+   "instance": "RAM_ExprUpdate_103_29",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6bafc8cbd7ba473e",
+   "err": null
+  },
+  {
+   "instance": "RAM_ExprUpdate_59_20",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d662a0dc21955b59",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "d662a0dc21955b59",
+   "size": 5,
+   "members": [
+    "RAM_EdgeDelete_52_19",
+    "RAM_ExprDelete_59_20",
+    "RAM_NSubDelete_88_26",
+    "RAM_NSubMove_58_20",
+    "RAM_ExprUpdate_59_20"
+   ]
+  },
+  {
+   "hash": "6bafc8cbd7ba473e",
+   "size": 5,
+   "members": [
+    "RAM_ExprDelete_103_29",
+    "RAM_NSubDelete_112_32",
+    "RAM_NSubUpdate_112_32",
+    "RAM_PointerInsert_114_32",
+    "RAM_ExprUpdate_103_29"
+   ]
+  },
+  {
+   "hash": "198cdc9449644f76",
+   "size": 5,
+   "members": [
+    "RAM_ExprInsert_59_20",
+    "RAM_ExprInsert_68_21",
+    "RAM_NSubDelete_79_22",
+    "RAM_NSubUpdate_79_22",
+    "RAM_PointerInsert_82_22"
+   ]
+  },
+  {
+   "hash": "91bc81c99a3ab11a",
+   "size": 2,
+   "members": [
+    "RAM_AssignN2B_88_26",
+    "RAM_EdgeFlip_53_19"
+   ]
+  },
+  {
+   "hash": "6fbe8e9146060d24",
+   "size": 2,
+   "members": [
+    "RAM_EdgeFlip_99_28",
+    "RAM_EdgeInsert_96_28"
+   ]
+  },
+  {
+   "hash": "5e00810a6957b243",
+   "size": 2,
+   "members": [
+    "RAM_NSubMove_102_29",
+    "RAM_NSubMove_110_31"
+   ]
+  },
+  {
+   "hash": "b01b03852398633a",
+   "size": 2,
+   "members": [
+    "RAM_PartselectInsert_94_26",
+    "RAM_PointerInsert_94_26"
+   ]
+  },
+  {
+   "hash": "32ad661a4d4bd765",
+   "size": 2,
+   "members": [
+    "RAM_PointerInsert_117_32",
+    "RAM_PointerInsert_118_32"
+   ]
+  },
+  {
+   "hash": "40062396d3c9f8c0",
+   "size": 1,
+   "members": [
+    "RAM_EdgeFlip_97_28"
+   ]
+  },
+  {
+   "hash": "ed9058fa2790b23b",
+   "size": 1,
+   "members": [
+    "RAM_NSubDelete_119_34"
+   ]
+  },
+  {
+   "hash": "8e2d87dd96ed7286",
+   "size": 1,
+   "members": [
+    "RAM_NSubInsert_101_28"
+   ]
+  },
+  {
+   "hash": "f24718122674d68b",
+   "size": 1,
+   "members": [
+    "RAM_NSubMove_86_25"
+   ]
+  },
+  {
+   "hash": "1bd1417789534807",
+   "size": 1,
+   "members": [
+    "RAM_NSubUpdate_119_34"
+   ]
+  },
+  {
+   "hash": "41712867559dd26a",
+   "size": 1,
+   "members": [
+    "RAM_PointerInsert_121_34"
+   ]
+  }
+ ]
+}

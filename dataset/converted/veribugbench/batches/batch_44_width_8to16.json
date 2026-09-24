@@ -1,0 +1,374 @@
+{
+ "batch_index": 44,
+ "source_group": "veribugbench:RTLLM/width_8to16",
+ "project": "width_8to16",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns/1ns\nmodule testbench();\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n    reg rst,valid_in;\n\treg clk=1;\n\treg[7:0] data_in;\n\twire valid_out;\n\twire [15:0] data_out;\n\nwidth_8to16 dut(\n\t.clk (clk),   \n\t.rst_n(rst),\n\t.valid_in(valid_in),\n\t.data_in(data_in),\n\t.valid_out(valid_out),\n\t.data_out(data_out)\n);\n\talways #5 clk = ~clk;  \n\ninteger error = 0;\ninitial begin\n\trst=0;valid_in=0;\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n \t#10 rst=1;valid_in=1;data_in=8'b10100000;\n\t// $display(\"data_out = %b\", data_out);\n\t// $display(\"valid_out = %b\", valid_out);\n\terror = valid_out ==0 ? error : error+1; \n\t#10 data_in=8'b10100001; \n\t// $display(\"data_out = %b\", data_out); \n\t#10 data_in=8'b10110000;\n\t// $display(\"data_out = %b\", data_out); \n\t// $display(\"valid_out = %b\", valid_out);\n\terror = (data_out == 16'b1010000010100001 && valid_out ==1 )? error : error+1;\n\t#10 valid_in=0;\n\t#20 valid_in=1;data_in=8'b10110001; \n\t#10 valid_in=0;\n\t// $display(\"data_out = %b\", data_out); \n\t// $display(\"valid_out = %b\", valid_out);\n\terror = (data_out == 16'b1011000010110001 && valid_out ==1 )? error : error+1;\n\t#30\n\n\tif (error == 0) begin\n\t\t$display(\"===========Your Design Passed===========\");\n\tend\n\telse begin\n\t$display(\"===========Test completed with %d / 3 failures===========\", error);\n\tend\n\n\t$finish;\nend  \n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"valid_out,\");\n      $fwrite(file_mantra, \"data_out,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", valid_out);\n        $fwrite(file_mantra, \"%h, \", data_out);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    $display(\"LLM: Starting deterministic test patterns...\");\n\n    // Initialize Inputs\n    rst = 0;\n    valid_in = 0;\n    data_in = 8'h00;\n\n    // Apply Reset\n    #20;\n    rst = 1;\n    #20;\n\n    // -------------------------------------------------------\n    // Test 1: Basic Functionality (0xAA, 0x55 -> 0xAA55)\n    // -------------------------------------------------------\n    // Targets: Basic data path, stitching logic\n    @(posedge clk);\n    #1;\n    valid_in = 1;\n    data_in = 8'hAA; // First byte (Upper)\n    @(posedge clk);\n    #1;\n    data_in = 8'h55; // Second byte (Lower)\n    @(posedge clk);\n    #1;\n    valid_in = 0;\n    data_in = 8'h00;\n    #20; \n\n    // -------------------------------------------------------\n    // Test 2: Back-to-Back Transactions (Burst Mode)\n    // -------------------------------------------------------\n    // Targets: Flag logic, blocking/non-blocking assignments\n    // Pair 1: 0xFF, 0x00 -> 0xFF00\n    // Pair 2: 0x0F, 0xF0 -> 0x0FF0\n    @(posedge clk);\n    #1;\n    valid_in = 1;\n    data_in = 8'hFF; // Byte 1 of Pair 1\n    @(posedge clk);\n    #1;\n    data_in = 8'h00; // Byte 2 of Pair 1\n    @(posedge clk);\n    #1;\n    data_in = 8'h0F; // Byte 1 of Pair 2 (Immediately after)\n    @(posedge clk);\n    #1;\n    data_in = 8'hF0; // Byte 2 of Pair 2\n    @(posedge clk);\n    #1;\n    valid_in = 0;\n    data_in = 0;\n    #20;\n\n    // -------------------------------------------------------\n    // Test 3: Interrupted Valid (Gaps)\n    // -------------------------------------------------------\n    // Targets: Flag retention, state stability\n    // Byte 1, Wait, Byte 2\n    @(posedge clk);\n    #1;\n    valid_in = 1;\n    data_in = 8'h12; // Byte 1\n    @(posedge clk);\n    #1;\n    valid_in = 0;    // Gap - flag should remain high\n    data_in = 8'h00;\n    @(posedge clk);\n    @(posedge clk);\n    #1;\n    valid_in = 1;\n    data_in = 8'h34; // Byte 2\n    @(posedge clk);\n    #1;\n    valid_in = 0;\n    #20;\n\n    // -------------------------------------------------------\n    // Test 4: Reset in the middle (Partial sequence abort)\n    // -------------------------------------------------------\n    // Targets: Reset logic, flag reset\n    @(posedge clk);\n    #1;\n    valid_in = 1;\n    data_in = 8'hA5; // Byte 1\n    @(posedge clk);\n    #1;\n    // Instead of Byte 2, we reset\n    rst = 0; \n    valid_in = 0;\n    #20;\n    rst = 1;\n    #20;\n    // Now send a full valid sequence to ensure state machine recovered\n    @(posedge clk);\n    #1;\n    valid_in = 1;\n    data_in = 8'hCC; // Byte 1\n    @(posedge clk);\n    #1;\n    data_in = 8'hDD; // Byte 2\n    @(posedge clk);\n    #1;\n    valid_in = 0;\n    #20;\n\n    // -------------------------------------------------------\n    // Test 5: Walking 1s (Bit-level check)\n    // -------------------------------------------------------\n    // Targets: Bit-select boundaries, wiring errors\n    // Pair: 00000001, 10000000 -> 0180\n    @(posedge clk);\n    #1;\n    valid_in = 1;\n    data_in = 8'h01; // LSB of upper byte\n    @(posedge clk);\n    #1;\n    data_in = 8'h80; // MSB of lower byte\n    @(posedge clk);\n    #1;\n    valid_in = 0;\n    #20;\n\n    // Pair: 10000000, 00000001 -> 8001\n    @(posedge clk);\n    #1;\n    valid_in = 1;\n    data_in = 8'h80; // MSB of upper byte\n    @(posedge clk);\n    #1;\n    data_in = 8'h01; // LSB of lower byte\n    @(posedge clk);\n    #1;\n    valid_in = 0;\n    #20;\n\n    // 4. Cleanup / Handover\n    $display(\"LLM: Tests Finished. Handing over to Original TB...\");\n    rst = 0; // Reset state for original TB\n    valid_in = 0;\n    data_in = 0;\n    llm_go_signal = 0;\n    // DO NOT call $finish here.\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:96672c422c6eeec1",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag = ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:00d889aaaad190d9",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:35053fc36e5bf418",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:195006c54f0e66e8",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:96359a80f44348f4",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:68d8179f1a04bfe5",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or posedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c584d4671cc64d38",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4ae5f6a206837ad9",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or posedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c6ff339edc18bff1",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(negedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f78f7f25e4aa24de",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n or negedge valid_out) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:961463023922ae6d",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:87d385827510f0a3",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5a257b8d2fa4ce9d",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c8dd38e5de2b9a0c",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a6340a61a9bd5fe6",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f0a55260d6ac1d5d",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6b7fa36e648dd5ed",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:54f115a36b24c3be",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2e449a2f32eacb05",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n < !rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c8e8e3e76c4d29fc",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if((valid_in && flag) === !rst_n) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1f3e101ec17b6aa8",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n >>> !flag) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b86140d721efa255",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag ** (valid_in && !flag); \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ea163e680ee24045",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if((valid_in && flag) ^ (valid_in && !flag)) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:355c9a1696f2f279",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) begin\n    end else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1b6f860a37578eef",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fc9c3d87a996d32d",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) begin\n    end \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:08b5d83c88caf31e",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) begin\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:465e0b6bc2119452",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:751274cf753375f0",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) begin\n    end \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:400e002612139231",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b290666292fd2a86",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n    flag <= ~flag;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1fed8f0822f62e66",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n    data_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f907106dccce7d5a",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n    data_out <= { data_lock, data_in };\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b9b59a0ad7799224",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else begin\n      if(valid_in && flag) data_out <= { data_lock, data_in }; \n      flag <= 'd0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:84c44c1343fb87f9",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else begin\n      if(valid_in) flag <= ~flag; \n      flag <= 'd0;\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:564b404a62c39ef8",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else begin\n      if(valid_in && flag) valid_out <= 1'd1; \n      else valid_out <= 'd0;\n      data_out <= 'd0;\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9c3569d720377457",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      data_out <= 'd0;\n      if(valid_in && flag) data_out <= { data_lock, data_in }; \n    end else begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:607e4c05ea93121e",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) begin\n    end else begin\n      data_out <= { data_lock, data_in };\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:12f090496d48466f",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n    end else begin\n      if(valid_in && !flag) data_lock <= data_in; \n      data_lock <= 'd0;\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9d48e8910a54dc11",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      flag <= 'd0;\n      if(valid_in) flag <= ~flag; \n    end else begin\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9504d3401e61282f",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) begin\n    end else begin\n      flag <= ~flag;\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:51392a22492c1057",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) begin\n      valid_out <= 'd0;\n      if(valid_in && flag) valid_out <= 1'd1; \n      else valid_out <= 'd0;\n    end else begin\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6d8d6fb5d70657e3",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) begin\n    end else begin\n      valid_out <= 'd0;\n      valid_out <= 1'd1;\n    end\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8629628a66b206d7",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) flag <= 'd0; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b7839efd29a10429",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else data_lock <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:72b9264331a5b3f8",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) flag <= 'd0; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4d325c3ad2c93c76",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) valid_out <= 'd0; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5b6ac000301c15d3",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 1'd1; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c9e86c5b812d53ca",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) valid_out <= 'd0; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bd2b9ac5b04ef2ca",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out[12] <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:52cf3143d3d8b2ee",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in << !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bedecdda78f88cc4",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && (flag)) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b33f2ad658faf025",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(^rst_n) valid_out <= 'd0; \n    else if(valid_in && flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a1ca2183e97c2e69",
+   "project": "width_8to16",
+   "buggy_rtl": "\n\nmodule width_8to16\n(\n  input clk,\n  input rst_n,\n  input valid_in,\n  input [7:0] data_in,\n  output reg valid_out,\n  output reg [15:0] data_out\n);\n\n  reg [7:0] data_lock;\n  reg flag;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_lock <= 'd0; \n    else if(valid_in && !flag) data_lock <= data_in; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) flag <= 'd0; \n    else if(valid_in) flag <= ~flag; \n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) valid_out <= 'd0; \n    else if(valid_in << flag) valid_out <= 1'd1; \n    else valid_out <= 'd0;\n  end\n\n\n  always @(posedge clk or negedge rst_n) begin\n    if(!rst_n) data_out <= 'd0; \n    else if(valid_in && flag) data_out <= { data_lock, data_in }; \n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

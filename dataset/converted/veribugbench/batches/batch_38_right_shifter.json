@@ -1,0 +1,128 @@
+{
+ "batch_index": 38,
+ "source_group": "veribugbench:RTLLM/right_shifter",
+ "project": "right_shifter",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns/1ns\nmodule right_shifter_tb;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n  reg clk;\n  reg d;\n  wire [7:0] q;\n\n  // Instantiate the DUT (Design Under Test)\n  right_shifter dut (\n    .clk(clk),\n    .d(d),\n    .q(q)\n  );\n\n  // Generate clock\n  always #5 clk = ~clk;\n\n  initial begin\n    // Initialize inputs\n    clk = 0;\n    d = 0;\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n    #20;\n    d = 1;\n    #10;\n    d = 0;\n    #10;\n    d = 1;\n    #10;\n    d = 0;\n    #10;\n    d = 1;\n    #10;\n    d = 1;\n    #10;\n    d = 1;\n    #10;\n    \n    // Check the output\n    if(q==8'b11101010) begin\n      $display(\"===========Your Design Passed===========\");\n    end\n    else begin\n      $display(\"===========Failed===========\");\n    end\n    // Finish simulation\n    $finish;\n  end\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"q,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", q);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    $display(\"LLM: Starting deterministic mutation test vectors...\");\n\n    // Initialize input d to known state\n    d = 0;\n\n    // Wait for clock to stabilize (sync to negedge to drive inputs for posedge)\n    repeat(5) @(negedge clk);\n\n    // ---------------------------------------------------------\n    // Test Case 1: Walking 1\n    // Objective: Verify Shift Right (>>) vs Left (<<) and Insertion at MSB (q[7])\n    // ---------------------------------------------------------\n    // Drive d=1 for one cycle. Expected q next: 8'h80\n    d = 1;\n    @(negedge clk);\n    \n    // Drive d=0 and observe the '1' shifting right to LSB.\n    // Expected q sequence: 80 -> 40 -> 20 -> 10 -> 08 -> 04 -> 02 -> 01 -> 00\n    d = 0;\n    for (i = 0; i < 9; i = i + 1) begin\n        @(negedge clk);\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 2: Saturation (All 1s)\n    // Objective: Verify bit-width and ability to hold all 1s\n    // ---------------------------------------------------------\n    d = 1;\n    for (i = 0; i < 9; i = i + 1) begin\n        @(negedge clk);\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 3: Walking 0 in Field of 1s\n    // Objective: Verify ability to clear bits and data path continuity\n    // ---------------------------------------------------------\n    // Insert a single 0. Expected q next: 8'h7F (01111111)\n    d = 0;\n    @(negedge clk);\n\n    // Fill with 1s again to push the 0 out\n    d = 1;\n    for (i = 0; i < 9; i = i + 1) begin\n        @(negedge clk);\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 4: Alternating Pattern 0xAA (10101010)\n    // Objective: High frequency transitions to test setup/hold and bit independence\n    // Note: q shifts right. Last d in is MSB.\n    // To get 10101010 (MSB..LSB), input sequence must be 0,1,0,1,0,1,0,1 (Oldest..Newest)\n    // ---------------------------------------------------------\n    for (i = 0; i < 4; i = i + 1) begin\n        d = 0; @(negedge clk);\n        d = 1; @(negedge clk);\n    end\n\n    // ---------------------------------------------------------\n    // Test Case 5: Alternating Pattern 0x55 (01010101)\n    // Objective: Complementary pattern\n    // ---------------------------------------------------------\n    for (i = 0; i < 4; i = i + 1) begin\n        d = 1; @(negedge clk);\n        d = 0; @(negedge clk);\n    end\n\n    // Reset to 0 and hold\n    d = 0;\n    repeat(5) @(negedge clk);\n\n    // 4. Handover\n    $display(\"LLM: Tests Finished. Handing over to Original TB...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:c8167549e67696f7",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q <= q >> 1;\n    q[7] = d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:daf376dfe3099815",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(negedge clk) begin\n    q <= q >> 1;\n    q[7] <= d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e3532319eed10029",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q <= 1;\n    q[7] <= d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:51a91614c74d2a51",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    begin\n    end\n    q[7] <= d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:94547597b9fcdce1",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q <= q >> 1;\n    begin\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:20f713834472a1af",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q <= q >> 1;\n    q[7] <= d;\n    q <= q >> 1;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9dd5a44a361e1f17",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q <= q >> 1;\n    q <= q >> 1;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8b73a72bb86e96db",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q <= q >> 1;\n    q <= d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3a2d10988a074b9a",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q[12] = 0;\n\n\n  always @(posedge clk) begin\n    q <= q >> 1;\n    q[7] <= d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:feda3dc78a99494c",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q[32] <= q >> 1;\n    q[7] <= d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bd7298dc35f97aba",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q <= q[7] >> 1;\n    q[7] <= d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:4c7ff419be15d079",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q <= q >> 1;\n    q[16] <= d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:726813702fc54192",
+   "project": "right_shifter",
+   "buggy_rtl": "\n\nmodule right_shifter\n(\n  clk,\n  q,\n  d\n);\n\n  input clk;\n  input d;\n  output [7:0] q;\n  reg [7:0] q;\n\n  initial q = 0;\n\n\n  always @(posedge clk) begin\n    q <= q <= 1;\n    q[7] <= d;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

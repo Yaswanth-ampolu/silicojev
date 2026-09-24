@@ -1,0 +1,13 @@
+{
+ "project_id": "sha3_f_permutation",
+ "source_group": "CirFix",
+ "tb": "test_f_permutation_t1_enhanced.v",
+ "n_origin_files": 6,
+ "golden_rc": -99,
+ "golden_hash": "b95f2a9551099983",
+ "deterministic": true,
+ "golden_err": "MISSING /silicogenplayground/projects/silicogen/silicojev/dataset/raw/github/VeriBugBench/dataset/v1.0/sources/CirFix/opencores/sha3_f_permutation/test_f_permutation_t1_enhanced.v",
+ "sweep_version": 2,
+ "instances": [],
+ "note": "golden unusable - instances not swept"
+}

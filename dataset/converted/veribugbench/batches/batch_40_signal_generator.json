@@ -1,0 +1,332 @@
+{
+ "batch_index": 40,
+ "source_group": "veribugbench:RTLLM/signal_generator",
+ "project": "signal_generator",
+ "upstream": "RTLLM",
+ "testbench": "module tb_signal_generator;\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\nreg\t\t\t\tclk,rst_n;\nwire[4:0]\t\twave;\n\nsignal_generator uut(\n\t\t\t\t.clk(clk),\n\t\t\t\t.rst_n(rst_n),\n\t\t\t\t.wave(wave)\n\t\t\t\t);\n\nreg[31:0]reference[0:99];\n\ninteger i = 0;\ninteger error = 0;\n// integer outfile;\ninitial begin\n      $readmemh(\"../../../tri_gen.txt\",reference);\n\t\t\tclk = 0;\n      rst_n = 0;\n\t\t\t#10\n      rst_n =1;\n      // outfile = $fopen(\"tri_gen.txt\", \"w\");\n\t\t\trepeat(100) begin\n        // $fwrite(outfile, \"%h\\n\", wave);\n        // $display(wave);\n        error=(wave==reference[i])?error:error+1;\n        #10;\n        i = i+1;\n      end\n      // $fclose(outfile);\n      if(error==0)\n      begin\n        $display(\"===========Your Design Passed===========\");\n            end\n      else\n      begin\n        $display(\"===========Error===========\");\n      end\n      $finish;\nend\n \nalways #5 clk =~clk;\n \n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"wave,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", wave);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer i;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    \n    // --- Initialization ---\n    // Ensure reset is asserted at the start to bring DUT to known state\n    rst_n = 0;\n    repeat(5) @(posedge clk);\n    \n    // Release reset on negedge to avoid setup/hold violations\n    @(negedge clk);\n    rst_n = 1;\n\n    // --- Phase 1: Full Triangle Wave Traversal ---\n    // Wait for the counter to reach the maximum value (31)\n    // This exercises the 'Count Up' logic and the 'State 0 -> State 1' transition condition\n    wait(wave == 5'b11111);\n    \n    // Wait for the counter to return to minimum value (0)\n    // This exercises the 'Count Down' logic and the 'State 1 -> State 0' transition condition\n    wait(wave == 5'b00000);\n\n    // --- Phase 2: Asynchronous Reset Sensitivity Test ---\n    // Allow the counter to increment partially (e.g., to ~10)\n    repeat(10) @(posedge clk);\n    \n    // Assert reset asynchronously (away from clock edge)\n    // This targets mutations that might remove 'negedge rst_n' from the sensitivity list\n    #2; \n    rst_n = 0;\n    #7; // Hold low for a duration not aligned with clock period\n    rst_n = 1;\n\n    // --- Phase 3: Boundary Condition Interruption (Peak) ---\n    // Wait for the wave to reach the peak again\n    wait(wave == 5'b11111);\n    \n    // Assert reset exactly when wave is at peak\n    // This stresses the logic where 'state' and 'wave' might be updating simultaneously\n    @(negedge clk);\n    rst_n = 0;\n    @(negedge clk);\n    rst_n = 1;\n\n    // --- Phase 4: Boundary Condition Interruption (Valley) ---\n    // Wait for the wave to reach the valley (0)\n    wait(wave == 5'b00000);\n    \n    // Assert reset exactly when wave is at 0\n    @(negedge clk);\n    rst_n = 0;\n    @(negedge clk);\n    rst_n = 1;\n\n    // --- Phase 5: Rapid Toggling / Glitch Test ---\n    // Stress test the reset recovery logic\n    repeat(5) @(posedge clk);\n    rst_n = 0;\n    #2; rst_n = 1;\n    #2; rst_n = 0;\n    #2; rst_n = 1;\n\n    // Stabilize before handing over control\n    repeat(20) @(posedge clk);\n\n    // 4. Cleanup\n    // Handover control to the original testbench\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:ac3e63e0ecd87b6e",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:56646104d9400143",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(negedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:b751b80bb381c3f4",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or posedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8cd25f9e3c8eeda9",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n or posedge state) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8eea6d0ce4393d83",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f2a3fd65ea24cbea",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:ebf65b634473e7e5",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:493e04d9a2529c85",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a03053297e856f61",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:50efbb99297a66d8",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n || (wave == 5'b11111)) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:08679e44176605d4",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if((wave == 5'b11111) === (wave == 5'b00000)) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8adc6baf9e03d784",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1 >= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:576b2e364c3966e0",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if((wave == 5'b00000) >>> (wave == 5'b00000)) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:6e05f370a760057f",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1 > wave + 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:105260d66c4f9bc6",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      begin\n      end\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9aa136a58a0f51e8",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      begin\n      end\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:18c95da7cb1dd0f9",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) begin\n          end else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:eac81be564beb432",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else begin\n          end\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:20b46fad71eddff5",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) begin\n          end else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3f97a1c30ba1f997",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else begin\n          end\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:935e994c3bf9eddd",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n    wave <= wave + 1;\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5a18c502be8c100e",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n      wave <= wave - 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:caf46f17ea0c3b50",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n          state <= 2'b01;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:0d2736ad67a608a7",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n          state <= 2'b0;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c1124af9410a37f7",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n          state <= 2'b00;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:23ae499ac232bc96",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n          state <= 2'b01;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d2291d23af098666",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n      wave <= wave + 1;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:96083aa3808f62bf",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) begin\n            state <= 2'b01;\n            wave <= 5'b0;\n          end else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f389eb22c09da479",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n      state <= 2'b0;\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d5d31bb0ca7abd6e",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) begin\n            state <= 2'b01;\n            wave <= wave + 1;\n          end else begin\n          end\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:adee3875cbeb4331",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) begin\n            state <= 2'b00;\n            wave <= wave - 1;\n          end else begin\n          end\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fc0319f8a8908671",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      wave <= wave - 1;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bd86e5142d29df03",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      state <= 2'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:71752b165bfa0858",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else state <= 2'b00;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:a37d9e9d3071b233",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= 5'b0;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f93951ac4f3547fe",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state[26] <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:57ea286ce7bbecab",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave[16] <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:30012eac3135faea",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave[29] == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d1b7fab5762a3094",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state[8] <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:69fe2e51e659841f",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave[16] == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fe2f15018ddec9e6",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state[11] <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bb5ac0d8363ab17f",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave[8] <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:191fc0e0108ee9e7",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(|rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e60b40e619e06dac",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave & 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:23170c0d8a999946",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave !== 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1d3abd515143bb94",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave * 5'b00000) state <= 2'b00; \n          else wave <= wave - 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8019d3f6d58ccd70",
+   "project": "signal_generator",
+   "buggy_rtl": "\n\nmodule signal_generator\n(\n  input clk,\n  input rst_n,\n  output reg [4:0] wave\n);\n\n  reg [1:0] state;\n\n  always @(posedge clk or negedge rst_n) begin\n    if(~rst_n) begin\n      state <= 2'b0;\n      wave <= 5'b0;\n    end else begin\n      case(state)\n        2'b00: begin\n          if(wave == 5'b11111) state <= 2'b01; \n          else wave <= wave + 1;\n        end\n        2'b01: begin\n          if(wave == 5'b00000) state <= 2'b00; \n          else wave <= wave & 1;\n        end\n      endcase\n    end\n  end\n\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}

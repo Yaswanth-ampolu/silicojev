@@ -1,0 +1,628 @@
+{
+ "project_id": "fsm",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "21c94af8160c72c5",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "fsm_EdgeFlip_51_14",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b7eb32b68f216a86",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprDelete_112_38",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprDelete_129_45",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c810a2a64712b3d6",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprDelete_146_52",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1743aaf116a968f2",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprDelete_188_71",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "005a92a3332af4a8",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprDelete_189_71",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "005a92a3332af4a8",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprDelete_192_71",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e415e3370054bc7a",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprDelete_78_24",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e215c9ef3ffbb672",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprDelete_95_31",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprInsert_112_38",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprInsert_163_59",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ddb117d09ff7d3d2",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprInsert_188_71",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "09189940656fd6e8",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprInsert_78_24",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "e215c9ef3ffbb672",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprInsert_95_31",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "aa9a937be06ca620",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubDelete_182_70",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1a9947049c58a6c3",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubDelete_195_72",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubDelete_200_74",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d7b68a17b286bc78",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubDelete_58_16",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubDelete_63_18",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubInsert_179_68",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "b85b5eddfe435211",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubInsert_Case_125_44",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubInsert_Case_142_51",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubInsert_IF_128_45",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubInsert_IF_180_69",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6599a227ca4acbc8",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubInsert_IF_187_71",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubInsert_IF_56_15",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "a5107547faa356af",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubInsert_IF_94_31",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubMove_111_38",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubMove_128_45",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubMove_145_52",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ddb117d09ff7d3d2",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubMove_162_59",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a1a08f0189779bc",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubMove_180_69",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "0ae14cb259c21efe",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubMove_187_71",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "dd002d3c7bf87fc5",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubMove_56_15",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubMove_77_24",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubUpdate_182_70",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1a9947049c58a6c3",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubUpdate_195_72",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_NSubUpdate_63_18",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_PointerInsert_100_32",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_PointerInsert_139_48",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_PointerInsert_141_48",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_PointerInsert_156_55",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "d79c89c79dca1ec7",
+   "err": null
+  },
+  {
+   "instance": "fsm_PointerInsert_158_55",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1d86ce37ae077280",
+   "err": null
+  },
+  {
+   "instance": "fsm_PointerInsert_60_16",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_PointerInsert_67_18",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_PointerInsert_73_22",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprUpdate_112_38",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprUpdate_146_52",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "6dd6f225c8545968",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprUpdate_163_59",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "1d86ce37ae077280",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprUpdate_188_71",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "326c58d7ef4fc5bd",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprUpdate_189_71",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "ddfb347f5a56fd46",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprUpdate_192_71",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "326c58d7ef4fc5bd",
+   "err": null
+  },
+  {
+   "instance": "fsm_ExprUpdate_78_24",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "cf5e961ca89d4bcd",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "cf5e961ca89d4bcd",
+   "size": 25,
+   "members": [
+    "fsm_ExprDelete_112_38",
+    "fsm_ExprDelete_95_31",
+    "fsm_ExprInsert_112_38",
+    "fsm_NSubDelete_195_72",
+    "fsm_NSubDelete_58_16",
+    "fsm_NSubDelete_63_18",
+    "fsm_NSubInsert_Case_125_44",
+    "fsm_NSubInsert_Case_142_51",
+    "fsm_NSubInsert_IF_128_45",
+    "fsm_NSubInsert_IF_187_71",
+    "fsm_NSubInsert_IF_94_31",
+    "fsm_NSubMove_111_38",
+    "fsm_NSubMove_128_45",
+    "fsm_NSubMove_56_15",
+    "fsm_NSubMove_77_24",
+    "fsm_NSubUpdate_195_72",
+    "fsm_NSubUpdate_63_18",
+    "fsm_PointerInsert_100_32",
+    "fsm_PointerInsert_139_48",
+    "fsm_PointerInsert_141_48",
+    "fsm_PointerInsert_60_16",
+    "fsm_PointerInsert_67_18",
+    "fsm_PointerInsert_73_22",
+    "fsm_ExprUpdate_112_38",
+    "fsm_ExprUpdate_78_24"
+   ]
+  },
+  {
+   "hash": "005a92a3332af4a8",
+   "size": 2,
+   "members": [
+    "fsm_ExprDelete_188_71",
+    "fsm_ExprDelete_189_71"
+   ]
+  },
+  {
+   "hash": "e215c9ef3ffbb672",
+   "size": 2,
+   "members": [
+    "fsm_ExprDelete_78_24",
+    "fsm_ExprInsert_78_24"
+   ]
+  },
+  {
+   "hash": "ddb117d09ff7d3d2",
+   "size": 2,
+   "members": [
+    "fsm_ExprInsert_163_59",
+    "fsm_NSubMove_145_52"
+   ]
+  },
+  {
+   "hash": "1a9947049c58a6c3",
+   "size": 2,
+   "members": [
+    "fsm_NSubDelete_182_70",
+    "fsm_NSubUpdate_182_70"
+   ]
+  },
+  {
+   "hash": "1d86ce37ae077280",
+   "size": 2,
+   "members": [
+    "fsm_PointerInsert_158_55",
+    "fsm_ExprUpdate_163_59"
+   ]
+  },
+  {
+   "hash": "326c58d7ef4fc5bd",
+   "size": 2,
+   "members": [
+    "fsm_ExprUpdate_188_71",
+    "fsm_ExprUpdate_192_71"
+   ]
+  },
+  {
+   "hash": "b7eb32b68f216a86",
+   "size": 1,
+   "members": [
+    "fsm_EdgeFlip_51_14"
+   ]
+  },
+  {
+   "hash": "c810a2a64712b3d6",
+   "size": 1,
+   "members": [
+    "fsm_ExprDelete_129_45"
+   ]
+  },
+  {
+   "hash": "1743aaf116a968f2",
+   "size": 1,
+   "members": [
+    "fsm_ExprDelete_146_52"
+   ]
+  },
+  {
+   "hash": "e415e3370054bc7a",
+   "size": 1,
+   "members": [
+    "fsm_ExprDelete_192_71"
+   ]
+  },
+  {
+   "hash": "09189940656fd6e8",
+   "size": 1,
+   "members": [
+    "fsm_ExprInsert_188_71"
+   ]
+  },
+  {
+   "hash": "aa9a937be06ca620",
+   "size": 1,
+   "members": [
+    "fsm_ExprInsert_95_31"
+   ]
+  },
+  {
+   "hash": "d7b68a17b286bc78",
+   "size": 1,
+   "members": [
+    "fsm_NSubDelete_200_74"
+   ]
+  },
+  {
+   "hash": "b85b5eddfe435211",
+   "size": 1,
+   "members": [
+    "fsm_NSubInsert_179_68"
+   ]
+  },
+  {
+   "hash": "6599a227ca4acbc8",
+   "size": 1,
+   "members": [
+    "fsm_NSubInsert_IF_180_69"
+   ]
+  },
+  {
+   "hash": "a5107547faa356af",
+   "size": 1,
+   "members": [
+    "fsm_NSubInsert_IF_56_15"
+   ]
+  },
+  {
+   "hash": "3a1a08f0189779bc",
+   "size": 1,
+   "members": [
+    "fsm_NSubMove_162_59"
+   ]
+  },
+  {
+   "hash": "0ae14cb259c21efe",
+   "size": 1,
+   "members": [
+    "fsm_NSubMove_180_69"
+   ]
+  },
+  {
+   "hash": "dd002d3c7bf87fc5",
+   "size": 1,
+   "members": [
+    "fsm_NSubMove_187_71"
+   ]
+  },
+  {
+   "hash": "d79c89c79dca1ec7",
+   "size": 1,
+   "members": [
+    "fsm_PointerInsert_156_55"
+   ]
+  },
+  {
+   "hash": "6dd6f225c8545968",
+   "size": 1,
+   "members": [
+    "fsm_ExprUpdate_146_52"
+   ]
+  },
+  {
+   "hash": "ddfb347f5a56fd46",
+   "size": 1,
+   "members": [
+    "fsm_ExprUpdate_189_71"
+   ]
+  }
+ ]
+}

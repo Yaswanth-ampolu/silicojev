@@ -1,0 +1,478 @@
+{
+ "project_id": "pulse_detect",
+ "source_group": "RTLLM",
+ "tb": "new_testbench_enhanced.v",
+ "golden_rc": 0,
+ "golden_hash": "3e328ec977aa4dbb",
+ "deterministic": true,
+ "golden_err": null,
+ "instances": [
+  {
+   "instance": "pulse_detect_EdgeFlip_41_17",
+   "operator_id": "EdgeFlip",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c328796a9fde992e",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprDelete_120_48",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c3020a7b44e3bedd",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprDelete_146_70",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "027b3932752524f1",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprDelete_147_70",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "027b3932752524f1",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprDelete_150_70",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprDelete_47_18",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprDelete_69_27",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprDelete_86_34",
+   "operator_id": "ExprDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "81aaf612dc7ebce9",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprInsert_120_48",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c3020a7b44e3bedd",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprInsert_146_70",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7a50eda5bfcab058",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprInsert_47_18",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprInsert_86_34",
+   "operator_id": "ExprInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubDelete_49_19",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubDelete_54_21",
+   "operator_id": "NSubDelete",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_101_40",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_118_47",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "43bf589d8a0bcc06",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_136_67",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_62_24",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_84_33",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_Case_82_33",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_Case_99_40",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_IF_102_41",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_IF_119_48",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "43bf589d8a0bcc06",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_IF_145_70",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubInsert_IF_85_34",
+   "operator_id": "NSubInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubMove_119_48",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "7ffa50914666340a",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubMove_145_70",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "88109ed4857c45ce",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubMove_46_18",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubMove_68_27",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubMove_85_34",
+   "operator_id": "NSubMove",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "81aaf612dc7ebce9",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_NSubUpdate_49_19",
+   "operator_id": "NSubUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_PointerInsert_108_42",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "43bf589d8a0bcc06",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_PointerInsert_125_49",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "43bf589d8a0bcc06",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_PointerInsert_149_70",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_PointerInsert_56_21",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_PointerInsert_74_28",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "3a498b508cb33f65",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_PointerInsert_98_37",
+   "operator_id": "PointerInsert",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "fdc03776c10a5a61",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprUpdate_103_41",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "43bf589d8a0bcc06",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprUpdate_120_48",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c3020a7b44e3bedd",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprUpdate_147_70",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "769c566270e77b73",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprUpdate_150_70",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "75793ac076d7dcde",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprUpdate_69_27",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "c060ffabb0ea1c44",
+   "err": null
+  },
+  {
+   "instance": "pulse_detect_ExprUpdate_86_34",
+   "operator_id": "ExprUpdate",
+   "verdict": "killed",
+   "rc": 0,
+   "behaviour_hash": "81aaf612dc7ebce9",
+   "err": null
+  }
+ ],
+ "equivalence_classes": [
+  {
+   "hash": "3a498b508cb33f65",
+   "size": 22,
+   "members": [
+    "pulse_detect_ExprDelete_150_70",
+    "pulse_detect_ExprDelete_47_18",
+    "pulse_detect_ExprDelete_69_27",
+    "pulse_detect_ExprInsert_47_18",
+    "pulse_detect_ExprInsert_86_34",
+    "pulse_detect_NSubDelete_49_19",
+    "pulse_detect_NSubDelete_54_21",
+    "pulse_detect_NSubInsert_101_40",
+    "pulse_detect_NSubInsert_136_67",
+    "pulse_detect_NSubInsert_62_24",
+    "pulse_detect_NSubInsert_84_33",
+    "pulse_detect_NSubInsert_Case_82_33",
+    "pulse_detect_NSubInsert_Case_99_40",
+    "pulse_detect_NSubInsert_IF_102_41",
+    "pulse_detect_NSubInsert_IF_145_70",
+    "pulse_detect_NSubInsert_IF_85_34",
+    "pulse_detect_NSubMove_46_18",
+    "pulse_detect_NSubMove_68_27",
+    "pulse_detect_NSubUpdate_49_19",
+    "pulse_detect_PointerInsert_149_70",
+    "pulse_detect_PointerInsert_56_21",
+    "pulse_detect_PointerInsert_74_28"
+   ]
+  },
+  {
+   "hash": "43bf589d8a0bcc06",
+   "size": 5,
+   "members": [
+    "pulse_detect_NSubInsert_118_47",
+    "pulse_detect_NSubInsert_IF_119_48",
+    "pulse_detect_PointerInsert_108_42",
+    "pulse_detect_PointerInsert_125_49",
+    "pulse_detect_ExprUpdate_103_41"
+   ]
+  },
+  {
+   "hash": "c3020a7b44e3bedd",
+   "size": 3,
+   "members": [
+    "pulse_detect_ExprDelete_120_48",
+    "pulse_detect_ExprInsert_120_48",
+    "pulse_detect_ExprUpdate_120_48"
+   ]
+  },
+  {
+   "hash": "81aaf612dc7ebce9",
+   "size": 3,
+   "members": [
+    "pulse_detect_ExprDelete_86_34",
+    "pulse_detect_NSubMove_85_34",
+    "pulse_detect_ExprUpdate_86_34"
+   ]
+  },
+  {
+   "hash": "027b3932752524f1",
+   "size": 2,
+   "members": [
+    "pulse_detect_ExprDelete_146_70",
+    "pulse_detect_ExprDelete_147_70"
+   ]
+  },
+  {
+   "hash": "c328796a9fde992e",
+   "size": 1,
+   "members": [
+    "pulse_detect_EdgeFlip_41_17"
+   ]
+  },
+  {
+   "hash": "7a50eda5bfcab058",
+   "size": 1,
+   "members": [
+    "pulse_detect_ExprInsert_146_70"
+   ]
+  },
+  {
+   "hash": "7ffa50914666340a",
+   "size": 1,
+   "members": [
+    "pulse_detect_NSubMove_119_48"
+   ]
+  },
+  {
+   "hash": "88109ed4857c45ce",
+   "size": 1,
+   "members": [
+    "pulse_detect_NSubMove_145_70"
+   ]
+  },
+  {
+   "hash": "fdc03776c10a5a61",
+   "size": 1,
+   "members": [
+    "pulse_detect_PointerInsert_98_37"
+   ]
+  },
+  {
+   "hash": "769c566270e77b73",
+   "size": 1,
+   "members": [
+    "pulse_detect_ExprUpdate_147_70"
+   ]
+  },
+  {
+   "hash": "75793ac076d7dcde",
+   "size": 1,
+   "members": [
+    "pulse_detect_ExprUpdate_150_70"
+   ]
+  },
+  {
+   "hash": "c060ffabb0ea1c44",
+   "size": 1,
+   "members": [
+    "pulse_detect_ExprUpdate_69_27"
+   ]
+  }
+ ]
+}

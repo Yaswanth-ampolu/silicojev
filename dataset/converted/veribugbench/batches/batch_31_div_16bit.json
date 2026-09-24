@@ -1,0 +1,212 @@
+{
+ "batch_index": 31,
+ "source_group": "veribugbench:RTLLM/div_16bit",
+ "project": "div_16bit",
+ "upstream": "RTLLM",
+ "testbench": "`timescale 1ns/1ps\nmodule tb_division();\n\n// === Global Sync Signal ===\nreg llm_go_signal = 1;\n\n\nreg [15:0] A;\nreg [7:0] B;\nwire [15:0] result;\nwire [15:0] odd;\n\ninteger i; \ninteger error = 0; \nreg [15:0] expected_result;\nreg [15:0] expected_odd;\ninitial begin\n   for (i = 0; i < 100; i = i + 1) begin\n      A = $urandom_range(1'b0, 16'b1111_1111_1111_1111);\n      B = $urandom_range(1'b1, 8'b1111_1111);\n      expected_result = A/B;\n      expected_odd = A%B;\n    wait(llm_go_signal == 0); // [Auto] Handover from LLM to Original TB\n\n      #10; \n      error = (expected_odd != odd || expected_result != result) ? error+1 : error;\n      // $display(\"A = %d, B = %d, Result = %d, odd = %d\", A, B, result, odd);\n   end\n   \n   if (error == 0) begin\n            $display(\"===========Your Design Passed===========\");\n    end\n    else begin\n    $display(\"===========Test completed with %d /100 failures===========\", error);\n    end\n    \n    $finish;\nend\n\ndiv_16bit uut (.A(A), .B(B), .result(result), .odd(odd));\n\n\n\n\n\n        ///////////////////added\n        integer file_mantra;\n        initial begin\n          file_mantra = $fopen(\"output.txt\");//added\n          $fwrite(file_mantra, \"time, \");\n      $fwrite(file_mantra, \"result,\");\n      $fwrite(file_mantra, \"odd,\");\n\n          $fwrite(file_mantra, \"\\n\");//added\n          forever begin\n            #1\n            $fwrite(file_mantra, \"%0d, \", $time);\n        $fwrite(file_mantra, \"%h, \", result);\n        $fwrite(file_mantra, \"%h, \", odd);\n\n            $fwrite(file_mantra, \"\\n\");\n          end\n        end\n        \n\n\n\n\n// ============================================\n// === LLM Enhanced Stimuli (Phase 1) ===\ninitial begin\n    // [Auto-Moved Vars]\n        integer k;\n\n    // 1. DECLARE VARIABLES FIRST (Top of block)\n\n\n    // 2. THEN WAIT for original tests\n    wait(llm_go_signal == 1);\n\n    // 3. THEN execute logic\n    $display(\"Starting LLM Deterministic Tests...\");\n\n    // --- Basic Sanity Checks ---\n    // Simple division: 100 / 10 = 10, rem 0\n    A = 16'd100; B = 8'd10; #10;\n    \n    // Remainder check: 100 / 30 = 3, rem 10\n    A = 16'd100; B = 8'd30; #10;\n    \n    // --- Boundary Values (Min/Max) ---\n    // Max A, Max B: 65535 / 255 = 257, rem 0\n    A = 16'hFFFF; B = 8'hFF; #10;\n    \n    // Max A, Min B: 65535 / 1 = 65535, rem 0\n    A = 16'hFFFF; B = 8'h01; #10;\n    \n    // Min A, Max B: 0 / 255 = 0, rem 0\n    A = 16'h0000; B = 8'hFF; #10;\n    \n    // Min A, Min B: 0 / 1 = 0, rem 0\n    A = 16'h0000; B = 8'h01; #10;\n\n    // --- Bit Patterns (Entropy & Coupling) ---\n    // Alternating patterns to catch bit-coupling faults\n    A = 16'hAAAA; B = 8'h55; #10;\n    A = 16'h5555; B = 8'hAA; #10;\n    \n    // All ones vs Alternating\n    A = 16'hFFFF; B = 8'hAA; #10;\n    \n    // --- Power of 2 Divisors (Shift Logic Stress) ---\n    // These target mutations where shifts are replaced or offsets are wrong\n    A = 16'd4096; B = 8'd2; #10;\n    A = 16'd4096; B = 8'd4; #10;\n    A = 16'd4096; B = 8'd8; #10;\n    A = 16'd4096; B = 8'd16; #10;\n    A = 16'd4096; B = 8'd32; #10;\n    A = 16'd4096; B = 8'd64; #10;\n    A = 16'd4096; B = 8'd128; #10;\n\n    // --- Edge Cases: A near B ---\n    // A = B (Result 1, Rem 0)\n    A = 16'd200; B = 8'd200; #10;\n    \n    // A < B (Result 0, Rem A)\n    A = 16'd199; B = 8'd200; #10;\n    \n    // A > B (Result 1, Rem > 0)\n    A = 16'd201; B = 8'd200; #10;\n\n    // --- Walking 1s on B (Control Flow/Comparator Stress) ---\n    // Ensures every bit of B contributes correctly to the subtraction logic\n    A = 16'hFFFF;\n    B = 8'h01; #10;\n    B = 8'h02; #10;\n    B = 8'h04; #10;\n    B = 8'h08; #10;\n    B = 8'h10; #10;\n    B = 8'h20; #10;\n    B = 8'h40; #10;\n    B = 8'h80; #10;\n\n    // --- Walking 0s on B (Inverse Mask) ---\n    B = 8'hFE; #10;\n    B = 8'hFD; #10;\n    B = 8'hFB; #10;\n    B = 8'hF7; #10;\n    B = 8'hEF; #10;\n    B = 8'hDF; #10;\n    B = 8'hBF; #10;\n    B = 8'h7F; #10;\n\n    // --- Large Primes/Non-Power-of-2 (Algorithm Stress) ---\n    A = 16'd54321; B = 8'd123; #10;\n    A = 16'd12345; B = 8'd251; #10;\n\n    // --- High Bit Toggle on A ---\n    // Checks if MSB logic/sign extension (if any) is correct\n    A = 16'h8000; B = 8'd1; #10;\n    A = 16'h8000; B = 8'h80; #10;\n\n    // 4. Cleanup\n    $display(\"LLM Tests Finished. Handing over to Original TB...\");\n    llm_go_signal = 0;\nend\n// ============================================\n\n\n// === Global Watchdog ===\n\n// === Global Safety Watchdog (Injected) ===\ninitial begin\n    #200000;\n    $display(\"\\n[Watchdog] Timeout triggered at %t!\", $time);\n    if (file_mantra != 0) $fclose(file_mantra);\n    $finish;\nend\n\nendmodule",
+ "questions": {
+  "evidence_sufficient": {
+   "criteria": {
+    "false": "Evidence is insufficient or unvalidated",
+    "true": "Evidence is sufficient and supported by a tool or trusted label"
+   },
+   "instructions": "Is there enough evidence to choose a likely root cause?",
+   "type": "noul"
+  },
+  "next_action": {
+   "criteria": {
+    "abstain": "There is insufficient evidence to choose a direction",
+    "ask_human": "Request review from a hardware expert",
+    "constraints": "Inspect timing, clock, pin, or synthesis constraints",
+    "formal": "Run or inspect formal properties and counterexamples",
+    "rtl": "Inspect the RTL implementation or generated hardware logic",
+    "simulation": "Run a targeted simulation or a different simulator configuration",
+    "specification": "Check the protocol, design specification, or requirements",
+    "testbench": "Inspect stimulus, testbench, UVM, or verification code",
+    "waveform": "Inspect waveform and cycle-level signal behavior"
+   },
+   "instructions": "What diagnostic direction should be investigated next?",
+   "type": "choice"
+  },
+  "root_cause_type": {
+   "criteria": {
+    "combinational_logic": "Incorrect combinational or arithmetic logic",
+    "formal_property": "Assertion, property, invariant, or formal-model issue",
+    "reset_initialization": "Reset, initialization, or unknown-state issue",
+    "security": "Hardware security, vulnerability, or information-flow issue",
+    "sequential_assignment": "Clocked assignment, blocking/non-blocking, or latch issue",
+    "state_machine": "FSM transition, state encoding, or control-flow issue",
+    "syntax_compile": "Syntax, compilation, elaboration, or l-value failure",
+    "timing_protocol": "Timing, handshake, clock-domain, or protocol sequencing issue",
+    "type_width": "Type, width, signedness, cast, or operator mismatch",
+    "unknown": "The root-cause category is not known from the available evidence"
+   },
+   "instructions": "Which root-cause category best describes the available evidence?",
+   "type": "choice"
+  }
+ },
+ "records": [
+  {
+   "id": "veribugbench:684fb68d02c2fcea",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f444ff894a5ac4d5",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3d6a91a2b8afd2af",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:7e7909e83c027cec",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:8bf95574fa5fd3b1",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; (i<16)==tmp_a-tmp_b+1; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:f87d30b8c3c0e946",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if((tmp_a >= tmp_b) - (tmp_a - tmp_b + 1)) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3831dc40862cd78f",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1 - (tmp_a - tmp_b + 1);\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:605edf11784dd0c4",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  input wire result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:fe39e6d64e18adb8",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  input wire odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:60273d0dc5c461e2",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a;\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:1d4936b5e4e4f9a0",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:9];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:efe18ec9472f7c55",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:15];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:584b9b2d7a77463a",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i[12]=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:597bb68f8562b1ef",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i[9]=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:af351b069aaa093f",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a[2] = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2e9b11ccc125f8c3",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a[13] = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:38d8d3654d6b6769",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd[22] = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:9cfb16f430bf80ea",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result[13] = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:bf7604e201f9e154",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg[11] = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e2719e1222e7300a",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg[18] = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:3a9ef915333c58a3",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B[4];\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:2a347d288da9997a",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b[14] = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:cc8b9f7005762c1d",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i>=16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:d65ac90671409401",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a <= 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:5ba3366faa1fd497",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a && tmp_b) begin\n          tmp_a = tmp_a - tmp_b + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:c7761f499fa5f0f1",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = tmp_a - tmp_b != 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  },
+  {
+   "id": "veribugbench:e09144bd50d4b090",
+   "project": "div_16bit",
+   "buggy_rtl": "\n\nmodule div_16bit\n(\n  input wire [15:0] A,\n  input wire [7:0] B,\n  output wire [15:0] result,\n  output wire [15:0] odd\n);\n\n  reg [15:0] a_reg;\n  reg [15:0] b_reg;\n  reg [31:0] tmp_a;\n  reg [31:0] tmp_b;\n  integer i;\n\n  always @(*) begin\n    a_reg = A;\n    b_reg = B;\n  end\n\n\n  always @(*) begin\n    begin\n      tmp_a = { 16'b0, a_reg };\n      tmp_b = { b_reg, 16'b0 };\n      for(i=0; i<16; i=i+1) begin\n        tmp_a = tmp_a << 1;\n        if(tmp_a >= tmp_b) begin\n          tmp_a = (tmp_a >= tmp_b) + 1;\n        end else begin\n          tmp_a = tmp_a;\n        end\n      end\n    end\n  end\n\n  assign odd = tmp_a[31:16];\n  assign result = tmp_a[15:0];\n\nendmodule\n\n",
+   "upstream_repo": "RTLLM"
+  }
+ ]
+}
