@@ -25,9 +25,10 @@ from transformers import AutoTokenizer
 
 import sys
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT / "laya") not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT / "laya"))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+LAYA_SOURCE = Path(os.environ.get("SILICOJEV_LAYA_SOURCE", REPO_ROOT / "external" / "laya")).resolve()
+if str(LAYA_SOURCE) not in sys.path:
+    sys.path.insert(0, str(LAYA_SOURCE))
 
 from laya.agent import _fix_tokenizer_config  # noqa: E402
 from laya.common import QTYPES, build_model, build_sequence, proper_reward  # noqa: E402
@@ -112,6 +113,7 @@ def build_items(rows: list[dict[str, Any]], tokenizer, cfg: dict[str, Any]) -> t
                 "label": int(np.argmax(target)),
                 "case_id": row.get("id"),
                 "question_id": qid,
+                "weight": float((row.get("training_weights") or {}).get(qid, 1.0)),
             })
     if not items:
         raise ValueError("No tokenizable training items were produced")
@@ -129,6 +131,7 @@ def collate(items: list[dict[str, Any]], pad_id: int) -> dict[str, torch.Tensor]
     target = torch.zeros((n, kmax), dtype=torch.float32)
     qtype = torch.zeros(n, dtype=torch.long)
     label = torch.zeros(n, dtype=torch.long)
+    sample_weight = torch.ones(n, dtype=torch.float32)
     for i, item in enumerate(items):
         ids[i, :len(item["ids"])] = torch.tensor(item["ids"], dtype=torch.long)
         attention[i, :len(item["ids"])] = 1
@@ -138,6 +141,7 @@ def collate(items: list[dict[str, Any]], pad_id: int) -> dict[str, torch.Tensor]
         target[i, :len(item["target"])] = torch.tensor(item["target"], dtype=torch.float32)
         qtype[i] = item["qtype"]
         label[i] = item["label"]
+        sample_weight[i] = float(item.get("weight", 1.0))
     return {
         "input_ids": ids,
         "attention_mask": attention,
@@ -146,6 +150,7 @@ def collate(items: list[dict[str, Any]], pad_id: int) -> dict[str, torch.Tensor]
         "target": target,
         "qtype": qtype,
         "label": label,
+        "sample_weight": sample_weight,
     }
 
 
@@ -168,9 +173,11 @@ def loss_from_logits(logits: torch.Tensor, batch: dict[str, torch.Tensor], sigma
         advantage = reward - reward.mean(0, keepdim=True)
         advantage = advantage / (advantage.std() + 1e-6)
     logp = -(((z - logits.unsqueeze(0)) ** 2) * mask).sum(-1) / (2 * sigma**2)
-    loss_rl = -(advantage * logp).mean()
-    loss_ce = -(target * torch.log_softmax(logits.masked_fill(~mask, -1e4), -1)).sum(-1).mean()
-    return loss_rl + loss_ce
+    loss_rl = -(advantage * logp).mean(0)
+    loss_ce = -(target * torch.log_softmax(logits.masked_fill(~mask, -1e4), -1)).sum(-1)
+    weights = batch.get("sample_weight", torch.ones_like(loss_ce)).float().clamp_min(0.0)
+    denominator = weights.sum().clamp_min(1e-8)
+    return ((loss_rl + loss_ce) * weights).sum() / denominator
 
 
 @torch.no_grad()
@@ -384,6 +391,9 @@ def main() -> None:
     ap.add_argument("--dtype", choices=["bf16", "fp16", "fp32"], default="bf16")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--max-steps", type=int, default=0)
+    ap.add_argument("--encoder-lr", type=float, default=2.5e-5)
+    ap.add_argument("--head-lr", type=float, default=1.0e-4)
+    ap.add_argument("--weight-decay", type=float, default=0.01)
     args = ap.parse_args()
 
     if not torch.cuda.is_available():
@@ -415,7 +425,18 @@ def main() -> None:
     train_rows = load_rows(args.train)
     valid_rows = load_rows(args.validation)
     data_fp = fingerprint([args.train.resolve(), args.validation.resolve()], {
-        "model": str(model_dir), "max_len": args.max_len, "head_max_len": args.head_max_len,
+        "model": str(model_dir),
+        "max_len": args.max_len,
+        "head_max_len": args.head_max_len,
+        "epochs": args.epochs,
+        "micro_batch_size": args.micro_batch_size,
+        "grad_accum_steps": args.grad_accum_steps,
+        "dtype": args.dtype,
+        "seed": args.seed,
+        "encoder_lr": args.encoder_lr,
+        "head_lr": args.head_lr,
+        "weight_decay": args.weight_decay,
+        "max_steps": args.max_steps,
     })
     train_items, train_skipped = build_items(train_rows, tokenizer, cfg)
     valid_items, valid_skipped = build_items(valid_rows, tokenizer, cfg)
@@ -437,9 +458,9 @@ def main() -> None:
     enc_params = [p for name, p in model.named_parameters() if "encoder." in name]
     head_params = [p for name, p in model.named_parameters() if "encoder." not in name]
     optimizer = torch.optim.AdamW([
-        {"params": enc_params, "lr": 2.5e-5},
-        {"params": head_params, "lr": 1.0e-4},
-    ], weight_decay=0.01)
+        {"params": enc_params, "lr": args.encoder_lr},
+        {"params": head_params, "lr": args.head_lr},
+    ], weight_decay=args.weight_decay)
     updates_per_epoch = max(1, (len(train_items) + args.micro_batch_size - 1) // args.micro_batch_size // args.grad_accum_steps)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, T_max=max(1, updates_per_epoch * args.epochs), eta_min=1e-6
@@ -460,6 +481,7 @@ def main() -> None:
 
     pad_id = tokenizer.pad_token_id or 0
     started = time.time()
+    completed_epoch = int(resume_state["epoch"])
     for epoch in range(int(resume_state["epoch"]), args.epochs):
         order = list(range(len(train_items)))
         random.Random(args.seed + epoch).shuffle(order)
@@ -524,6 +546,7 @@ def main() -> None:
         save_checkpoint(root, f"epoch_{epoch + 1:04d}", model, tokenizer, cfg, optimizer, scheduler, scaler, state)
         print(json.dumps({"epoch": epoch + 1, "train_loss": state["train_loss"], "validation": metrics}, indent=2), flush=True)
         resume_state["batch_in_epoch"] = 0
+        completed_epoch = epoch + 1
         if args.max_steps and resume_state["global_step"] >= args.max_steps:
             break
 
@@ -539,7 +562,7 @@ def main() -> None:
     print(json.dumps({"temperatures": fitted_temperatures, "calibration": calibration}, indent=2), flush=True)
 
     final_state = {
-        "epoch": min(args.epochs, epoch + 1),
+        "epoch": min(args.epochs, completed_epoch),
         "batch_in_epoch": 0,
         "global_step": resume_state["global_step"],
         "dataset_fingerprint": data_fp,

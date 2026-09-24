@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import sys
 import time
 from collections import defaultdict
@@ -21,8 +22,9 @@ from typing import Any, Iterable
 
 import numpy as np
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / "laya"))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+LAYA_SOURCE = Path(os.environ.get("SILICOJEV_LAYA_SOURCE", REPO_ROOT / "external" / "laya")).resolve()
+sys.path.insert(0, str(LAYA_SOURCE))
 from laya import Agent  # noqa: E402
 
 
@@ -102,6 +104,7 @@ def observation(q: dict[str, Any], answer: dict[str, Any], gold: dict[str, Any],
     record: dict[str, Any] = {
         "qtype": q["type"],
         "source": source,
+        "label_source": str(gold.get("label_source") or "unspecified"),
         "correct": correct,
         "confidence": float(pred.max()) if len(pred) else 0.0,
         "soft_accuracy": float(np.dot(pred, target)),
@@ -164,6 +167,7 @@ def main() -> None:
     records: list[dict[str, Any]] = []
     source_records: dict[str, list[dict[str, Any]]] = defaultdict(list)
     qtype_records: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    label_source_records: dict[str, list[dict[str, Any]]] = defaultdict(list)
     source_latencies: dict[str, list[float]] = defaultdict(list)
     all_latencies: list[float] = []
     predictions = []
@@ -195,6 +199,7 @@ def main() -> None:
             records.append(record)
             source_records[source].append(record)
             qtype_records[q["type"]].append(record)
+            label_source_records[record["label_source"]].append(record)
 
     score_enabled = score_count > 0
     report = {
@@ -211,6 +216,10 @@ def main() -> None:
         "by_question_type": {
             qtype: summarize(qrecords)
             for qtype, qrecords in sorted(qtype_records.items())
+        },
+        "by_label_source": {
+            label_source: summarize(label_records)
+            for label_source, label_records in sorted(label_source_records.items())
         },
         "per_source": {
             source: summarize(source_records[source], source_latencies[source])

@@ -1,5 +1,7 @@
 # Local model/checkpoint artifacts (multi-gigabyte; keep outside GitHub).
 checkpoints/
+models/
+external/
 
 # Python and notebook caches.
 **/__pycache__/
@@ -19,6 +21,9 @@ graphify-out/.graphify_*
 # Raw external datasets are reproducible downloads (URLs + sha256 are recorded in
 # dataset/EXTERNAL_DATASETS.md); the converted records are what the repo tracks.
 dataset/raw/
+dataset/cache/
+dataset/prepared/
+evaluation/hf_bucket_v1/
 
 # Replay/distillation scratch and caches are reproducible build artifacts.
 training/fixbench_replay_cache/

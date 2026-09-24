@@ -1,76 +1,52 @@
 # SilicoJev
 
-SilicoJev is the RTL/EDA specialization of Laya. The first version should
-preserve Laya's architecture and output contract (`choice`, `noul`, and
-`score`) while replacing the general workflow training data with validated
-hardware-debugging decisions.
+SilicoJev adapts Laya's typed decision model to RTL/chip-design and design-verification tasks. Given a task state, it returns calibrated distributions for five independent questions: `next_action`, `root_cause_type`, `evidence_sufficient`, `risk`, and `urgency`. It is a specialized decision model, not a free-form code-generating LLM.
 
-## Current layout
+## Fresh clone and training
 
-- `dataset/raw/`: curated copies of the selected upstream sources.
-- `dataset/extracted/`: archives unpacked for inspection and conversion.
-- `dataset/CONVERSION_PLAN.md`: source-by-source conversion plan.
-- `dataset/SILICOJEV_SCHEMA.json`: normalized record contract.
-- `dataset/EXTERNAL_DATASETS.md`: acquired RTL-BenchLS, Fixbench-RTL, and
-  CVDP data, licenses, and curation rules.
-- `reference/jev/`: Laya/Laya.cpp, official TypeSafe clients/skills, and
-  community routing/evaluation references.
+Clone the repository and launch the new notebook from the repository root:
 
-The original downloads under `../data/` are intentionally preserved. The
-curated corpus is a working copy so source data can be re-audited.
+```bash
+git clone https://github.com/Yaswanth-ampolu/silicojev.git
+cd silicojev
+jupyter lab silicojev_training_hf.ipynb
+```
 
-The notebook keeps the newly acquired external corpora raw until a
-source-specific adapter, replay check, and repository-disjoint split are in
-place. Unreplayed OriGen repair pairs are excluded from the notebook's default
-conversion path.
+Run the notebook in order. It:
 
-## Model strategy
+1. Finds the repository root without machine-specific paths and checks CUDA/BF16/VRAM.
+2. Installs notebook dependencies without replacing CUDA-enabled PyTorch.
+3. Authenticates through Hugging Face's secure interactive login prompt if needed; tokens are not put in the notebook or repository.
+4. Downloads the four 5-question JSONL files from the public `Yaswanth-ampolu/silicojev` bucket into ignored `dataset/cache/hf_bucket/`.
+5. Validates the typed-question schema, gold probability distributions, duplicate IDs, split integrity, and family/project leakage. It writes SHA-256 hashes and split/source counts to ignored `dataset/prepared/hf_bucket_v1/manifest.json`.
+6. Clones the pinned Laya source into ignored `external/laya/` and downloads the public base checkpoint into ignored `models/laya-typed-decisions/`.
+7. Runs a one-optimizer-step smoke test into a separate checkpoint directory. Full training stays disabled until the smoke results are reviewed.
+8. Fine-tunes with the existing Laya typed-decision architecture and RLCD-style proper-scoring plus soft cross-entropy objective. It saves resumable checkpoints under `checkpoints/hf_bucket_v1/` and evaluates the held-out test split.
+9. Optionally uploads only inference artifacts to a Hugging Face model repository. Upload is disabled by default, and the default target is private; optimizer/RNG state is excluded.
 
-Start from the downloaded `laya-typed-decisions` checkpoint and fine-tune it
-as `silicojev`. Keep the Laya output shape initially so the existing runtime
-can evaluate SilicoJev and comparisons remain meaningful. The model name,
-training metadata, and Hugging Face repository can change without changing the
-decision primitives.
+The notebook's first Hugging Face login uses `huggingface_hub.login()`'s interactive prompt. You may instead log in from a terminal before opening Jupyter with `hf auth login`; the notebook checks the local Hugging Face credential store. Never paste access tokens into notebook cells.
 
-Training must be resumable: save model, optimizer, scheduler, scaler, RNG,
-epoch, batch position, dataset fingerprint, and configuration in every
-checkpoint. Never resume a checkpoint against a changed dataset without
-explicitly recording the new dataset version.
+## Data and label policy
 
-## Evaluation contract
+The bucket inputs are `silicojev_5q.jsonl`, `fixbench_rtl_5q.jsonl`, `rtl_benchls_5q.jsonl`, and `veribugbench_5q.jsonl`. They already use the SilicoJev/Laya typed record format, so the pipeline does not rewrite the task state, questions, or gold probabilities. The base SilicoJev split is retained; RTL-BenchLS keeps its repository-disjoint split; Fixbench-RTL is split by its audited lineage groups; VeriBugBench is split by project. Rows source-flagged `eval_excluded` are recorded in the manifest and held out of all generated splits.
 
-`training/evaluate_silicojev.py` follows the original Laya benchmark shape. It
-reports exact accuracy, soft accuracy (the predicted probability assigned to
-the soft gold distribution), Brier score, KL divergence, total variation, ECE,
-and inference latency at p50/p95. It also writes `*_by_source.json` with the
-same metrics grouped by source (`hwe-bench`, `RootCause-Bench`, and so on), so
-performance on validated and weakly labeled sources is visible separately.
+Some targets are verified or benchmark/manual labels, while others are inferred, teacher-judged, synthetic, or pseudo/unverified. The preparation script adds explicit per-question `training_weights` without promoting or modifying gold labels. The initial policy assigns lower weights to weak labels; it is an experimental setting and is documented in `training/prepare_hf_bucket_data.py`. The evaluation data and provenance remain available for auditing; pseudo-score results must not be represented as validated quality.
 
-The final training step fits one validation-set temperature per typed head
-(`choice`, `score`, `noul`) with LBFGS on negative log likelihood and stores
-the result in `rl_agent_config.json`. A checkpoint without a fitted
-temperature is reported as uncalibrated rather than silently treated as
-calibrated.
+Bucket contents can be replaced independently of a Git commit. The generated data manifest records local SHA-256 values so a training run can be tied to exact downloaded bytes. For a fully immutable data source, publish the files in a versioned Hugging Face Dataset repository and pin its commit revision.
 
-Score is explicitly disabled in the current normalized release. The selected
-hardware sources do not supply a trustworthy ordered urgency/priority label,
-so adding a fabricated score target would make RPS, score MAE, and
-within-one-level numbers misleading. The evaluator will enable those metrics
-only after a source with defensible ordered labels is added.
+## Model, code, and artifact locations
 
-## Pseudo-score merge (training experiments only)
+- Base checkpoint: public `convaiinnovations/laya-typed-decisions`, downloaded at the pinned revision configured in the notebook.
+- Laya source: cloned at a pinned commit into `external/laya/`.
+- Dataset cache and prepared split files: `dataset/cache/` and `dataset/prepared/`.
+- Fine-tuning checkpoints, including optimizer and RNG state: `checkpoints/`.
+- Evaluation reports: `evaluation/hf_bucket_v1/`.
+- Optional published inference model: selected Hugging Face model repository.
 
-The ten-worker annotation pass has been structurally audited and merged into:
+Model weights, caches, and training checkpoints are deliberately ignored by Git; do not push these large artifacts to the source repository. The notebook uploads model weights to Hugging Face only when `UPLOAD_MODEL_TO_HF = True` is explicitly enabled.
 
-- `dataset/normalized/pseudo_scores/all_with_pseudo_scores_reviewed.jsonl`
-- `dataset/normalized/pseudo_scores/train_with_pseudo_scores.jsonl`
-- `dataset/normalized/pseudo_scores/validation_with_pseudo_scores.jsonl`
-- `dataset/normalized/pseudo_scores/test_with_pseudo_scores.jsonl`
-- `dataset/pseudo_annotation/review_report.json`
+## Training implementation
 
-The merge preserves the original records and adds `risk` and `urgency` score
-questions. It corrected no semantic judgments automatically: all 12,496 score
-labels remain `codex_pseudo_unverified`. The audit found 617 low-confidence
-records and 631 records where a `no time pressure` urgency label was not proven
-by the evidence. The pseudo-score splits may be used for exploratory training,
-but must not replace the independently validated test set.
+`training/train_silicojev.py` is the authoritative trainer. It retains Laya's encoder and typed heads, uses BF16 where supported, enables gradient checkpointing, and periodically saves resumable checkpoints. `training/prepare_hf_bucket_data.py` validates and combines the bucket datasets while keeping splits group-disjoint. `training/evaluate_silicojev.py` reports exact/soft accuracy, Brier score, KL divergence, total variation, ECE, latency, and metrics by source, question type, and label source; score metrics must be interpreted in light of each label's provenance.
+
+The notebook defaults are aimed at a single 80 GB H100 (BF16, micro-batch 32, accumulation 2) and reduce the batch for lower-memory GPUs. This environment does not have the H100, so the actual GPU smoke test must be run in the target Jupyter instance before full training.
