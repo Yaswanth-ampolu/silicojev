@@ -935,8 +935,26 @@ def _main_pipeline() -> None:
             best_state = {**common_state, "best_metric": args.best_metric, "best_metric_mode": args.best_mode,
                           "best_metric_value": best_value, "calibration": validation_calibration,
                           "calibration_temperatures": validation_temperatures}
-            print(f"[best] metric={args.best_metric} old={old_value} new={best_value:.6f} path={best_path}", flush=True)
-            save_checkpoint(root, "best", model, tokenizer, best_cfg, optimizer, scheduler, scaler, best_state, metrics_path, update_latest=False)
+            best_path = save_checkpoint(
+                root,
+                "best",
+                model,
+                tokenizer,
+                best_cfg,
+                optimizer,
+                scheduler,
+                scaler,
+                best_state,
+                metrics_path,
+                update_latest=False,
+            )
+            print(
+                f"[best] metric={args.best_metric} "
+                f"old={old_value} "
+                f"new={best_value:.6f} "
+                f"path={best_path}",
+                flush=True,
+            )
             append_jsonl(metrics_path, {"type":"best", "step":resume_state["global_step"], "epoch":epoch+1,
                                         "metric":args.best_metric, "value":best_value, "path":str(best_path),
                                         "data_fingerprint":data_fp, "model_fingerprint":model_fp,

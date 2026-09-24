@@ -22,7 +22,7 @@ from typing import Any, Iterable
 
 import numpy as np
 
-from decision_metrics import distribution_observation, summarize
+from decision_metrics import distribution_observation, normalize, summarize
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 LAYA_SOURCE = Path(os.environ.get("SILICOJEV_LAYA_SOURCE", REPO_ROOT / "external" / "laya")).resolve()
