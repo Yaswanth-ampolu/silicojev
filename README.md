@@ -28,7 +28,7 @@ The notebook's first Hugging Face login uses `huggingface_hub.login()`'s interac
 
 ## Data and label policy
 
-The bucket inputs are `silicojev_5q.jsonl`, `fixbench_rtl_5q.jsonl`, `rtl_benchls_5q.jsonl`, and `veribugbench_5q.jsonl`. They already use the SilicoJev/Laya typed record format, so the pipeline does not rewrite the task state, questions, or gold probabilities. The base SilicoJev split is retained; RTL-BenchLS keeps its repository-disjoint split; Fixbench-RTL is split by its audited lineage groups; VeriBugBench is split by project. Rows source-flagged `eval_excluded` are recorded in the manifest and held out of all generated splits.
+The bucket inputs are `silicojev_5q.jsonl`, `fixbench_rtl_5q.jsonl`, `rtl_benchls_5q.jsonl`, and `veribugbench_5q.jsonl`. They already use the SilicoJev/Laya typed record format, so the pipeline does not rewrite task state, questions, or gold probabilities. Preparation writes four group-disjoint splits: `train`, `validation` (dev/checkpoint selection), `calibration` (temperature fitting only), and `test` (final-only evaluation). Existing test assignments are preserved; existing validation groups are deterministically separated into validation and calibration groups. RTL-BenchLS remains repository-disjoint, Fixbench-RTL is split by audited lineage families, and VeriBugBench by project. Rows source-flagged `eval_excluded` are recorded in the manifest and excluded. The manifest records split counts, decision/source/label-source distributions, file/content fingerprints, and weighted training mass by source and label source.
 
 Some targets are verified or benchmark/manual labels, while others are inferred, teacher-judged, synthetic, or pseudo/unverified. The preparation script adds explicit per-question `training_weights` without promoting or modifying gold labels. The initial policy assigns lower weights to weak labels; it is an experimental setting and is documented in `training/prepare_hf_bucket_data.py`. The evaluation data and provenance remain available for auditing; pseudo-score results must not be represented as validated quality.
 
@@ -47,6 +47,29 @@ Model weights, caches, and training checkpoints are deliberately ignored by Git;
 
 ## Training implementation
 
-`training/train_silicojev.py` is the authoritative trainer. It retains Laya's encoder and typed heads, uses BF16 where supported, enables gradient checkpointing, and periodically saves resumable checkpoints. `training/prepare_hf_bucket_data.py` validates and combines the bucket datasets while keeping splits group-disjoint. `training/evaluate_silicojev.py` reports exact/soft accuracy, Brier score, KL divergence, total variation, ECE, latency, and metrics by source, question type, and label source; score metrics must be interpreted in light of each label's provenance.
+`training/train_silicojev.py` is the authoritative trainer. It retains Laya's encoder, heads, and RLCD/proper-scoring plus soft cross-entropy loss. Validation selects `best/` by Brier score (minimum by default); the final epoch is saved separately in `final/`. Temperature fitting uses only `calibration.jsonl`, and removes inherited `temperature_by_options` because Laya gives those per-option values precedence. Test data is loaded only for final evaluation. Step checkpoints are atomically written and pruned; `latest` resumes training while `best/` and `final/` are retained. Resume validates content-based data/model fingerprints and semantic training settings, allows epoch/max-step extension, and ignores harmless loader-worker changes.
 
-The notebook defaults are aimed at a single 80 GB H100 (BF16, micro-batch 32, accumulation 2) and reduce the batch for lower-memory GPUs. This environment does not have the H100, so the actual GPU smoke test must be run in the target Jupyter instance before full training.
+Preparation and training CLI sequence (after downloading the four bucket files into `dataset/cache/hf_bucket/` and preparing a Laya checkpoint under `models/laya-typed-decisions/`):
+
+```bash
+python training/prepare_hf_bucket_data.py \
+  --input-dir dataset/cache/hf_bucket \
+  --output-dir dataset/prepared/hf_bucket_v1
+
+python training/train_silicojev.py \
+  --model-dir models/laya-typed-decisions \
+  --train dataset/prepared/hf_bucket_v1/train.jsonl \
+  --validation dataset/prepared/hf_bucket_v1/validation.jsonl \
+  --calibration dataset/prepared/hf_bucket_v1/calibration.jsonl \
+  --test dataset/prepared/hf_bucket_v1/test.jsonl \
+  --output-dir checkpoints/hf_bucket_v1 \
+  --dtype bf16 --epochs 4 --micro-batch-size 32 --grad-accum-steps 2 \
+  --encoder-lr 2.5e-5 --head-lr 1e-4 --warmup-ratio 0.05 \
+  --checkpoint-every 250 --keep-checkpoints 2 --resume auto
+```
+
+Suggested controlled A100/H100 starting point: BF16, 4 epochs, effective batch 64 (H100/A100-80GB `32×2`; adjust explicitly for A100-40GB), encoder/head LR `2.5e-5`/`1e-4`, max/head lengths 1024/256, 5% warmup, cosine decay, gradient checkpointing `auto`, fused AdamW `auto`, and option permutation disabled (`0.0`). `--attention-backend auto` selects FlashAttention 2 only when installed/initializable, otherwise SDPA. These are reference settings, not claims of optimality. Tune one experimental setting at a time.
+
+For a base-model A/B run, download each candidate at its own pinned Hub revision into a separate model directory and pass the matching pair with `--base-model-id` and `--base-model-revision`; use separate output directories so their checkpoints, metrics, and resume identities cannot mix.
+
+The trainer reports GPU, CUDA, VRAM, precision, throughput, token lengths/truncation, validation metrics, and writes append-only `metrics.jsonl` plus optional TensorBoard events. This repository runtime has no CUDA device, so only CPU-side tests can be run here; perform the required BF16 forward/backward/checkpoint/resume smoke test on the target A100/H100 before launching the full run.

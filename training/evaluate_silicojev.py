@@ -22,6 +22,8 @@ from typing import Any, Iterable
 
 import numpy as np
 
+from decision_metrics import distribution_observation, summarize
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 LAYA_SOURCE = Path(os.environ.get("SILICOJEV_LAYA_SOURCE", REPO_ROOT / "external" / "laya")).resolve()
 sys.path.insert(0, str(LAYA_SOURCE))
@@ -37,31 +39,6 @@ SCORE_DISABLED_NOTE = (
 
 def parse_json(value: Any) -> Any:
     return json.loads(value) if isinstance(value, str) else value
-
-
-def finite(value: float, default: float = 0.0) -> float:
-    return float(value) if math.isfinite(float(value)) else default
-
-
-def normalize(values: Iterable[float]) -> np.ndarray:
-    values = np.asarray(list(values), dtype=np.float64)
-    values = np.clip(values, 0.0, None)
-    total = float(values.sum())
-    return values / total if total > 0 else np.full(len(values), 1.0 / max(len(values), 1))
-
-
-def ece(conf: list[float], correct: list[float], bins: int = 15) -> float:
-    if not conf:
-        return 0.0
-    c = np.asarray(conf, dtype=np.float64)
-    y = np.asarray(correct, dtype=np.float64)
-    edges = np.linspace(0.0, 1.0, bins + 1)
-    result = 0.0
-    for lo, hi in zip(edges[:-1], edges[1:]):
-        mask = (c > lo) & (c <= hi)
-        if mask.any():
-            result += float(mask.mean()) * abs(float(c[mask].mean()) - float(y[mask].mean()))
-    return finite(result)
 
 
 def distribution_for_answer(q: dict[str, Any], answer: dict[str, Any]) -> tuple[list[str], np.ndarray]:
@@ -93,24 +70,10 @@ def observation(q: dict[str, Any], answer: dict[str, Any], gold: dict[str, Any],
     gold_keys, target = distribution_for_gold(q, gold)
     if pred_keys != gold_keys:
         raise ValueError(f"Question criteria changed between prediction and gold: {pred_keys} != {gold_keys}")
-    predicted_label = int(pred.argmax())
-    gold_label = int(target.argmax())
-    correct = float(predicted_label == gold_label)
-    if q["type"] == "choice" and answer.get("choice") in pred_keys:
-        correct = float(pred_keys.index(answer["choice"]) == gold_label)
-    elif q["type"] == "noul":
-        correct = float((float(answer.get("noul", 0.5)) >= 0.5) == (target[1] >= 0.5))
-
     record: dict[str, Any] = {
-        "qtype": q["type"],
+        **distribution_observation(q["type"], pred, target),
         "source": source,
         "label_source": str(gold.get("label_source") or "unspecified"),
-        "correct": correct,
-        "confidence": float(pred.max()) if len(pred) else 0.0,
-        "soft_accuracy": float(np.dot(pred, target)),
-        "brier_score": float(np.square(pred - target).sum()),
-        "kl_divergence": float(np.sum(target * np.log(np.clip(target, 1e-12, 1.0) / np.clip(pred, 1e-12, 1.0)))),
-        "total_variation": float(0.5 * np.abs(pred - target).sum()),
     }
     if q["type"] == "score":
         predicted_score = float(answer.get("score", np.dot(np.arange(len(pred)), pred)))
@@ -118,40 +81,6 @@ def observation(q: dict[str, Any], answer: dict[str, Any], gold: dict[str, Any],
         record["score_mae"] = abs(predicted_score - gold_score)
         record["within_1_level"] = float(abs(predicted_score - gold_score) <= 1.0)
     return record
-
-
-def summarize(records: list[dict[str, Any]], latencies_ms: list[float] | None = None) -> dict[str, Any]:
-    if not records:
-        result: dict[str, Any] = {
-            "n": 0,
-            "accuracy": None,
-            "soft_accuracy": None,
-            "brier_score": None,
-            "kl_divergence": None,
-            "total_variation": None,
-            "ece": None,
-        }
-    else:
-        correct = [r["correct"] for r in records]
-        result = {
-            "n": len(records),
-            "accuracy": finite(np.mean(correct)),
-            "soft_accuracy": finite(np.mean([r["soft_accuracy"] for r in records])),
-            "brier_score": finite(np.mean([r["brier_score"] for r in records])),
-            "kl_divergence": finite(np.mean([r["kl_divergence"] for r in records])),
-            "total_variation": finite(np.mean([r["total_variation"] for r in records])),
-            "ece": ece([r["confidence"] for r in records], correct),
-        }
-        score_records = [r for r in records if "score_mae" in r]
-        result["score_mae"] = finite(np.mean([r["score_mae"] for r in score_records])) if score_records else None
-        result["within_1_level"] = finite(np.mean([r["within_1_level"] for r in score_records])) if score_records else None
-    if latencies_ms:
-        result["latency_p50_ms"] = finite(np.percentile(latencies_ms, 50))
-        result["latency_p95_ms"] = finite(np.percentile(latencies_ms, 95))
-    else:
-        result["latency_p50_ms"] = None
-        result["latency_p95_ms"] = None
-    return result
 
 
 def main() -> None:

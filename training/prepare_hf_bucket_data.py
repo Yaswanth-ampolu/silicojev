@@ -25,7 +25,10 @@ EXPECTED_QUESTIONS = {
     "risk": "score",
     "urgency": "score",
 }
-SPLITS = ("train", "validation", "test")
+BASE_SPLITS = ("train", "validation", "test")
+SPLITS = ("train", "validation", "calibration", "test")
+DEFAULT_BASE_MODEL_ID = "convaiinnovations/laya-typed-decisions"
+DEFAULT_BASE_MODEL_REVISION = "1a793eb568e6718f15941d08f85432581df534e3"
 EXPECTED_COUNTS = {
     "silicojev_5q.jsonl": 6248,
     "fixbench_rtl_5q.jsonl": 100,
@@ -96,9 +99,15 @@ def stable_split(group: str, seed: int) -> str:
     return "test"
 
 
+def split_validation_group(group: str, seed: int) -> str:
+    """Deterministically divide an existing validation group into dev/calibration."""
+    value = int(hashlib.sha256(f"calibration:{seed}:{group}".encode()).hexdigest()[:8], 16)
+    return "calibration" if value % 2 else "validation"
+
+
 def load_base_split_ids(split_dir: Path) -> dict[str, str]:
     id_to_split: dict[str, str] = {}
-    for split in SPLITS:
+    for split in BASE_SPLITS:
         path = split_dir / f"{split}.jsonl"
         for row in read_jsonl(path):
             rid = str(row.get("id", ""))
@@ -182,20 +191,28 @@ def make_splits(
             if filename == "silicojev_5q.jsonl":
                 split = base_ids[rid]
                 group = f"base:{row.get('source_group', rid)}"
+                if split == "validation":
+                    split = split_validation_group(group, seed)
             elif filename == "rtl_benchls_5q.jsonl":
                 split = (row.get("provenance") or {}).get("split")
-                if split not in SPLITS:
+                if split not in BASE_SPLITS:
                     raise ValueError(f"{rid}: RTL-BenchLS record lacks a valid repository-disjoint split")
                 group = f"rtlbenchls:{row.get('source_group') or rid}"
+                if split == "validation":
+                    split = split_validation_group(group, seed)
             elif filename == "fixbench_rtl_5q.jsonl":
                 group_name = fix_groups.get(rid, rid)
                 group = f"fixbench:{group_name}"
                 split = stable_split(group, seed)
+                if split == "validation":
+                    split = split_validation_group(group, seed)
             else:
                 provenance = row.get("provenance") or {}
                 group_name = provenance.get("project_id") or row.get("source_group") or rid
                 group = f"veribugbench:{group_name}"
                 split = stable_split(group, seed)
+                if split == "validation":
+                    split = split_validation_group(group, seed)
 
             previous = group_splits[filename].setdefault(group, split)
             if previous != split:
@@ -229,10 +246,10 @@ def make_splits(
     metadata = {
         "seed": seed,
         "split_policy": {
-            "silicojev_5q.jsonl": "preserve tracked train/validation/test ID assignments",
-            "rtl_benchls_5q.jsonl": "preserve converter repository-disjoint split",
-            "fixbench_rtl_5q.jsonl": "stable hash split by audited lineage family",
-            "veribugbench_5q.jsonl": "stable hash split by source project_id",
+            "silicojev_5q.jsonl": "preserve tracked train/test IDs; split original validation source_groups between dev/calibration",
+            "rtl_benchls_5q.jsonl": "preserve converter train/test repository split; split original validation repositories between dev/calibration",
+            "fixbench_rtl_5q.jsonl": "preserve stable train/validation/test lineage-family split; divide validation families between dev/calibration",
+            "veribugbench_5q.jsonl": "preserve stable train/validation/test project split; divide validation projects between dev/calibration",
         },
         "label_source_weights": DEFAULT_LABEL_WEIGHTS,
         "unknown_label_source_weight": 0.20,
@@ -244,6 +261,63 @@ def make_splits(
     return outputs, metadata
 
 
+def split_statistics(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    sources: Counter[str] = Counter()
+    label_sources: Counter[str] = Counter()
+    decisions = 0
+    ids = []
+    for row in rows:
+        ids.append(str(row["id"]))
+        sources[str(row.get("source") or "unknown")] += 1
+        questions = parse_json(row["questions"], f"{row['id']}.questions")
+        gold = parse_json(row["gold"], f"{row['id']}.gold")
+        for qid in questions:
+            if qid in gold:
+                decisions += 1
+                label_sources[str(gold[qid].get("label_source") or "unspecified")] += 1
+    return {
+        "records": len(rows),
+        "decisions": decisions,
+        "source_distribution": dict(sorted(sources.items())),
+        "label_source_distribution": dict(sorted(label_sources.items())),
+        "record_ids_sha256": hashlib.sha256("\n".join(sorted(ids)).encode()).hexdigest(),
+    }
+
+
+def training_mass(rows: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, float | int]]]:
+    def collect(key_for):
+        accum: dict[str, dict[str, Any]] = defaultdict(
+            lambda: {"record_ids": set(), "decision_count": 0, "weight_sum": 0.0}
+        )
+        for row in rows:
+            questions = parse_json(row["questions"], f"{row['id']}.questions")
+            gold = parse_json(row["gold"], f"{row['id']}.gold")
+            weights = row.get("training_weights") or {}
+            for qid in questions:
+                if qid not in gold:
+                    continue
+                entry = accum[key_for(row, gold[qid])]
+                entry["record_ids"].add(str(row["id"]))
+                entry["decision_count"] += 1
+                entry["weight_sum"] += float(weights.get(qid, 1.0))
+        total_mass = sum(entry["weight_sum"] for entry in accum.values())
+        return {
+            key: {
+                "record_count": len(entry["record_ids"]),
+                "decision_count": entry["decision_count"],
+                "mean_sample_weight": entry["weight_sum"] / max(entry["decision_count"], 1),
+                "weighted_mass": entry["weight_sum"],
+                "weighted_mass_percent": 100.0 * entry["weight_sum"] / max(total_mass, 1e-12),
+            }
+            for key, entry in sorted(accum.items())
+        }
+
+    return {
+        "by_source": collect(lambda row, _gold: str(row.get("source") or "unknown")),
+        "by_label_source": collect(lambda _row, gold: str(gold.get("label_source") or "unspecified")),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-dir", type=Path, required=True)
@@ -251,6 +325,8 @@ def main() -> None:
     parser.add_argument("--fixbench-groups", type=Path, default=REPO_ROOT / "dataset/converted/fixbench_rtl/split_groups.json")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--base-model-id", default=DEFAULT_BASE_MODEL_ID)
+    parser.add_argument("--base-model-revision", default=DEFAULT_BASE_MODEL_REVISION)
     args = parser.parse_args()
 
     expected_files = (
@@ -281,6 +357,24 @@ def main() -> None:
         name: {"sha256": sha256(args.input_dir / name), "bytes": (args.input_dir / name).stat().st_size}
         for name in expected_files
     }
+    metadata["base_model"] = {"id": args.base_model_id, "revision": args.base_model_revision}
+    metadata["splits"] = {}
+    for split in SPLITS:
+        split_path = args.output_dir / f"{split}.jsonl"
+        stats = split_statistics(splits[split])
+        file_hash = sha256(split_path)
+        stats["sha256"] = file_hash
+        stats["data_fingerprint"] = hashlib.sha256(
+            json.dumps({"schema": "silicojev-5q-v2", "split": split, "sha256": file_hash}, sort_keys=True).encode()
+        ).hexdigest()
+        metadata["splits"][split] = stats
+    metadata["training_mass"] = training_mass(splits["train"])
+    metadata["data_fingerprint"] = hashlib.sha256(
+        json.dumps(
+            {name: metadata["splits"][name]["data_fingerprint"] for name in SPLITS},
+            sort_keys=True,
+        ).encode()
+    ).hexdigest()
     metadata["total_records"] = sum(len(rows) for rows in splits.values())
     (args.output_dir / "manifest.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(metadata, indent=2))
