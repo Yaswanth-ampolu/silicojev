@@ -24,6 +24,17 @@ dataset/raw/
 dataset/cache/
 dataset/prepared/
 evaluation/hf_bucket_v1/
+dataset/extracted/
+
+# Local checkouts of reference repositories; keep their source outside this repo.
+reference/jev/laya.cpp/
+reference/jev/system-one-adapter-python/
+reference/jev/tenbin/
+reference/jev/typesafe-ai-skills/
+reference/jev/typesafe-arena/
+reference/jev/typesafe-router/
+reference/jev/typesafe-sdk-python/
+reference/unsloth/
 
 # Replay/distillation scratch and caches are reproducible build artifacts.
 training/fixbench_replay_cache/
