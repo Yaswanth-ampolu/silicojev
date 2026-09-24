@@ -9,6 +9,8 @@ stable ``latest`` link for notebook restarts.
 from __future__ import annotations
 
 import argparse
+import atexit
+from collections import deque
 import hashlib
 import json
 import os
@@ -21,7 +23,13 @@ from typing import Any
 import numpy as np
 import torch
 from safetensors.torch import load_file, save_file
+from tqdm.auto import tqdm
 from transformers import AutoTokenizer
+
+try:
+    from torch.utils.tensorboard import SummaryWriter
+except ImportError:
+    SummaryWriter = None
 
 import sys
 
@@ -304,6 +312,49 @@ def fit_validation_temperatures(
     return temperatures, status
 
 
+def gpu_memory_metrics(device: torch.device | None = None) -> dict[str, float]:
+    """Return allocator memory in GiB without synchronizing the CUDA device."""
+    if not torch.cuda.is_available():
+        return {
+            "gpu_allocated_gb": 0.0,
+            "gpu_reserved_gb": 0.0,
+            "gpu_peak_gb": 0.0,
+        }
+    return {
+        "gpu_allocated_gb": torch.cuda.memory_allocated(device) / (1024**3),
+        "gpu_reserved_gb": torch.cuda.memory_reserved(device) / (1024**3),
+        "gpu_peak_gb": torch.cuda.max_memory_allocated(device) / (1024**3),
+    }
+
+
+def append_jsonl(path: Path, record: dict[str, Any]) -> None:
+    """Append one complete JSON record; metrics survive restarts and are never reset."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    line = json.dumps(record, ensure_ascii=False, default=str) + "\n"
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(line)
+        handle.flush()
+
+
+def optimizer_learning_rates(optimizer) -> dict[str, float]:
+    return {
+        str(group.get("name", f"group_{index}")): float(group["lr"])
+        for index, group in enumerate(optimizer.param_groups)
+    }
+
+
+def report_cuda_oom(exc: RuntimeError, epoch: int, micro_step: int, global_step: int, batch_size: int) -> None:
+    if "out of memory" not in str(exc).lower():
+        return
+    memory = gpu_memory_metrics(torch.device("cuda") if torch.cuda.is_available() else None)
+    print(
+        f"[oom] epoch={epoch} micro_step={micro_step} global_step={global_step} "
+        f"micro_batch_size={batch_size} allocated={memory['gpu_allocated_gb']:.2f}GiB "
+        f"reserved={memory['gpu_reserved_gb']:.2f}GiB peak={memory['gpu_peak_gb']:.2f}GiB",
+        flush=True,
+    )
+
+
 def save_model_artifacts(model, tokenizer, cfg: dict[str, Any], directory: Path) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     state = {key: value.detach().cpu().contiguous() for key, value in model.state_dict().items()}
@@ -323,10 +374,12 @@ def save_checkpoint(
     scheduler,
     scaler,
     state: dict[str, Any],
+    metrics_path: Path | None = None,
 ) -> Path:
     root.mkdir(parents=True, exist_ok=True)
     final = root / name
     temp = root / f".tmp_{name}_{os.getpid()}"
+    print(f"[checkpoint] saving step={state.get('global_step')} path={final}", flush=True)
     if temp.exists():
         shutil.rmtree(temp)
     temp.mkdir(parents=True)
@@ -353,6 +406,17 @@ def save_checkpoint(
     if latest.exists() or latest.is_symlink():
         latest.unlink()
     os.replace(latest_tmp, latest)
+    print(f"[checkpoint] saved path={final}", flush=True)
+    if metrics_path is not None:
+        checkpoint_event = {
+            "type": "checkpoint",
+            "step": state.get("global_step"),
+            "epoch": state.get("epoch"),
+            "path": str(final),
+        }
+        if state.get("elapsed_seconds") is not None:
+            checkpoint_event["elapsed_seconds"] = state["elapsed_seconds"]
+        append_jsonl(metrics_path, checkpoint_event)
     return final
 
 
@@ -370,7 +434,6 @@ def load_resume(path: Path, model, optimizer, scheduler, scaler, device: torch.d
     torch.set_rng_state(ckpt["torch_rng"])
     if torch.cuda.is_available() and ckpt.get("cuda_rng") is not None:
         torch.cuda.set_rng_state_all(ckpt["cuda_rng"])
-    print(f"Resumed from {path} at epoch={state['epoch']} batch={state['batch_in_epoch']} step={state['global_step']}")
     return state
 
 
@@ -458,8 +521,8 @@ def main() -> None:
     enc_params = [p for name, p in model.named_parameters() if "encoder." in name]
     head_params = [p for name, p in model.named_parameters() if "encoder." not in name]
     optimizer = torch.optim.AdamW([
-        {"params": enc_params, "lr": args.encoder_lr},
-        {"params": head_params, "lr": args.head_lr},
+        {"params": enc_params, "lr": args.encoder_lr, "name": "encoder"},
+        {"params": head_params, "lr": args.head_lr, "name": "head"},
     ], weight_decay=args.weight_decay)
     updates_per_epoch = max(1, (len(train_items) + args.micro_batch_size - 1) // args.micro_batch_size // args.grad_accum_steps)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
@@ -469,7 +532,17 @@ def main() -> None:
 
     root = args.output_dir.resolve()
     root.mkdir(parents=True, exist_ok=True)
+    metrics_path = root / "metrics.jsonl"
+    tensorboard_writer = None
+    if SummaryWriter is not None:
+        try:
+            tensorboard_writer = SummaryWriter(log_dir=str(root / "tensorboard"))
+            atexit.register(tensorboard_writer.close)
+        except (ImportError, OSError) as exc:
+            print(f"[tensorboard] unavailable; continuing without it ({exc})", flush=True)
     resume_state = {"epoch": 0, "batch_in_epoch": 0, "global_step": 0}
+    resumed_from = None
+    resume_status = "disabled (--resume none)" if args.resume == "none" else "fresh run (checkpoint not found)"
     if args.resume != "none":
         resume_path = root / "latest" if args.resume == "auto" else Path(args.resume)
         if resume_path.exists():
@@ -478,10 +551,56 @@ def main() -> None:
             if meta.get("dataset_fingerprint") != data_fp:
                 raise RuntimeError("Checkpoint dataset fingerprint differs from the current dataset")
             resume_state = load_resume(resolved, model, optimizer, scheduler, scaler, device)
+            resumed_from = resolved
+            resume_status = f"resuming from {resolved}"
+            starting_epoch = int(resume_state["epoch"])
+            epoch_description = (
+                f"{starting_epoch + 1}/{args.epochs}"
+                if starting_epoch < args.epochs
+                else f"complete ({args.epochs}/{args.epochs})"
+            )
+            print(f"[resume] checkpoint={resolved}", flush=True)
+            print(f"[resume] starting_step={resume_state['global_step']}", flush=True)
+            print(f"[resume] starting_epoch={epoch_description}", flush=True)
+
+    # Old optimizer checkpoints may predate group names; reapply labels after loading
+    # so live LR reporting remains unambiguous without changing parameter membership.
+    for group, name in zip(optimizer.param_groups, ("encoder", "head")):
+        group["name"] = name
 
     pad_id = tokenizer.pad_token_id or 0
     started = time.time()
+    run_clock = time.perf_counter()
+    run_samples = 0
+    run_tokens = 0
     completed_epoch = int(resume_state["epoch"])
+    batches_per_epoch = (len(train_items) + args.micro_batch_size - 1) // args.micro_batch_size
+    if torch.cuda.is_available():
+        properties = torch.cuda.get_device_properties(device)
+        gpu_name = properties.name
+        total_vram_gb = properties.total_memory / (1024**3)
+        torch.cuda.reset_peak_memory_stats(device)
+    else:
+        gpu_name = "unavailable"
+        total_vram_gb = 0.0
+    print("=" * 72, flush=True)
+    print("SilicoJev Training", flush=True)
+    print("=" * 72, flush=True)
+    print(f"GPU: {gpu_name} | CUDA: {torch.version.cuda or 'unavailable'} | VRAM: {total_vram_gb:.2f} GiB", flush=True)
+    print(f"Precision: {args.dtype}", flush=True)
+    print(f"Train examples: {len(train_items):,} | Validation examples: {len(valid_items):,}", flush=True)
+    print(f"Epochs: {args.epochs} | Batches per epoch: {batches_per_epoch:,}", flush=True)
+    print(f"Micro batch size: {args.micro_batch_size} | Gradient accumulation: {args.grad_accum_steps} | Effective batch: {args.micro_batch_size * args.grad_accum_steps}", flush=True)
+    print(f"Encoder LR: {args.encoder_lr:g} | Head LR: {args.head_lr:g} | Weight decay: {args.weight_decay:g}", flush=True)
+    print(f"Max sequence length: {args.max_len} | Head max length: {args.head_max_len}", flush=True)
+    print(f"Checkpoint/output directory: {root}", flush=True)
+    print(f"Resume: {resume_status}", flush=True)
+    print(f"Metrics: {metrics_path}", flush=True)
+    if tensorboard_writer is None:
+        print("TensorBoard: unavailable; continuing without it", flush=True)
+    else:
+        print(f"TensorBoard: {root / 'tensorboard'}", flush=True)
+    print("=" * 72, flush=True)
     for epoch in range(int(resume_state["epoch"]), args.epochs):
         order = list(range(len(train_items)))
         random.Random(args.seed + epoch).shuffle(order)
@@ -490,47 +609,166 @@ def main() -> None:
         accum = 0
         epoch_loss = 0.0
         epoch_items = 0
-        for batch_start in range(0, len(order), args.micro_batch_size):
-            if batch_start < first_batch:
-                continue
-            chosen = [train_items[i] for i in order[batch_start:batch_start + args.micro_batch_size]]
-            if not chosen:
-                continue
-            batch = move_batch(collate(chosen, pad_id), device)
-            progress = epoch / max(1, args.epochs - 1)
-            sigma = 0.4 + (0.1 - 0.4) * progress
-            with torch.autocast("cuda", dtype=amp_dtype, enabled=amp_enabled):
-                logits, _ = model(batch["input_ids"], batch["attention_mask"], batch["marker_pos"], batch["marker_mask"], batch["qtype"])
-                loss = loss_from_logits(logits, batch, sigma, model) / args.grad_accum_steps
-            scaler.scale(loss).backward()
-            accum += 1
-            epoch_loss += float(loss.item()) * args.grad_accum_steps * len(chosen)
-            epoch_items += len(chosen)
-            is_last = batch_start + args.micro_batch_size >= len(order)
-            if accum % args.grad_accum_steps == 0 or is_last:
-                scaler.unscale_(optimizer)
-                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-                scaler.step(optimizer)
-                scaler.update()
-                optimizer.zero_grad(set_to_none=True)
-                scheduler.step()
-                accum = 0
-                resume_state["global_step"] += 1
-                if resume_state["global_step"] % args.checkpoint_every == 0:
-                    state = {
-                        "epoch": epoch,
-                        "batch_in_epoch": batch_start + args.micro_batch_size,
-                        "global_step": resume_state["global_step"],
-                        "dataset_fingerprint": data_fp,
-                        "training_config": vars(args),
-                        "train_items": len(train_items),
-                        "validation_items": len(valid_items),
+        recent_losses = deque(maxlen=100)
+        remaining_batches = range(first_batch, len(order), args.micro_batch_size)
+        with tqdm(
+            remaining_batches,
+            desc=f"Epoch {epoch + 1}/{args.epochs}",
+            dynamic_ncols=True,
+            unit="micro",
+        ) as progress_bar:
+            for batch_start in progress_bar:
+                chosen = [train_items[i] for i in order[batch_start:batch_start + args.micro_batch_size]]
+                if not chosen:
+                    continue
+                micro_step = epoch * batches_per_epoch + batch_start // args.micro_batch_size + 1
+                try:
+                    cpu_batch = collate(chosen, pad_id)
+                    batch_tokens = int(cpu_batch["attention_mask"].sum().item())
+                    batch = move_batch(cpu_batch, device)
+                    progress = epoch / max(1, args.epochs - 1)
+                    sigma = 0.4 + (0.1 - 0.4) * progress
+                    with torch.autocast("cuda", dtype=amp_dtype, enabled=amp_enabled):
+                        logits, _ = model(batch["input_ids"], batch["attention_mask"], batch["marker_pos"], batch["marker_mask"], batch["qtype"])
+                        loss = loss_from_logits(logits, batch, sigma, model) / args.grad_accum_steps
+                    scaler.scale(loss).backward()
+                    accum += 1
+                    loss_value = float(loss.item()) * args.grad_accum_steps
+                    epoch_loss += loss_value * len(chosen)
+                    epoch_items += len(chosen)
+                    run_samples += len(chosen)
+                    run_tokens += batch_tokens
+                    recent_losses.append((loss_value * len(chosen), len(chosen)))
+                    is_last = batch_start + args.micro_batch_size >= len(order)
+                    optimizer_updated = accum % args.grad_accum_steps == 0 or is_last
+                    if optimizer_updated:
+                        scaler.unscale_(optimizer)
+                        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                        scaler.step(optimizer)
+                        scaler.update()
+                        optimizer.zero_grad(set_to_none=True)
+                        scheduler.step()
+                        accum = 0
+                        resume_state["global_step"] += 1
+                        if resume_state["global_step"] % args.checkpoint_every == 0:
+                            state = {
+                                "epoch": epoch,
+                                "batch_in_epoch": batch_start + args.micro_batch_size,
+                                "global_step": resume_state["global_step"],
+                                "dataset_fingerprint": data_fp,
+                                "training_config": vars(args),
+                                "train_items": len(train_items),
+                                "validation_items": len(valid_items),
+                            }
+                            save_checkpoint(
+                                root,
+                                f"step_{resume_state['global_step']:08d}",
+                                model,
+                                tokenizer,
+                                cfg,
+                                optimizer,
+                                scheduler,
+                                scaler,
+                                state,
+                                metrics_path,
+                            )
+
+                        should_log = (
+                            resume_state["global_step"] % 10 == 0
+                            or is_last
+                            or (args.max_steps and resume_state["global_step"] >= args.max_steps)
+                        )
+                        if should_log:
+                            elapsed = max(time.perf_counter() - run_clock, 1e-9)
+                            rates = optimizer_learning_rates(optimizer)
+                            memory = gpu_memory_metrics(device)
+                            record = {
+                                "type": "train",
+                                "epoch": epoch + 1,
+                                "step": resume_state["global_step"],
+                                "micro_step": micro_step,
+                                "loss": loss_value,
+                                "average_loss": epoch_loss / max(epoch_items, 1),
+                                "encoder_lr": rates["encoder"],
+                                "head_lr": rates["head"],
+                                "samples_per_second": run_samples / elapsed,
+                                "tokens_per_second": run_tokens / elapsed,
+                                **memory,
+                                "elapsed_seconds": time.time() - started,
+                            }
+                            append_jsonl(metrics_path, record)
+                            if tensorboard_writer is not None:
+                                tensorboard_writer.add_scalar("train/loss", record["loss"], record["step"])
+                                tensorboard_writer.add_scalar("train/average_loss", record["average_loss"], record["step"])
+                                tensorboard_writer.add_scalar("train/encoder_lr", record["encoder_lr"], record["step"])
+                                tensorboard_writer.add_scalar("train/head_lr", record["head_lr"], record["step"])
+                                tensorboard_writer.add_scalar("gpu/allocated_gb", record["gpu_allocated_gb"], record["step"])
+                                tensorboard_writer.add_scalar("gpu/reserved_gb", record["gpu_reserved_gb"], record["step"])
+                                tensorboard_writer.add_scalar("throughput/samples_per_second", record["samples_per_second"], record["step"])
+                                tensorboard_writer.flush()
+
+                    elapsed = max(time.perf_counter() - run_clock, 1e-9)
+                    memory = gpu_memory_metrics(device)
+                    rates = optimizer_learning_rates(optimizer)
+                    recent_total = sum(count for _, count in recent_losses)
+                    recent_average = sum(value for value, _ in recent_losses) / max(recent_total, 1)
+                    postfix = {
+                        "micro": micro_step,
+                        "step": resume_state["global_step"],
+                        "loss": f"{loss_value:.4f}",
+                        "avg": f"{epoch_loss / max(epoch_items, 1):.4f}",
+                        "roll": f"{recent_average:.4f}",
+                        "enc_lr": f"{rates['encoder']:.2g}",
+                        "head_lr": f"{rates['head']:.2g}",
+                        "vram": f"{memory['gpu_allocated_gb']:.1f}G",
+                        "reserved": f"{memory['gpu_reserved_gb']:.1f}G",
+                        "peak": f"{memory['gpu_peak_gb']:.1f}G",
+                        "samples/s": f"{run_samples / elapsed:.1f}",
                     }
-                    save_checkpoint(root, f"step_{resume_state['global_step']:08d}", model, tokenizer, cfg, optimizer, scheduler, scaler, state)
-                    print(f"checkpoint step={resume_state['global_step']} epoch={epoch + 1} batch={batch_start + args.micro_batch_size}", flush=True)
-                if args.max_steps and resume_state["global_step"] >= args.max_steps:
-                    break
-        metrics = evaluate(model, valid_items, pad_id, device, args.micro_batch_size)
+                    if run_tokens:
+                        postfix["tokens/s"] = f"{run_tokens / elapsed:.0f}"
+                    progress_bar.set_postfix(postfix, refresh=False)
+
+                    if optimizer_updated and args.max_steps and resume_state["global_step"] >= args.max_steps:
+                        break
+                except RuntimeError as exc:
+                    report_cuda_oom(
+                        exc,
+                        epoch + 1,
+                        micro_step,
+                        resume_state["global_step"],
+                        len(chosen),
+                    )
+                    raise
+        try:
+            metrics = evaluate(model, valid_items, pad_id, device, args.micro_batch_size)
+        except RuntimeError as exc:
+            report_cuda_oom(
+                exc,
+                epoch + 1,
+                epoch * batches_per_epoch,
+                resume_state["global_step"],
+                args.micro_batch_size,
+            )
+            raise
+        validation_record = {
+            "type": "validation",
+            "epoch": epoch + 1,
+            "step": resume_state["global_step"],
+            "validation_loss": metrics["loss"],
+            "validation_accuracy": metrics["accuracy"],
+            "validation_items": metrics["items"],
+            "elapsed_seconds": time.time() - started,
+        }
+        append_jsonl(metrics_path, validation_record)
+        print(
+            f"[validation] epoch={epoch + 1} step={resume_state['global_step']} "
+            f"loss={metrics['loss']:.6f} accuracy={metrics['accuracy']:.4f} items={metrics['items']}",
+            flush=True,
+        )
+        if tensorboard_writer is not None:
+            tensorboard_writer.add_scalar("validation/loss", metrics["loss"], resume_state["global_step"])
+            tensorboard_writer.flush()
         state = {
             "epoch": epoch + 1,
             "batch_in_epoch": 0,
@@ -543,7 +781,18 @@ def main() -> None:
             "validation": metrics,
             "elapsed_seconds": time.time() - started,
         }
-        save_checkpoint(root, f"epoch_{epoch + 1:04d}", model, tokenizer, cfg, optimizer, scheduler, scaler, state)
+        save_checkpoint(
+            root,
+            f"epoch_{epoch + 1:04d}",
+            model,
+            tokenizer,
+            cfg,
+            optimizer,
+            scheduler,
+            scaler,
+            state,
+            metrics_path,
+        )
         print(json.dumps({"epoch": epoch + 1, "train_loss": state["train_loss"], "validation": metrics}, indent=2), flush=True)
         resume_state["batch_in_epoch"] = 0
         completed_epoch = epoch + 1
@@ -573,7 +822,7 @@ def main() -> None:
         "calibration": calibration,
         "elapsed_seconds": time.time() - started,
     }
-    save_checkpoint(root, "final", model, tokenizer, cfg, optimizer, scheduler, scaler, final_state)
+    save_checkpoint(root, "final", model, tokenizer, cfg, optimizer, scheduler, scaler, final_state, metrics_path)
     print(json.dumps(final_state, indent=2, default=str))
 
 
